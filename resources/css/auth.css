@@ -1,0 +1,125 @@
+/* =========================================================
+   Auth screens — Blade port helpers for design/portal.css.
+   .p-auth, .p-auth-side, .p-auth-form, .p-field, .hint and
+   the lockup parts already live in design/portal.css; this
+   file only adds what was inline in the JSX.
+   ========================================================= */
+
+/* The design's `.p-auth-side .crest-bg` uses a relative
+   url('assets/crest-monogram.svg'), which Vite can't resolve
+   from the imported file. We render <img class="crest-bg">
+   instead with asset(), and hide any css-bg variant. */
+.p-auth-side .crest-bg {
+	background-image: none !important;
+}
+
+.p-auth-promo-hint {
+	margin-top: 24px;
+	padding: 12px;
+	background: var(--rt-gold-50);
+	border: 1px solid var(--rt-gold-300);
+	border-radius: 4px;
+	font-size: 12px;
+	color: var(--rt-gold-900);
+	display: flex;
+	gap: 8px;
+	align-items: flex-start;
+}
+
+.p-auth-forgot {
+	color: var(--rt-gold-700);
+	font-weight: 500;
+	font-size: 12px;
+}
+
+.p-auth-remember {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 13px;
+	color: var(--p-fg-2);
+	user-select: none;
+	margin-top: 4px;
+}
+
+.p-auth-remember input[type="checkbox"] { accent-color: var(--rt-navy-800); }
+
+.p-auth-sep {
+	border: 0;
+	border-top: 1px solid var(--p-border);
+	margin: 32px 0;
+}
+
+.p-auth-switch {
+	text-align: center;
+	font-size: 13px;
+	color: var(--p-fg-2);
+}
+
+.p-auth-switch a {
+	color: var(--p-fg-1);
+	font-weight: 600;
+}
+
+.p-auth-form-grid {
+	display: grid;
+	gap: 16px;
+}
+
+.p-auth-submit { width: 100%; justify-content: center; margin-top: 8px; }
+
+.p-auth-label-row {
+	display: flex;
+	justify-content: space-between;
+}
+
+/* Register — multi-step progress bar */
+.p-auth-progress {
+	display: flex;
+	gap: 6px;
+	margin-bottom: 28px;
+}
+
+.p-auth-progress span {
+	flex: 1;
+	height: 3px;
+	border-radius: 2px;
+	background: var(--p-border);
+}
+
+.p-auth-progress span.is-active { background: var(--rt-gold-600); }
+
+.p-auth-actions {
+	display: flex;
+	gap: 10px;
+	margin-top: 28px;
+}
+
+.p-auth-actions .rt-btn-primary {
+	flex: 1;
+	justify-content: center;
+}
+
+/* Forgot — sent state */
+.p-auth-sent-icon {
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	background: var(--rt-gold-50);
+	border: 1px solid var(--rt-gold-300);
+	color: var(--rt-gold-700);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 18px;
+}
+
+.p-auth-sent-note {
+	background: var(--p-bg-surface-alt);
+	border: 1px solid var(--p-border);
+	border-radius: 4px;
+	padding: 14px 16px;
+	font-size: 13px;
+	color: var(--p-fg-2);
+	line-height: 1.7;
+}

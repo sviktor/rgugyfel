@@ -1,0 +1,261 @@
+/* =========================================================
+   Royal Telecom Design System — Tokens + Semantic Styles
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* ---------- Brand colors ---------- */
+  --rt-navy-900: #07182B;     /* deepest navy — text on cream, banners */
+  --rt-navy-800: #0E2A47;     /* PRIMARY — buttons, nav, headlines */
+  --rt-navy-700: #173a5f;
+  --rt-navy-600: #25527d;
+  --rt-navy-500: #3a6a98;
+  --rt-navy-300: #8aa8c8;
+  --rt-navy-100: #d6e1ec;
+  --rt-navy-50:  #ecf1f7;
+
+  --rt-gold-900: #6F5326;
+  --rt-gold-800: #8E6E36;
+  --rt-gold-700: #A38241;
+  --rt-gold-600: #B8924A;     /* PRIMARY accent */
+  --rt-gold-500: #CAA868;
+  --rt-gold-300: #E2C893;
+  --rt-gold-100: #F3E6C6;
+  --rt-gold-50:  #FAF3E0;
+
+  /* ---------- Neutrals (warm) ---------- */
+  --rt-cream:    #F6F1E7;     /* page background */
+  --rt-ivory:    #FBF8F2;     /* card surface on cream */
+  --rt-paper:    #FFFFFF;
+  --rt-stone-50:  #F2EEE6;
+  --rt-stone-100: #E7E1D5;
+  --rt-stone-200: #D4CDBC;
+  --rt-stone-300: #B6AD98;
+  --rt-stone-400: #8E8775;
+  --rt-stone-500: #6B6557;
+  --rt-stone-600: #4D483D;
+  --rt-stone-700: #34302A;
+  --rt-stone-800: #1F1D19;
+
+  /* ---------- Semantic ---------- */
+  --rt-success: #3F7D58;
+  --rt-success-bg: #E5EFE8;
+  --rt-warn:    #C8892B;
+  --rt-warn-bg: #F8EBD0;
+  --rt-danger:  #A8324A;
+  --rt-danger-bg: #F4DCE2;
+  --rt-info:    #2F6CA1;
+  --rt-info-bg: #DDE7F1;
+
+  /* ---------- Foreground / Background semantic ---------- */
+  --rt-fg-1: var(--rt-navy-900);   /* primary text */
+  --rt-fg-2: var(--rt-stone-600);  /* secondary text */
+  --rt-fg-3: var(--rt-stone-400);  /* tertiary / placeholder */
+  --rt-fg-on-dark: var(--rt-cream);
+  --rt-fg-link: var(--rt-navy-800);
+  --rt-fg-link-hover: var(--rt-gold-700);
+
+  --rt-bg-page: var(--rt-cream);
+  --rt-bg-surface: var(--rt-ivory);
+  --rt-bg-raised: var(--rt-paper);
+  --rt-bg-dark: var(--rt-navy-800);
+  --rt-bg-deep: var(--rt-navy-900);
+
+  --rt-border: rgba(14, 42, 71, 0.10);
+  --rt-border-strong: rgba(14, 42, 71, 0.22);
+  --rt-border-on-dark: rgba(184, 146, 74, 0.20);
+  --rt-border-focus: var(--rt-gold-600);
+
+  /* ---------- Typography ---------- */
+  --rt-font-display: 'Cormorant Garamond', 'Garamond', 'Times New Roman', serif;
+  --rt-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --rt-font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Type scale (px) */
+  --rt-fs-xs:   12px;
+  --rt-fs-sm:   14px;
+  --rt-fs-md:   16px;
+  --rt-fs-lg:   18px;
+  --rt-fs-xl:   22px;
+  --rt-fs-2xl:  28px;
+  --rt-fs-3xl:  36px;
+  --rt-fs-4xl:  48px;
+  --rt-fs-5xl:  64px;
+
+  --rt-lh-tight:   1.15;
+  --rt-lh-snug:    1.30;
+  --rt-lh-normal:  1.55;
+  --rt-lh-relaxed: 1.70;
+
+  --rt-track-tight: -0.01em;
+  --rt-track-normal: 0;
+  --rt-track-wide: 0.06em;
+  --rt-track-wider: 0.12em;
+
+  /* ---------- Spacing (4px grid) ---------- */
+  --rt-s-1: 4px;
+  --rt-s-2: 8px;
+  --rt-s-3: 12px;
+  --rt-s-4: 16px;
+  --rt-s-5: 20px;
+  --rt-s-6: 24px;
+  --rt-s-7: 32px;
+  --rt-s-8: 40px;
+  --rt-s-9: 48px;
+  --rt-s-10: 64px;
+  --rt-s-11: 80px;
+  --rt-s-12: 96px;
+
+  /* ---------- Radii ---------- */
+  --rt-r-0: 0px;
+  --rt-r-1: 4px;       /* buttons, inputs, badges */
+  --rt-r-2: 8px;       /* cards */
+  --rt-r-3: 16px;      /* large feature cards */
+  --rt-r-full: 9999px; /* avatars, dots */
+
+  /* ---------- Shadows ---------- */
+  --rt-shadow-sm: 0 1px 2px rgba(14, 42, 71, 0.06);
+  --rt-shadow-md: 0 4px 16px -4px rgba(14, 42, 71, 0.10);
+  --rt-shadow-lg: 0 16px 40px -12px rgba(14, 42, 71, 0.18);
+  --rt-shadow-xl: 0 32px 80px -24px rgba(14, 42, 71, 0.28);
+  --rt-shadow-inset: inset 0 0 0 1px rgba(14, 42, 71, 0.10);
+  --rt-shadow-focus: 0 0 0 2px var(--rt-cream), 0 0 0 4px var(--rt-gold-600);
+
+  /* ---------- Motion ---------- */
+  --rt-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --rt-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --rt-dur-fast: 120ms;
+  --rt-dur-base: 240ms;
+  --rt-dur-slow: 400ms;
+
+  /* ---------- Layout ---------- */
+  --rt-container: 1240px;
+  --rt-nav-h: 72px;
+  --rt-nav-h-mobile: 56px;
+}
+
+/* =========================================================
+   Semantic element styles
+   ========================================================= */
+
+html { font-family: var(--rt-font-sans); color: var(--rt-fg-1); background: var(--rt-bg-page); }
+body { margin: 0; font-size: var(--rt-fs-md); line-height: var(--rt-lh-normal); -webkit-font-smoothing: antialiased; }
+
+h1, .rt-h1 {
+  font-family: var(--rt-font-display);
+  font-weight: 600;
+  font-size: var(--rt-fs-5xl);
+  line-height: var(--rt-lh-tight);
+  letter-spacing: var(--rt-track-tight);
+  margin: 0 0 var(--rt-s-4);
+  color: var(--rt-fg-1);
+}
+h2, .rt-h2 {
+  font-family: var(--rt-font-display);
+  font-weight: 600;
+  font-size: var(--rt-fs-3xl);
+  line-height: var(--rt-lh-snug);
+  letter-spacing: var(--rt-track-tight);
+  margin: 0 0 var(--rt-s-4);
+  color: var(--rt-fg-1);
+}
+h3, .rt-h3 {
+  font-family: var(--rt-font-display);
+  font-weight: 600;
+  font-size: var(--rt-fs-2xl);
+  line-height: var(--rt-lh-snug);
+  margin: 0 0 var(--rt-s-3);
+  color: var(--rt-fg-1);
+}
+h4, .rt-h4 {
+  font-family: var(--rt-font-sans);
+  font-weight: 600;
+  font-size: var(--rt-fs-lg);
+  line-height: var(--rt-lh-snug);
+  margin: 0 0 var(--rt-s-2);
+  color: var(--rt-fg-1);
+}
+h5, .rt-h5 {
+  font-family: var(--rt-font-sans);
+  font-weight: 600;
+  font-size: var(--rt-fs-md);
+  text-transform: uppercase;
+  letter-spacing: var(--rt-track-wide);
+  color: var(--rt-fg-2);
+  margin: 0 0 var(--rt-s-2);
+}
+
+p, .rt-body { font-size: var(--rt-fs-md); line-height: var(--rt-lh-relaxed); color: var(--rt-fg-1); margin: 0 0 var(--rt-s-4); }
+.rt-body-sm { font-size: var(--rt-fs-sm); line-height: var(--rt-lh-normal); color: var(--rt-fg-2); }
+.rt-body-lg { font-size: var(--rt-fs-lg); line-height: var(--rt-lh-relaxed); color: var(--rt-fg-1); }
+
+.rt-eyebrow {
+  font-family: var(--rt-font-sans);
+  font-size: var(--rt-fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--rt-track-wider);
+  color: var(--rt-gold-700);
+  font-feature-settings: "smcp";
+}
+
+.rt-display {
+  font-family: var(--rt-font-display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: var(--rt-fs-3xl);
+  letter-spacing: var(--rt-track-tight);
+  color: var(--rt-navy-800);
+}
+
+a, .rt-link {
+  color: var(--rt-fg-link);
+  text-decoration: none;
+  transition: color var(--rt-dur-fast) var(--rt-ease);
+}
+a:hover, .rt-link:hover {
+  color: var(--rt-fg-link-hover);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+code, .rt-code {
+  font-family: var(--rt-font-mono);
+  font-size: 0.92em;
+  background: var(--rt-stone-50);
+  padding: 2px 6px;
+  border-radius: var(--rt-r-1);
+  color: var(--rt-navy-800);
+}
+
+hr.rt-divider {
+  border: 0;
+  height: 1px;
+  background: var(--rt-gold-600);
+  opacity: 0.5;
+  margin: var(--rt-s-9) 0;
+  position: relative;
+  overflow: visible;
+}
+hr.rt-divider::after {
+  content: "✦";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--rt-bg-page);
+  color: var(--rt-gold-600);
+  padding: 0 var(--rt-s-3);
+  font-size: var(--rt-fs-md);
+}
+
+::selection { background: var(--rt-gold-300); color: var(--rt-navy-900); }
+
+/* Focus */
+:focus-visible {
+  outline: 2px solid var(--rt-gold-600);
+  outline-offset: 2px;
+  border-radius: var(--rt-r-1);
+}

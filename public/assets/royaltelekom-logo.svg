@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 96" width="480" height="96" role="img" aria-label="Royal Telekom">
+  
+  <g transform="translate(8 8)">
+    <circle cx="40" cy="40" r="38" fill="none" stroke="#0E2A47" stroke-width="1.5"></circle>
+    <circle cx="40" cy="40" r="32" fill="none" stroke="#B8924A" stroke-width="0.75"></circle>
+    <text x="40" y="52" text-anchor="middle" class="word" style="font-size:42px">R</text>
+    <path d="M16 60 q8 -6 14 -3" fill="none" stroke="#B8924A" stroke-width="1" stroke-linecap="round"></path>
+    <path d="M64 60 q-8 -6 -14 -3" fill="none" stroke="#B8924A" stroke-width="1" stroke-linecap="round"></path>
+  </g>
+  <text x="108" y="44" class="word" style="font-size:34px">ROYAL</text>
+  <text x="108" y="74" class="small" style="font-size:13px">T E L E K O M</text>
+  <line x1="108" y1="52" x2="380" y2="52" stroke="#B8924A" stroke-width="0.75"></line>
+  <text x="380" y="74" text-anchor="end" class="est" style="font-size:9px">EST : 2013</text>
+</svg>

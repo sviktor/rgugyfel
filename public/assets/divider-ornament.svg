@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 40" width="200" height="40" role="img" aria-label="Floral divider ornament">
+  <g stroke="#B8924A" stroke-width="1" fill="none" stroke-linecap="round">
+    <line x1="0" y1="20" x2="78" y2="20"></line>
+    <line x1="122" y1="20" x2="200" y2="20"></line>
+    
+    <path d="M78 20 q4 -6 9 -4 q-3 4 -2 8 q5 -3 9 -1 q-3 4 -1 8"></path>
+    
+    <path d="M122 20 q-4 -6 -9 -4 q3 4 2 8 q-5 -3 -9 -1 q3 4 1 8"></path>
+    
+    <circle cx="100" cy="20" r="3.5" fill="#B8924A" stroke="none"></circle>
+    <circle cx="100" cy="20" r="6"></circle>
+  </g>
+</svg>

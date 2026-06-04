@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Royal monogram">
+  
+  <circle cx="60" cy="60" r="56" fill="none" stroke="#0E2A47" stroke-width="2"></circle>
+  <circle cx="60" cy="60" r="48" fill="none" stroke="#B8924A" stroke-width="1"></circle>
+  <text x="60" y="78" text-anchor="middle" font-family="Cormorant Garamond, Garamond, serif" font-weight="600" font-size="64" fill="#0E2A47">R</text>
+</svg>

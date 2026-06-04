@@ -1,0 +1,29 @@
+/* =========================================================
+   Royal Telekom Ügyfélkapu — global helpers
+   Loaded after the design CSS bundle, before the screen-
+   specific files (auth.css, portal-ui.css).
+   ========================================================= */
+
+/* Global safety — no horizontal scrollbar from sub-pixel overflow */
+@layer base {
+	html, body { overflow-x: hidden; }
+}
+
+/* Lucide icons — size helper classes (same as siblings) */
+[data-lucide],
+i[data-lucide] {
+	display: inline-flex;
+	flex-shrink: 0;
+	stroke-width: 1.5;
+	vertical-align: middle;
+}
+
+.lucide-xs,  .lucide-xs  > svg { width: 12px; height: 12px; }
+.lucide-sm,  .lucide-sm  > svg { width: 14px; height: 14px; }
+.lucide-md,  .lucide-md  > svg { width: 18px; height: 18px; }
+.lucide-lg,  .lucide-lg  > svg { width: 22px; height: 22px; }
+.lucide-xl,  .lucide-xl  > svg { width: 28px; height: 28px; }
+.lucide-2xl, .lucide-2xl > svg { width: 36px; height: 36px; }
+
+/* x-cloak — hide Alpine-managed elements until init */
+[x-cloak] { display: none !important; }
