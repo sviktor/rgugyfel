@@ -9,7 +9,14 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>@yield('title', config('app.name'))</title>
-	<link rel="icon" type="image/svg+xml" href="{{ asset('assets/crest-monogram.svg') }}">
+	{{-- Favicons (Royal crest kit — files in public/assets/) --}}
+	<link rel="icon" href="{{ asset('assets/favicon.ico') }}" sizes="any">
+	<link rel="icon" type="image/svg+xml" href="{{ asset('assets/favicon.svg') }}">
+	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/favicon-32x32.png') }}">
+	<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/favicon-16x16.png') }}">
+	<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/apple-touch-icon.png') }}">
+	<link rel="manifest" href="{{ asset('assets/site.webmanifest') }}">
+	<meta name="theme-color" content="#0E2A47">
 	@vite(['resources/css/app.css', 'resources/js/app.js'])
 	@stack('head')
 </head>
