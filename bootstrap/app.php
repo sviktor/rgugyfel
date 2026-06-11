@@ -14,5 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // Email an uncaught exception (a genuine 500). Laravel 11 already skips
+        // 404/403/validation/auth via Handler::$internalDontReport, so this only
+        // fires for real server errors. ExceptionMailer is self-guarded (throttled,
+        // try/catch) so it never throws from here.
+        $exceptions->report(function (\Throwable $e) {
+            \App\Support\ExceptionMailer::notify($e, request());
+        });
     })->create();
