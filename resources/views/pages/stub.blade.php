@@ -9,7 +9,7 @@
 --}}
 @extends('layouts.portal')
 
-@section('title', $title . ' — Royal Telekom Ügyfélkapu')
+@section('title', $title . ' - Royal Telekom Ügyfélkapu')
 
 @section('content')
 

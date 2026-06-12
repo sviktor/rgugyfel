@@ -1,5 +1,5 @@
 {{--
-	Portal topbar — burger (mobile) + greeting + page title + actions.
+	Portal topbar - burger (mobile) + greeting + page title + actions.
 --}}
 @php
 	$titles = [

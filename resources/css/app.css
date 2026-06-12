@@ -1,19 +1,19 @@
-/* Royal Telekom Ügyfélkapu — entry CSS bundle */
+/* Royal Telekom Ügyfélkapu - entry CSS bundle */
 
 /*
- * Design system — verbatim from the Claude Design handoff bundle
+ * Design system - verbatim from the Claude Design handoff bundle
  * (w:\sv\rg\_design\royal-telecom-sites\project\). Order:
- *   1. colors_and_type.css — design tokens (CSS custom properties)
- *   2. kit.css             — shared chrome (.rt-nav, .rt-btn, .rt-section …)
+ *   1. colors_and_type.css - design tokens (CSS custom properties)
+ *   2. kit.css             - shared chrome (.rt-nav, .rt-btn, .rt-section …)
  *                            kit.css internally @imports colors_and_type.css
- *   3. portal.css          — portal-specific (sidebar, topbar, cards, auth screens)
+ *   3. portal.css          - portal-specific (sidebar, topbar, cards, auth screens)
  */
 @import './design/colors_and_type.css';
 @import './design/kit.css';
 @import './design/portal.css';
 
 /*
- * Blade port — split into a few focused files (auth vs portal-ui)
+ * Blade port - split into a few focused files (auth vs portal-ui)
  * keeps the rules close to the screens they style. style.css owns
  * the truly global concerns (overflow, lucide sizing, x-cloak).
  */

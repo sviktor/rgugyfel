@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * Auth controller — login / register / forgot (visual mockup).
+ * Auth controller - login / register / forgot (visual mockup).
  *
  * No real authentication yet: the `customers` table will land via
  * rgadmin's migration, and we'll wire a custom Eloquent user provider
@@ -23,7 +23,7 @@ class AuthController extends Controller
 	public function showForgot(): View   { return view('auth.forgot'); }
 
 	/**
-	 * Fake-login — redirects to dashboard regardless of credentials.
+	 * Fake-login - redirects to dashboard regardless of credentials.
 	 *
 	 * @example  POST /login  →  AuthController::login()
 	 */
@@ -35,7 +35,7 @@ class AuthController extends Controller
 	}
 
 	/**
-	 * Fake-register — redirects to dashboard.
+	 * Fake-register - redirects to dashboard.
 	 *
 	 * @example  POST /regisztracio  →  AuthController::register()
 	 */
@@ -46,7 +46,7 @@ class AuthController extends Controller
 	}
 
 	/**
-	 * Fake-forgot — flashes the email and renders the "sent" state.
+	 * Fake-forgot - flashes the email and renders the "sent" state.
 	 *
 	 * @example  POST /elfelejtett-jelszo  →  AuthController::forgot()
 	 */
@@ -61,7 +61,7 @@ class AuthController extends Controller
 	}
 
 	/**
-	 * Logout — redirects to the login screen.
+	 * Logout - redirects to the login screen.
 	 *
 	 * @example  POST /logout  →  AuthController::logout()
 	 */

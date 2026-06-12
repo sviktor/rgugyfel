@@ -126,7 +126,7 @@ return [
     */
 
     'migrations' => [
-        // Per-project migration tracking table — prevents the 4 sibling apps
+        // Per-project migration tracking table - prevents the 4 sibling apps
         // (rgsite, rgtelekom, rgugyfel, rgadmin) from writing into the same
         // `migrations` table in the shared mc_rg database.
         'table' => 'cp_migrations',

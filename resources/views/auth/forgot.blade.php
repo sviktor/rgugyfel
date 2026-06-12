@@ -1,10 +1,10 @@
 {{--
-	Password reset request screen — ported from portal-auth.jsx ForgotScreen.
+	Password reset request screen - ported from portal-auth.jsx ForgotScreen.
 	Post-submit "sent" state via session flag.
 --}}
 @extends('layouts.auth')
 
-@section('title', 'Elfelejtett jelszó — Royal Telekom Ügyfélkapu')
+@section('title', 'Elfelejtett jelszó - Royal Telekom Ügyfélkapu')
 @section('side-eyebrow', 'JELSZÓ-HELYREÁLLÍTÁS')
 @section('side-headline', 'Visszaállítjuk önnek a hozzáférést.')
 @section('side-lede', 'Adja meg e-mail címét, és küldünk egy biztonságos linket, amellyel új jelszót állíthat be. A link 30 percig érvényes.')

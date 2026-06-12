@@ -6,10 +6,10 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Royal Telekom Ügyfélkapu — web routes
+| Royal Telekom Ügyfélkapu - web routes
 |--------------------------------------------------------------------------
 |
-| MVP — no real auth yet (the `customers` table comes from rgadmin once
+| MVP - no real auth yet (the `customers` table comes from rgadmin once
 | that migration lands). For now the login/register forms fake-succeed
 | and redirect into the portal. Every portal route is publicly reachable
 | but visually requires a "session" (we'll add a guard later).

@@ -1,5 +1,5 @@
 {{--
-	Portal sidebar — nav groups + user box.
+	Portal sidebar - nav groups + user box.
 	NAV groups + items mirror portal-app.jsx NAV constant.
 --}}
 @php
@@ -23,7 +23,7 @@
 		]],
 	];
 	$current = Route::currentRouteName();
-	$user    = $user ?? ['name' => 'Vendég', 'initials' => 'V', 'customerId' => '—'];
+	$user    = $user ?? ['name' => 'Vendég', 'initials' => 'V', 'customerId' => '-'];
 @endphp
 
 <aside class="p-sidebar" :class="{ 'is-mobile-open': navOpen }">

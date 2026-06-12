@@ -1,7 +1,7 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 
 /**
- * Tailwind config — Royal Telekom Ügyfélkapu
+ * Tailwind config - Royal Telekom Ügyfélkapu
  *
  * Same brand tokens as rgsite/rgtelekom (shared design system),
  * referenced by the portal CSS variables via design/colors_and_type.css.

@@ -1,5 +1,5 @@
 /* =========================================================
-   Auth screens — Blade port helpers for design/portal.css.
+   Auth screens - Blade port helpers for design/portal.css.
    .p-auth, .p-auth-side, .p-auth-form, .p-field, .hint and
    the lockup parts already live in design/portal.css; this
    file only adds what was inline in the JSX.
@@ -73,7 +73,7 @@
 	justify-content: space-between;
 }
 
-/* Register — multi-step progress bar */
+/* Register - multi-step progress bar */
 .p-auth-progress {
 	display: flex;
 	gap: 6px;
@@ -100,7 +100,7 @@
 	justify-content: center;
 }
 
-/* Forgot — sent state */
+/* Forgot - sent state */
 .p-auth-sent-icon {
 	width: 56px;
 	height: 56px;

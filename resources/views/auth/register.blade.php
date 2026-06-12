@@ -1,11 +1,11 @@
 {{--
-	Register screen — ported from portal-auth.jsx RegisterScreen.
+	Register screen - ported from portal-auth.jsx RegisterScreen.
 	The 3-step wizard is rendered server-side with a `?step=` query param
 	(simpler than client-side state; the 3 short steps don't justify Alpine).
 --}}
 @extends('layouts.auth')
 
-@section('title', 'Regisztráció — Royal Telekom Ügyfélkapu')
+@section('title', 'Regisztráció - Royal Telekom Ügyfélkapu')
 @section('side-eyebrow', 'REGISZTRÁCIÓ')
 @section('side-headline', 'Csatlakozzon az Ügyfélkapuhoz.')
 @section('side-lede', 'Néhány adat megadásával Ön azonnal hozzáfér a teljes ügyfélkörnyezethez. Ha már Royal Telekom ügyfél, az ügyfél-azonosítóját megtalálja az utolsó számláján.')

@@ -1,11 +1,11 @@
 {{--
-	Dashboard — portal home page (MVP).
-	The full design (467-line portal-dashboard.jsx) ports later — for now
+	Dashboard - portal home page (MVP).
+	The full design (467-line portal-dashboard.jsx) ports later - for now
 	a focused 3-card overview: next invoice, active contracts, open tickets.
 --}}
 @extends('layouts.portal')
 
-@section('title', 'Főoldal — Royal Telekom Ügyfélkapu')
+@section('title', 'Főoldal - Royal Telekom Ügyfélkapu')
 
 @section('content')
 

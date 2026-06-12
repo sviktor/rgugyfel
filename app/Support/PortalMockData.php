@@ -3,7 +3,7 @@
 namespace App\Support;
 
 /**
- * Royal Telekom Portal — mock customer data.
+ * Royal Telekom Portal - mock customer data.
  *
  * Mirrors the constants in
  *   w:\sv\rg\_design\royal-telecom-sites\project\portal-shared.jsx
@@ -45,7 +45,7 @@ final class PortalMockData
 	}
 
 	/**
-	 * Invoices — most recent first.
+	 * Invoices - most recent first.
 	 *
 	 * @return array<int, array<string, mixed>>
 	 */

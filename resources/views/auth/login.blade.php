@@ -1,12 +1,12 @@
 {{--
-	Login screen — ported from portal-auth.jsx LoginScreen.
+	Login screen - ported from portal-auth.jsx LoginScreen.
 	Mockup form: POSTs to /login and fake-redirects to /dashboard.
 --}}
 @extends('layouts.auth')
 
-@section('title', 'Belépés — Royal Telekom Ügyfélkapu')
+@section('title', 'Belépés - Royal Telekom Ügyfélkapu')
 @section('side-headline', 'Üdvözöljük újra, kedves Ügyfelünk.')
-@section('side-lede', 'Itt megtekintheti aktuális számláit, kezelheti előfizetését, bejelentheti hibáit, és felveheti a kapcsolatot ügyfélszolgálatunkkal — mindezt egyetlen helyen, biztonságosan.')
+@section('side-lede', 'Itt megtekintheti aktuális számláit, kezelheti előfizetését, bejelentheti hibáit, és felveheti a kapcsolatot ügyfélszolgálatunkkal - mindezt egyetlen helyen, biztonságosan.')
 
 @section('content')
 

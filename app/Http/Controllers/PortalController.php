@@ -6,11 +6,11 @@ use App\Support\PortalMockData;
 use Illuminate\View\View;
 
 /**
- * Portal pages controller — dashboard + 6 stub sections.
+ * Portal pages controller - dashboard + 6 stub sections.
  *
  * The dashboard renders a focused 3-card overview from mock data.
  * The other six (invoices, plans, usage, tickets, docs, profile) ship
- * as "coming soon" stubs for now — the full UIs live in the design's
+ * as "coming soon" stubs for now - the full UIs live in the design's
  * portal-{dashboard,plans-tickets,profile,docs}.jsx files and will be
  * ported once we have the real `customers` / `invoices` / `subscriptions`
  * / `cp_tickets` schemas (rgadmin migrations + cp_tickets migration here).
@@ -18,7 +18,7 @@ use Illuminate\View\View;
 class PortalController extends Controller
 {
 	/**
-	 * Dashboard — /
+	 * Dashboard - /
 	 *
 	 * @example  GET /  →  PortalController::dashboard()
 	 */
