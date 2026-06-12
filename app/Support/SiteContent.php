@@ -66,7 +66,9 @@ class SiteContent
 	}
 
 	/**
-	 * The repeater rows of a section ([] when missing or hidden).
+	 * The repeater rows of a section ([] when missing or hidden). Rows the
+	 * operator unchecked in the editor (_active = '0') are skipped; rows
+	 * saved before that feature (no _active key) count as visible.
 	 *
 	 * @example  foreach ($cms->items('global.analytics') as $f) { $f['title']; }
 	 */
@@ -78,8 +80,11 @@ class SiteContent
 		}
 
 		$items = $section['data']['items'] ?? [];
+		if (! is_array($items)) {
+			return [];
+		}
 
-		return is_array($items) ? $items : [];
+		return array_values(array_filter($items, fn ($item) => ($item['_active'] ?? '1') !== '0'));
 	}
 
 	/**
