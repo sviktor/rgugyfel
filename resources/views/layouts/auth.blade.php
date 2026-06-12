@@ -1,7 +1,7 @@
 {{--
-	Auth screens layout — login, register, forgot.
+	Auth screens layout - login, register, forgot.
 	Split-screen: dark navy side (brand + headline) + form panel.
-	Visual mockup only — no auth backend yet (customers table comes
+	Visual mockup only - no auth backend yet (customers table comes
 	from rgadmin once that migration lands).
 --}}
 <!DOCTYPE html>
@@ -10,7 +10,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>@yield('title', config('app.name'))</title>
-	{{-- Favicons (Royal crest kit — files in public/assets/) --}}
+	{{-- Favicons (Royal crest kit - files in public/assets/) --}}
 	<link rel="icon" href="{{ asset('assets/favicon.ico') }}" sizes="any">
 	<link rel="icon" type="image/svg+xml" href="{{ asset('assets/favicon.svg') }}">
 	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/favicon-32x32.png') }}">
@@ -19,6 +19,19 @@
 	<link rel="manifest" href="{{ asset('assets/site.webmanifest') }}">
 	<meta name="theme-color" content="#0E2A47">
 	@vite(['resources/css/app.css', 'resources/js/app.js'])
+	{{-- Google Analytics (gtag.js) - measurement id from the CMS
+	     (rgadmin: WEBOLDALAK -> Ügyfélkapu -> Beállítások -> Analitika).
+	     GDPR: only emitted once the visitor opted into statistics cookies (the
+	     consent banner JS injects gtag itself right after a first-visit opt-in). --}}
+	@if ($cms->get('global.analytics.ga_id') !== '' && \App\Support\CookieConsent::allows('statistics'))
+		<script async src="https://www.googletagmanager.com/gtag/js?id={{ $cms->get('global.analytics.ga_id') }}"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+			gtag('config', '{{ $cms->get('global.analytics.ga_id') }}');
+		</script>
+	@endif
 </head>
 <body>
 	<div class="p-auth">
