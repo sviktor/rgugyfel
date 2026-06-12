@@ -1,0 +1,250 @@
+/*
+ * GDPR cookie consent - first-visit bottom banner + settings modal.
+ * Ported from the Claude Design handoff (site-rg.css cookie block +
+ * rg-cookies.jsx). Markup: resources/views/partials/cookie-consent.blade.php,
+ * logic: resources/js/cookie-consent.js (Alpine component).
+ * Self-contained: only the shared --rt-* design tokens are used, so this
+ * exact file ships in all three public sites (rgsite / rgtelekom / rgugyfel).
+ */
+
+/* Banner (fixed to the bottom, first visit only) */
+.rg-cookie-banner {
+	position: fixed;
+	left: 0; right: 0; bottom: 0;
+	z-index: 110;
+	background: var(--rt-paper);
+	border-top: 3px solid var(--rt-gold-600);
+	box-shadow: 0 -16px 48px rgba(7,24,43,0.28);
+	animation: rg-cookie-rise 360ms var(--rt-ease) both;
+}
+@keyframes rg-cookie-rise {
+	from { transform: translateY(24px); opacity: 0; }
+	to { transform: translateY(0); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.rg-cookie-banner { animation: none; }
+}
+.rg-cookie-banner-inner {
+	max-width: 1180px;
+	margin: 0 auto;
+	padding: 26px 28px;
+	display: flex;
+	align-items: center;
+	gap: 36px;
+}
+.rg-cookie-banner-text h2 {
+	font-family: var(--rt-font-display);
+	font-size: 24px; font-weight: 600;
+	color: var(--rt-navy-800);
+	margin: 0 0 8px;
+}
+.rg-cookie-banner-text p {
+	font-size: 13.5px; line-height: 1.65;
+	color: var(--rt-fg-2);
+	margin: 0;
+	max-width: 640px;
+}
+.rg-cookie-banner-text a { color: var(--rt-gold-700); text-decoration: underline; }
+.rg-cookie-banner-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	flex: 0 0 auto;
+	min-width: 220px;
+}
+.rg-cookie-banner-actions .rt-btn { justify-content: center; }
+.rg-cookie-link-btn {
+	background: none; border: none;
+	font-family: inherit; font-size: 12px; font-weight: 600;
+	letter-spacing: 0.08em; text-transform: uppercase;
+	color: var(--rt-navy-800);
+	text-decoration: underline; text-underline-offset: 3px;
+	cursor: pointer;
+	padding: 4px;
+	align-self: center;
+}
+.rg-cookie-link-btn:hover { color: var(--rt-gold-700); }
+
+/* Modal */
+.rg-cookie-modal-backdrop {
+	position: fixed; inset: 0;
+	z-index: 120;
+	background: rgba(7,24,43,0.6);
+	display: flex; align-items: center; justify-content: center;
+	padding: 24px;
+}
+.rg-cookie-modal {
+	background: var(--rt-paper);
+	width: min(680px, 100%);
+	max-height: min(82vh, 760px);
+	display: flex; flex-direction: column;
+	border-top: 3px solid var(--rt-gold-600);
+	box-shadow: var(--rt-shadow-lg);
+}
+.rg-cookie-modal-head {
+	display: flex; align-items: flex-start; justify-content: space-between;
+	padding: 26px 30px 18px;
+	border-bottom: 1px solid var(--rt-border);
+}
+.rg-cookie-modal-head h2 {
+	font-family: var(--rt-font-display);
+	font-size: 30px; font-weight: 600;
+	color: var(--rt-navy-800);
+	margin: 8px 0 0;
+}
+/* Local copy of the design .rg-eyebrow (kit class names differ per site) */
+.rg-cookie-eyebrow {
+	display: inline-flex; align-items: center; gap: 12px;
+	font-size: 11px; font-weight: 600;
+	letter-spacing: 0.22em; text-transform: uppercase;
+	color: var(--rt-gold-700);
+}
+.rg-cookie-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--rt-gold-600); }
+.rg-cookie-modal-close {
+	width: 40px; height: 40px;
+	border: 1px solid var(--rt-border);
+	background: transparent;
+	color: var(--rt-navy-800);
+	display: inline-flex; align-items: center; justify-content: center;
+	cursor: pointer; border-radius: 4px;
+	transition: background 200ms var(--rt-ease);
+}
+.rg-cookie-modal-close:hover { background: var(--rt-ivory); }
+.rg-cookie-modal-body {
+	overflow-y: auto;
+	padding: 20px 30px;
+}
+.rg-cookie-modal-lede {
+	font-size: 13.5px; line-height: 1.65;
+	color: var(--rt-fg-2);
+	margin: 0 0 20px;
+}
+.rg-cookie-modal-lede a { color: var(--rt-gold-700); text-decoration: underline; }
+.rg-cookie-cat {
+	border: 1px solid var(--rt-border);
+	background: var(--rt-ivory);
+	padding: 18px 20px 14px;
+	margin-bottom: 12px;
+}
+.rg-cookie-cat-head {
+	display: flex; align-items: flex-start; gap: 20px;
+	justify-content: space-between;
+}
+.rg-cookie-cat-titles h3 {
+	font-family: var(--rt-font-display);
+	font-size: 20px; font-weight: 600;
+	color: var(--rt-navy-800);
+	margin: 0 0 6px;
+}
+.rg-cookie-cat-titles p {
+	font-size: 13px; line-height: 1.6;
+	color: var(--rt-fg-2);
+	margin: 0;
+}
+.rg-cookie-cat-detail-btn {
+	background: none; border: none;
+	display: inline-flex; align-items: center; gap: 6px;
+	font-family: inherit; font-size: 11px; font-weight: 600;
+	letter-spacing: 0.1em; text-transform: uppercase;
+	color: var(--rt-gold-700);
+	cursor: pointer;
+	padding: 10px 0 4px;
+}
+.rg-cookie-cat-detail-btn:hover { color: var(--rt-navy-800); }
+/* The chevron rotates on the button class (Lucide swaps the <i> for an <svg>,
+   so reactive bindings must live on the parent, not the icon itself). */
+.rg-cookie-cat-detail-btn svg { transition: transform 200ms var(--rt-ease); }
+.rg-cookie-cat-detail-btn.is-open svg { transform: rotate(180deg); }
+/* Category with no real cookie yet (kept for future services) */
+.rg-cookie-empty {
+	font-size: 12px; line-height: 1.6;
+	color: var(--rt-fg-2);
+	font-style: italic;
+	margin: 10px 0 4px;
+}
+.rg-cookie-table-wrap { overflow-x: auto; margin-top: 6px; }
+.rg-cookie-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 12.5px;
+	background: var(--rt-paper);
+	border: 1px solid var(--rt-border);
+}
+.rg-cookie-table th, .rg-cookie-table td {
+	text-align: left;
+	padding: 8px 12px;
+	border-bottom: 1px solid var(--rt-border);
+	color: var(--rt-fg-2);
+	vertical-align: top;
+}
+.rg-cookie-table th {
+	font-size: 10.5px; font-weight: 700;
+	letter-spacing: 0.12em; text-transform: uppercase;
+	color: var(--rt-navy-800);
+	background: var(--rt-ivory);
+}
+.rg-cookie-table code {
+	font-size: 12px;
+	color: var(--rt-navy-800);
+	background: var(--rt-ivory);
+	padding: 1px 5px;
+}
+.rg-cookie-modal-foot {
+	display: flex; align-items: center; justify-content: space-between;
+	gap: 12px; flex-wrap: wrap;
+	padding: 18px 30px 24px;
+	border-top: 1px solid var(--rt-border);
+	background: var(--rt-ivory);
+}
+.rg-cookie-modal-foot-right { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Toggle switch */
+.rg-toggle {
+	display: inline-flex; align-items: center; gap: 8px;
+	background: none; border: none; padding: 2px;
+	cursor: pointer;
+	flex: 0 0 auto;
+}
+.rg-toggle:disabled { cursor: default; }
+.rg-toggle-knob {
+	position: relative;
+	width: 44px; height: 24px;
+	border-radius: 12px;
+	background: #c8c2b4;
+	border: 1px solid var(--rt-border);
+	transition: background 200ms var(--rt-ease);
+	flex: 0 0 auto;
+}
+.rg-toggle-knob::after {
+	content: '';
+	position: absolute;
+	top: 2px; left: 2px;
+	width: 18px; height: 18px;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 1px 3px rgba(7,24,43,0.3);
+	transition: transform 200ms var(--rt-ease);
+}
+.rg-toggle.is-on .rg-toggle-knob { background: var(--rt-gold-600); border-color: var(--rt-gold-700); }
+.rg-toggle.is-on .rg-toggle-knob::after { transform: translateX(20px); }
+.rg-toggle.is-locked .rg-toggle-knob { background: var(--rt-navy-800); border-color: var(--rt-navy-900); opacity: 0.85; }
+.rg-toggle-text {
+	font-size: 11px; font-weight: 600;
+	letter-spacing: 0.1em; text-transform: uppercase;
+	color: var(--rt-fg-2);
+	min-width: 74px;
+	text-align: left;
+}
+
+@media (max-width: 720px) {
+	.rg-cookie-banner-inner { flex-direction: column; align-items: stretch; gap: 18px; padding: 22px 18px; }
+	.rg-cookie-banner-actions { min-width: 0; }
+	.rg-cookie-banner-text h2 { font-size: 20px; }
+	.rg-cookie-modal-backdrop { padding: 0; align-items: flex-end; }
+	.rg-cookie-modal { width: 100%; max-height: 92vh; }
+	.rg-cookie-modal-head, .rg-cookie-modal-body, .rg-cookie-modal-foot { padding-left: 18px; padding-right: 18px; }
+	.rg-cookie-cat-head { flex-direction: column; gap: 12px; }
+	.rg-cookie-modal-foot { flex-direction: column; align-items: stretch; }
+	.rg-cookie-modal-foot .rt-btn { justify-content: center; width: 100%; }
+	.rg-cookie-modal-foot-right { flex-direction: column; }
+}

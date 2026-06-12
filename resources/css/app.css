@@ -21,6 +21,9 @@
 @import './auth.css';
 @import './portal-ui.css';
 
+/* GDPR cookie consent (banner + settings modal) - same file in all 3 sites */
+@import './cookie-consent.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

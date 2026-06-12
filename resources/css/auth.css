@@ -123,3 +123,14 @@
 	color: var(--p-fg-2);
 	line-height: 1.7;
 }
+
+/* Cookie-settings reopen link in the auth side copyright line (GDPR) */
+.p-auth-side .small a {
+	color: inherit;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.p-auth-side .small a:hover {
+	color: var(--rt-gold-500);
+}

@@ -36,6 +36,9 @@
 		</main>
 	</div>
 
+	{{-- GDPR cookie consent banner + settings modal --}}
+	@include('partials.cookie-consent')
+
 	<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
 	<script>
 		window.addEventListener('DOMContentLoaded', () => {

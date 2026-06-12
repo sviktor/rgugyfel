@@ -37,7 +37,7 @@
 				<h1>@yield('side-headline')</h1>
 				<p class="lede">@yield('side-lede')</p>
 			</div>
-			<div class="small">© {{ date('Y') }} Royal Telekom · Royal Group · Minőség és diszkréció 1998 óta.</div>
+			<div class="small">© {{ date('Y') }} Royal Telekom · Royal Group · Minőség és diszkréció 1998 óta. · <a href="#" data-cookie-settings>Sütibeállítások</a></div>
 		</aside>
 
 		{{-- Form panel --}}
@@ -45,6 +45,9 @@
 			@yield('content')
 		</div>
 	</div>
+
+	{{-- GDPR cookie consent banner + settings modal --}}
+	@include('partials.cookie-consent')
 
 	<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
 	<script>

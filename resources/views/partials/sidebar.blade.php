@@ -66,4 +66,9 @@
 			</button>
 		</form>
 	</div>
+
+	{{-- Cookie-settings reopen link (GDPR: must stay reachable after consent) --}}
+	<div class="p-sidebar-legal">
+		<a href="#" data-cookie-settings>Sütibeállítások</a>
+	</div>
 </aside>

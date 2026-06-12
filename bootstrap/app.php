@@ -11,7 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // The JS-written cookie-consent cookie is plain JSON, not Laravel-
+        // encrypted - except it so the Blade layer can read it (GA gate).
+        $middleware->encryptCookies(except: [\App\Support\CookieConsent::COOKIE]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Email an uncaught exception (a genuine 500). Laravel 11 already skips

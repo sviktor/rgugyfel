@@ -47,3 +47,20 @@
 	margin: 0;
 	max-width: 540px;
 }
+
+/* Sidebar bottom legal row - cookie-settings reopen link (GDPR) */
+.p-sidebar-legal {
+	margin-top: -10px;
+	text-align: center;
+}
+
+.p-sidebar-legal a {
+	font-size: 11px;
+	color: rgba(245, 235, 205, 0.45);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.p-sidebar-legal a:hover {
+	color: var(--rt-gold-500);
+}
