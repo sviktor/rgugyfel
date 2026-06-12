@@ -56,11 +56,14 @@
 	<script>
 		window.addEventListener('DOMContentLoaded', () => {
 			if (window.lucide) lucide.createIcons();
+			// IMPORTANT: match the *placeholder* <i> only. createIcons() outputs
+			// <svg data-lucide="..."> nodes, so a bare [data-lucide] matcher sees
+			// its own output as "new icons" and loops forever (page freeze).
 			new MutationObserver((muts) => {
 				if (!window.lucide) return;
 				for (const m of muts) {
 					for (const n of m.addedNodes) {
-						if (n.nodeType === 1 && (n.matches?.('[data-lucide]') || n.querySelector?.('[data-lucide]'))) {
+						if (n.nodeType === 1 && (n.matches?.('i[data-lucide]') || n.querySelector?.('i[data-lucide]'))) {
 							lucide.createIcons();
 							return;
 						}
