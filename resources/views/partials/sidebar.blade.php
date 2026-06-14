@@ -28,7 +28,7 @@
 
 <aside class="p-sidebar" :class="{ 'is-mobile-open': navOpen }">
 	<div class="brand">
-		<img src="{{ asset('assets/crest-monogram.svg') }}" alt="">
+		<img src="{{ asset('assets/crest-monogram-light.svg') }}" alt="">
 		<div class="lockup">
 			<div class="top">ROYAL TELEKOM</div>
 			<div class="bottom">ÜGYFÉLKAPU</div>

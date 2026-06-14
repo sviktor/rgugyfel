@@ -6,21 +6,20 @@ use App\Support\PortalMockData;
 use Illuminate\View\View;
 
 /**
- * Portal pages controller - dashboard + 6 stub sections.
+ * Portal pages controller - the authenticated customer area.
  *
- * The dashboard renders a focused 3-card overview from mock data.
- * The other six (invoices, plans, usage, tickets, docs, profile) ship
- * as "coming soon" stubs for now - the full UIs live in the design's
- * portal-{dashboard,plans-tickets,profile,docs}.jsx files and will be
- * ported once we have the real `customers` / `invoices` / `subscriptions`
- * / `cp_tickets` schemas (rgadmin migrations + cp_tickets migration here).
+ * Ports the Royal Telecom Design System portal kit
+ * (w:\sv\rg\_design\royal-telecom-sites\project\portal-*.jsx). Visual
+ * mockup only: data comes from App\Support\PortalMockData and is replaced
+ * once the real `customers` / `invoices` / `subscriptions` / `cp_tickets`
+ * schemas land (rgadmin migrations + this project's cp_* migrations).
  */
 class PortalController extends Controller
 {
 	/**
-	 * Dashboard - /
+	 * Dashboard (Főoldal) - /
 	 *
-	 * @example  GET /  →  PortalController::dashboard()
+	 * @example GET / -> PortalController::dashboard()
 	 */
 	public function dashboard(): View
 	{
@@ -28,59 +27,87 @@ class PortalController extends Controller
 			'invoices'  => PortalMockData::invoices(),
 			'contracts' => PortalMockData::contracts(),
 			'tickets'   => PortalMockData::tickets(),
-		]);
-	}
-
-	public function invoices(): View
-	{
-		return view('pages.stub', $this->commonContext() + [
-			'title' => 'Számláim',
-			'body'  => 'A számlatörténet, PDF-letöltés, fizetési átutalási QR kód, banki utalás-segéd, csekk és online fizetés. Hamarosan elérhető.',
-		]);
-	}
-
-	public function plans(): View
-	{
-		return view('pages.stub', $this->commonContext() + [
-			'title' => 'Szerződéseim',
-			'body'  => 'Aktív internet/TV/mobil előfizetések, csomagváltás, hűségidő-státusz, új szerződés igénylés. Hamarosan elérhető.',
-		]);
-	}
-
-	public function usage(): View
-	{
-		return view('pages.stub', $this->commonContext() + [
-			'title' => 'Forgalom és sebességmérés',
-			'body'  => 'Az aktuális hónap adatforgalma, sebességmérési eredmények, hálózati statisztikák. Hamarosan elérhető.',
-		]);
-	}
-
-	public function tickets(): View
-	{
-		return view('pages.stub', $this->commonContext() + [
-			'title' => 'Hibabejelentés',
-			'body'  => 'Aktív és lezárt hibajegyek, új bejelentés, üzenetváltás az ügyintézővel. Hamarosan elérhető.',
-		]);
-	}
-
-	public function docs(): View
-	{
-		return view('pages.stub', $this->commonContext() + [
-			'title' => 'Dokumentumok',
-			'body'  => 'Szerződésmásolatok, ÁSZF, formanyomtatványok és személyes dokumentumok letöltése. Hamarosan elérhető.',
-		]);
-	}
-
-	public function profile(): View
-	{
-		return view('pages.stub', $this->commonContext() + [
-			'title' => 'Profil és beállítások',
-			'body'  => 'Személyes adatok módosítása, jelszóváltás, értesítési beállítások, kapcsolatfelvételi módok. Hamarosan elérhető.',
+			'bank'      => PortalMockData::bankDetails(),
 		]);
 	}
 
 	/**
-	 * Shared sidebar/topbar context (user + badges).
+	 * Invoices (Számláim) - /szamlak
+	 *
+	 * @example GET /szamlak -> PortalController::invoices()
+	 */
+	public function invoices(): View
+	{
+		return view('pages.invoices', $this->commonContext() + [
+			'invoices' => PortalMockData::invoices(),
+			'bank'     => PortalMockData::bankDetails(),
+		]);
+	}
+
+	/**
+	 * Subscriptions / plans (Szerződéseim) - /szerzodeseim
+	 *
+	 * @example GET /szerzodeseim -> PortalController::plans()
+	 */
+	public function plans(): View
+	{
+		return view('pages.plans', $this->commonContext() + [
+			'contracts' => PortalMockData::contracts(),
+			'plans'     => PortalMockData::availablePlans(),
+		]);
+	}
+
+	/**
+	 * Usage / speed (Forgalom & sebesség) - /forgalom  [stub by design]
+	 *
+	 * @example GET /forgalom -> PortalController::usage()
+	 */
+	public function usage(): View
+	{
+		return view('pages.stub', $this->commonContext() + [
+			'title' => 'Forgalom és sebességmérés',
+			'body'  => 'Itt fogja látni az aktuális hónap adatforgalmát, a sebességmérési eredményeit és a hálózati statisztikákat. A funkció hamarosan elérhető.',
+		]);
+	}
+
+	/**
+	 * Support / tickets (Hibabejelentés) - /hibabejelentes
+	 *
+	 * @example GET /hibabejelentes -> PortalController::tickets()
+	 */
+	public function tickets(): View
+	{
+		return view('pages.tickets', $this->commonContext() + [
+			'tickets' => PortalMockData::tickets(),
+		]);
+	}
+
+	/**
+	 * Documents (Dokumentumok) - /dokumentumok
+	 *
+	 * @example GET /dokumentumok -> PortalController::docs()
+	 */
+	public function docs(): View
+	{
+		return view('pages.docs', $this->commonContext() + [
+			'docs' => PortalMockData::docs(),
+		]);
+	}
+
+	/**
+	 * Profile & settings (Profil & beállítások) - /profil
+	 *
+	 * @example GET /profil -> PortalController::profile()
+	 */
+	public function profile(): View
+	{
+		return view('pages.profile', $this->commonContext() + [
+			'contracts' => PortalMockData::contracts(),
+		]);
+	}
+
+	/**
+	 * Shared sidebar/topbar context (user + nav badges + notifications).
 	 *
 	 * @return array<string, mixed>
 	 */
@@ -89,6 +116,7 @@ class PortalController extends Controller
 		return [
 			'user'   => PortalMockData::user(),
 			'badges' => PortalMockData::badges(),
+			'notifs' => PortalMockData::notifications(),
 		];
 	}
 }

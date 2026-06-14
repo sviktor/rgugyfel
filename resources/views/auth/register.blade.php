@@ -8,7 +8,7 @@
 @section('title', 'Regisztráció - Royal Telekom Ügyfélkapu')
 @section('side-eyebrow', 'REGISZTRÁCIÓ')
 @section('side-headline', 'Csatlakozzon az Ügyfélkapuhoz.')
-@section('side-lede', 'Néhány adat megadásával Ön azonnal hozzáfér a teljes ügyfélkörnyezethez. Ha már Royal Telekom ügyfél, az ügyfél-azonosítóját megtalálja az utolsó számláján.')
+@section('side-lede', 'Néhány adat megadásával Ön azonnal hozzáfér a teljes ügyfélkörnyezethez. Ha már Royal Telekom ügyfél, a szerződésszámát megtalálja a szerződésén vagy az utolsó számláján.')
 
 @section('content')
 
@@ -58,9 +58,9 @@
 		@if ($step === 2)
 			<div class="p-auth-form-grid">
 				<div class="p-field">
-					<label>Ügyfél-azonosító <span style="color:var(--p-fg-3);font-weight:400;">(meglévő ügyfél esetén)</span></label>
-					<input class="rt-input" name="customerId" placeholder="2024-0382">
-					<span class="hint">A számlái fejlécében találja, pl. „Ügyfél: #2024-0382”.</span>
+					<label>Szerződésszám <span class="p-label-opt">(meglévő ügyfél esetén)</span></label>
+					<input class="rt-input" name="customerId" placeholder="RT-INT-2024-0382">
+					<span class="hint">A szerződésén és a számlái fejlécében találja, pl. „Szerződés: RT-INT-2024-0382”.</span>
 				</div>
 				<div style="display:flex;align-items:center;gap:10px;color:var(--p-fg-3);font-size:12px;">
 					<span style="flex:1;height:1px;background:var(--p-border);"></span>

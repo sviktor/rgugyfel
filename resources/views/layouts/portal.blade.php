@@ -52,6 +52,9 @@
 	{{-- GDPR cookie consent banner + settings modal --}}
 	@include('partials.cookie-consent')
 
+	{{-- Lightbox alert (window.ptAlert) --}}
+	@include('partials._pt-alert')
+
 	<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
 	<script>
 		window.addEventListener('DOMContentLoaded', () => {

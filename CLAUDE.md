@@ -43,7 +43,7 @@ Custom Eloquent user provider pointing to `customers`:
 - Password column TBD - coordinate with `rgadmin` migration (likely bcrypt `password` column added on `customers`).
 - Legacy `herminatelekom` used MD5 + a hardcoded bypass - **do not carry that over**. Force a password reset flow on first login if importing old accounts.
 
-## Routes (current - MVP, visual mockup)
+## Routes (current - full design port, visual mockup)
 
 | Route | Method | Controller | Purpose |
 |---|---|---|---|
@@ -51,47 +51,52 @@ Custom Eloquent user provider pointing to `customers`:
 | `/regisztracio?step=1\|2\|3` | GET/POST | `AuthController::showRegister/register` | 3-step register wizard (SSR step state via `?step=`) |
 | `/elfelejtett-jelszo` | GET/POST | `AuthController::showForgot/forgot` | Password reset request (session-flag for the "sent" state) |
 | `/logout` | POST | `AuthController::logout` | Logout → `/login` |
-| `/` | GET | `PortalController::dashboard` | Dashboard (MVP: 3-card overview from mock data) |
-| `/szamlak` | GET | `PortalController::invoices` | Stub - "Hamarosan" |
-| `/szerzodeseim` | GET | `PortalController::plans` | Stub - "Hamarosan" |
-| `/forgalom` | GET | `PortalController::usage` | Stub - "Hamarosan" |
-| `/hibabejelentes` | GET | `PortalController::tickets` | Stub - "Hamarosan" |
-| `/dokumentumok` | GET | `PortalController::docs` | Stub - "Hamarosan" |
-| `/profil` | GET | `PortalController::profile` | Stub - "Hamarosan" |
+| `/` | GET | `PortalController::dashboard` | Áttekintés - financial hero + bank-transfer modal, active ticket, quick actions, contracts list, add-contract request |
+| `/szamlak` | GET | `PortalController::invoices` | Számláim - filter tabs + status-badged table + bank-transfer modal + PDF-like invoice preview (per invoice) |
+| `/szerzodeseim` | GET | `PortalController::plans` | Szerződéseim - contract detail cards (loyalty bar) + available plans showcase + 3-step plan-switch wizard |
+| `/forgalom` | GET | `PortalController::usage` | Forgalom & sebesség - "Hamarosan" stub (a stub in the design too) |
+| `/hibabejelentes` | GET | `PortalController::tickets` | Hibabejelentés - open/closed tabs + ticket list + new-ticket modal + per-ticket detail thread |
+| `/dokumentumok` | GET | `PortalController::docs` | Dokumentumok - category filters + document list + "how to use" help |
+| `/profil` | GET | `PortalController::profile` | Profil & beállítások - 4 tabs (personal / address / security / notifications) + account meta |
+
+The portal nav (sidebar) is the design's **grouped** menu: Áttekintés (Főoldal), Pénzügy (Számláim), Szolgáltatásaim (Szerződéseim / Forgalom), Ügyintézés (Hibabejelentés / Dokumentumok), Fiók (Profil). Nav items are real `<a>` links; the topbar carries a notifications bell-popover + a settings link to the profile. Modals / tabs / wizards run on Alpine (visual only); form submission / payment / plan-switch / ticket reply are the **programming phase**.
 
 **No auth middleware yet** - every route is publicly reachable. Once the `customers` table lands (via rgadmin) and we wire `Auth::guard('customer')`, we'll add `auth:customer` to all the portal routes.
 
 ## CSS structure
 
-Split into four focused files so the auth screens, portal chrome and global helpers stay readable. `app.css` is the entry that `@import`s the others in order:
+Split into focused files so the auth screens, portal chrome and global helpers stay readable. `app.css` is the entry that `@import`s the others in order:
 
 | File | Owns |
 |---|---|
 | `resources/css/app.css` | Entry - `@import`s the design bundle, then `style.css`, `auth.css`, `portal-ui.css`, then Tailwind directives. |
-| `resources/css/design/colors_and_type.css`, `kit.css`, `portal.css` | **Verbatim** Claude Design handoff - never edit. Owns `.p-*` portal chrome, auth screens, cards, badges. |
-| `resources/css/style.css` | Global helpers - `html, body { overflow-x: hidden }`, `[data-lucide]` size classes, `[x-cloak]`. |
-| `resources/css/auth.css` | Auth screens - port-specific helpers for `.p-auth-form`, register wizard progress, forgot "sent" state. |
-| `resources/css/portal-ui.css` | Portal chrome - sidebar/topbar overrides, stub-page card. |
+| `resources/css/design/colors_and_type.css`, `kit.css`, `portal.css` | **Verbatim** Claude Design handoff - never edit. `portal.css` owns the whole `.p-*` portal/auth system (sidebar, topbar, cards, badges, hero-fin, bank popover, invoice doc, plan-switch, tickets, profile, docs) + the `.pt-alert*` toast. Source: the final handoff bundle `w:\sv\rg\_design\royal-telecom-sites\project\` (HTML/JSX prototypes - `portal-*.jsx` + `portal.css`). |
+| `resources/css/style.css` | Global helpers - `overflow-x: hidden`, `[data-lucide]` size classes, `[x-cloak]`, **+ design-token gap fills**: the handoff's `portal.css` references `--rt-font-body` and `--rt-gold-400`, which `colors_and_type.css` never defines; we bridge them at `:root` (font-body → font-sans, gold-400 → a light gold) so ~30 rules don't fall back to inherited font / cream-instead-of-gold. |
+| `resources/css/auth.css` | Auth screens - port helpers for `.p-auth-form`, register wizard progress, forgot "sent" state. |
+| `resources/css/portal-ui.css` | Port helpers - the bits that were **inline styles** in the JSX prototypes (the design's components live in `portal.css`; we only add classes for the inline padding/width/etc.). Also: the **`<a>` nav mirror** (the design styles `.p-sidebar nav button` / `.p-quick button`, we render `<a>` links, so the button rules are mirrored onto `a`), the **fixed-sidebar app-shell** (desktop: shell `height:100vh; overflow:hidden`, only `.p-main` scrolls - sticky was unreliable under `overflow-x:hidden`), and CSS-var driven data widths (loyalty bar, password-strength meter). |
 
-The design `portal.css` references `url('assets/crest-monogram.svg')` for `.p-auth-side .crest-bg`; Vite can't resolve that relative path through the `@import`, so we render `<img class="crest-bg" src="{{ asset('assets/crest-monogram.svg') }}">` in the auth layout and override the CSS background to `none`.
+**Crest on the dark panels** uses `crest-monogram-light.svg` (the cream/gold variant) rendered as an `<img>` via `asset()` (Vite can't resolve the design's relative `url(assets/...)` through the `@import`); the auth `.crest-bg` watermark + sidebar logo both use it.
+
+**Porting rule:** the design CSS targets `<button>` for in-app actions; where we use real `<a>` links (sidebar nav, quick actions) the button rules must be mirrored onto `a` in `portal-ui.css` (keep in sync with `portal.css`). Two design-CSS quirks are deliberately worked around: the `.p-switch` toggle class (44×24px) is **not** put on the plan-switch modal (it would shrink it), and the two undefined tokens above are gap-filled.
 
 ## Layouts
 
-- `resources/views/layouts/auth.blade.php` - split-screen (dark navy side with crest + form panel). Used by login, register, forgot.
-- `resources/views/layouts/portal.blade.php` - sidebar + topbar + main. Mobile sidebar drawer toggled by Alpine `x-data="{ navOpen: false }"`. Used by dashboard and all stub pages.
+- `resources/views/layouts/auth.blade.php` - split-screen (dark navy intro side with the light crest + form panel). Used by login, register, forgot.
+- `resources/views/layouts/portal.blade.php` - sidebar + topbar + main. Mobile sidebar drawer toggled by Alpine `x-data="{ navOpen: false }"`; on desktop the shell is fixed and only `.p-main` scrolls. Used by every portal page.
 
-Both layouts load Lucide via CDN with a `MutationObserver` for Alpine-injected nodes (same pattern as rgsite/rgtelekom).
+Both layouts load Lucide via CDN with a `MutationObserver` for Alpine-injected nodes (same pattern as rgsite/rgtelekom), and both include `partials/_pt-alert.blade.php` - a vanilla `window.ptAlert({ variant, title, message })` lightbox toast (port of `portal-alert.jsx`, styled by `portal.css` `.pt-alert*`) used by the profile saves (and ready for auth validation).
 
-## MVP scope
+Shared partials: `partials/_bank-modal.blade.php` (the bank-transfer card, used by the dashboard + invoices; expects `$bank` + Alpine `bank`/`bankAmount`/`bankRef`).
 
-The full portal design is ~2400 lines of JSX across 7 files; this port shipped only the **MVP** (auth screens, layout, dashboard 3-card overview, 6 "Hamarosan" stubs). The detailed pages (full invoice list + PDF, contract details + loyalty bar, ticket threads + reply, profile editor) port later, once the real schema arrives:
+## Design scope / wiring TODO
 
-- **Customer auth + profile**: needs `customers` table (rgadmin migration). Then add `Auth::guard('customer')` + `App\Models\Customer extends Authenticatable` with `protected $table = 'customers'`.
-- **Invoices**: needs `invoices` + `payments` tables (rgadmin).
-- **Subscriptions**: needs `subscriptions` + `products` tables (rgadmin).
-- **Tickets**: needs `cp_tickets` + `cp_ticket_messages` tables (this project's migrations).
+The **full** portal design is ported (login + register + forgot, dashboard, invoices, plans, tickets, documents, profile; `forgalom` stays a stub as in the design). It is **visual only** - the data comes from `app/Support/PortalMockData.php` (a faithful mirror of the handoff's `portal-shared.jsx` + the notifications/docs data, with `huf()` / `date()` / `daysUntil()` view helpers - a single file, easy to delete once the real models exist). The interactive flows run on Alpine but do **not** persist; wiring them is the programming phase:
 
-Mock data is in `app/Support/PortalMockData.php` - a single file makes it easy to delete in one go once the real models exist.
+- **Customer auth + profile**: needs `customers` table (rgadmin migration). Then add `Auth::guard('customer')` + `App\Models\Customer extends Authenticatable` with `protected $table = 'customers'`. Login/register/forgot currently fake-succeed; the profile saves only pop the toast.
+- **Invoices**: needs `invoices` + `payments` tables (rgadmin). The bank-transfer "Kifizetem", PDF download/print, and search are visual.
+- **Subscriptions / plans**: needs `subscriptions` + `products` tables (rgadmin). The plan-switch wizard does not submit.
+- **Tickets**: needs `cp_tickets` + `cp_ticket_messages` (this project's migrations). The new-ticket form + thread reply do not submit.
+- **Documents / notifications**: static lists for now; the downloads + notification read-state need a backend.
 
 ## Local dev
 

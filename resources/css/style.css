@@ -27,3 +27,18 @@ i[data-lucide] {
 
 /* x-cloak - hide Alpine-managed elements until init */
 [x-cloak] { display: none !important; }
+
+/* =========================================================
+   Design-token gap fills.
+   design/portal.css references two tokens that the handoff's
+   colors_and_type.css never defines (--rt-font-body, --rt-gold-400),
+   so ~30 rules would otherwise fall back to inherited font / colour
+   (wrong type sizes, cream instead of gold accents). We bridge them
+   at port level here; the design files stay verbatim. Custom props
+   resolve at computed-value time, so defining them after the import
+   still applies to portal.css's earlier usage.
+   ========================================================= */
+:root {
+	--rt-font-body: var(--rt-font-sans);   /* portal.css "body" alias of Inter */
+	--rt-gold-400: #D6B87E;                 /* light gold accent (between 300 and 500) */
+}

@@ -36,11 +36,11 @@
 <body>
 	<div class="p-auth">
 
-		{{-- Dark navy side with crest watermark + headline --}}
+		{{-- Dark navy side with crest watermark + headline (light crest on dark) --}}
 		<aside class="p-auth-side">
-			<img class="crest-bg" src="{{ asset('assets/crest-monogram.svg') }}" alt="" aria-hidden="true">
+			<img class="crest-bg" src="{{ asset('assets/crest-monogram-light.svg') }}" alt="" aria-hidden="true">
 			<div class="logo-row">
-				<img class="crest" src="{{ asset('assets/crest-monogram.svg') }}" alt="">
+				<img class="crest" src="{{ asset('assets/crest-monogram-light.svg') }}" alt="">
 				<div class="lockup">
 					<div class="top">ROYAL TELEKOM</div>
 					<div class="bottom">@yield('side-eyebrow', 'ÜGYFÉLKAPU')</div>
@@ -61,6 +61,9 @@
 
 	{{-- GDPR cookie consent banner + settings modal --}}
 	@include('partials.cookie-consent')
+
+	{{-- Lightbox alert (window.ptAlert) --}}
+	@include('partials._pt-alert')
 
 	<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
 	<script>

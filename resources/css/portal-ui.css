@@ -4,17 +4,97 @@
    inline in the JSX or what is project-port-specific.
    ========================================================= */
 
-/* Sidebar - fix the link buttons to render correctly without React */
-.p-sidebar nav button,
+/* Sidebar nav - the design styles `.p-sidebar nav button`, but we render
+   real `<a>` links for navigation. Mirror the design's button rules onto
+   `a` (padding, colors, active accent bar, the round badge-pill) so the
+   links look identical. Keep in sync with design/portal.css. */
 .p-sidebar nav a {
-	background: none;
+	appearance: none;
 	border: 0;
-	width: 100%;
+	background: transparent;
+	color: rgba(245, 235, 205, 0.78);
 	text-align: left;
-	cursor: pointer;
-	color: inherit;
 	font: inherit;
+	font-size: 14px;
+	padding: 10px 12px;
+	border-radius: var(--p-radius);
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	cursor: pointer;
 	text-decoration: none;
+	transition: background 0.15s, color 0.15s;
+	position: relative;
+}
+
+.p-sidebar nav a:hover {
+	background: rgba(245, 235, 205, 0.06);
+	color: var(--rt-cream);
+}
+
+.p-sidebar nav a.active {
+	background: rgba(212, 168, 73, 0.14);
+	color: var(--rt-cream);
+}
+
+.p-sidebar nav a.active::before {
+	content: '';
+	position: absolute;
+	left: -18px;
+	top: 8px;
+	bottom: 8px;
+	width: 3px;
+	background: var(--rt-gold-500);
+}
+
+.p-sidebar nav a .badge-pill {
+	margin-left: auto;
+	font-size: 11px;
+	padding: 1px 7px;
+	border-radius: 999px;
+	background: var(--rt-gold-500);
+	color: var(--rt-navy-900);
+	font-weight: 600;
+}
+
+.p-sidebar nav a.active .badge-pill {
+	background: var(--rt-cream);
+}
+
+/* Dashboard quick actions - design styles `.p-quick button`; we render
+   `<a>` links. Mirror the button rules onto `a`. */
+.p-quick a {
+	appearance: none;
+	border: 1px solid var(--p-border);
+	background: var(--p-bg-surface);
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 14px 16px;
+	border-radius: var(--p-radius);
+	cursor: pointer;
+	font: 500 14px/1 var(--rt-font-body);
+	color: var(--p-fg-1);
+	text-align: left;
+	text-decoration: none;
+	transition: background 0.15s, border-color 0.15s;
+}
+
+.p-quick a:hover {
+	background: var(--rt-gold-50);
+	border-color: var(--rt-gold-400);
+}
+
+.p-quick a > span {
+	flex: 1;
+}
+
+.p-quick a > svg:first-child {
+	color: var(--rt-gold-700);
+}
+
+.p-quick a .arr {
+	color: var(--p-fg-3);
 }
 
 /* Stub page - used for "coming soon" sections (invoices, plans, …) */
@@ -63,4 +143,186 @@
 
 .p-sidebar-legal a:hover {
 	color: var(--rt-gold-500);
+}
+
+/* =========================================================
+   Fixed sidebar, scrolling content (app-shell scroll model).
+   The design uses a sticky sidebar, but `html, body { overflow-x:
+   hidden }` (style.css) makes sticky unreliable. On desktop we pin
+   the shell to the viewport and scroll only the main column, so the
+   menu stays put. Mobile keeps normal page scroll + the off-canvas
+   drawer (handled in design/portal.css), so this is desktop-only.
+   ========================================================= */
+@media (min-width: 1025px) {
+	.p-shell {
+		height: 100vh;
+		overflow: hidden;
+	}
+
+	.p-main {
+		height: 100vh;
+		overflow-y: auto;
+	}
+}
+
+/* =========================================================
+   Port helpers - the bits that were inline styles in the JSX
+   (design/portal.css owns the components themselves).
+   ========================================================= */
+
+/* The design's <Card> applies its padding inline; reproduce the default. */
+.p-card.p-pad {
+	padding: 24px 26px;
+}
+
+/* Dashboard: active-ticket card uses a zero-padded card with padded inner rows */
+.p-dash-tickethead {
+	padding: 22px 26px 4px;
+}
+
+.p-dash-ticketbody {
+	padding: 8px 26px 24px;
+}
+
+.p-dash-ticketempty {
+	padding: 0 26px 24px;
+}
+
+/* Dashboard: add-contract intro paragraph */
+.p-contract-intro {
+	color: var(--p-fg-2);
+	font-size: 14px;
+	line-height: 1.65;
+	margin: 0 0 18px;
+}
+
+/* Small confirmation modal (add-contract) - reuses the plan-switch "done" panel */
+.p-modal--sm {
+	max-width: 520px;
+}
+
+.p-addconfirm {
+	padding: 36px 32px 32px;
+}
+
+.p-check-gold {
+	background: var(--rt-gold-50);
+	color: var(--rt-gold-700);
+}
+
+/* Invoices: invoice-preview ("PDF") toolbar + paper bits that were inline */
+.p-spacer {
+	flex: 1;
+}
+
+.ta-right {
+	text-align: right;
+}
+
+.p-invoice-logo {
+	height: 56px;
+	margin-bottom: 12px;
+}
+
+/* Modal width variants + a grow button (inline maxWidth/flex in the JSX) */
+.p-modal--md {
+	max-width: 640px;
+}
+
+.p-modal--lg {
+	max-width: 720px;
+}
+
+.p-btn-grow {
+	flex: 1;
+	justify-content: center;
+}
+
+/* Plans: loyalty-bar fill width comes from a data value (CSS var, not a
+   per-value class) - the actual width rule lives here. */
+.p-contract-detail .loyalty .fill {
+	width: var(--pct, 0%);
+}
+
+/* Plan-switch: terms checkbox row (inline-styled label in the JSX) */
+.p-switch-terms {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	font-size: 13px;
+	color: var(--p-fg-2);
+	margin-top: 14px;
+}
+
+.p-switch-terms input[type="checkbox"] {
+	accent-color: var(--rt-navy-800);
+	margin-top: 2px;
+}
+
+/* Plan-switch confirm: the reactive price value keeps the big display size
+   (the design's `.price span` shrinks the "/hó" suffix; our value is a span too). */
+.p-switch-confirm .diff-card .col .price .num {
+	font-size: inherit;
+	color: inherit;
+}
+
+/* Profile / docs: bits that were inline styles in the JSX */
+.p-form-intro {
+	color: var(--p-fg-2);
+	font-size: 14px;
+	line-height: 1.65;
+	margin: 0 0 22px;
+	max-width: 640px;
+}
+
+.p-field-row--3 {
+	grid-template-columns: 1fr 1fr 1fr;
+}
+
+.p-section-desc {
+	color: var(--p-fg-2);
+	font-size: 14px;
+	line-height: 1.65;
+	margin: -6px 0 22px;
+	max-width: 640px;
+}
+
+.p-doc-note {
+	font-size: 13px;
+	color: var(--p-fg-3);
+	margin-top: 22px;
+	text-align: center;
+	line-height: 1.6;
+}
+
+.p-doc-note a {
+	color: var(--rt-navy-800);
+	text-decoration: underline;
+}
+
+/* doc-row trailing download glyph (inline fg-3 colour in the JSX) */
+.p-doc-row .p-doc-dl {
+	color: var(--p-fg-3);
+	flex: 0 0 auto;
+}
+
+/* password-strength meter fill colour/width comes from data (CSS vars) */
+.pw-strength .fill {
+	width: var(--pw, 0%);
+	background: var(--pwc, var(--rt-gold-500));
+}
+
+/* password-match hint colours (inline in the JSX) */
+.p-hint-ok {
+	color: var(--p-success-fg);
+}
+
+.p-hint-bad {
+	color: var(--p-danger-fg);
+}
+
+/* "(optional)" muted suffix inside a field label (inline in the JSX) */
+.p-label-opt {
+	color: var(--p-fg-3);
+	font-weight: 400;
 }

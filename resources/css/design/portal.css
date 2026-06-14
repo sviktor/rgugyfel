@@ -148,6 +148,7 @@
 .p-field {
   display: grid;
   gap: 6px;
+  align-content: start;
 }
 .p-field label {
   font-family: var(--rt-font-display);
@@ -2417,3 +2418,208 @@
   gap: 10px;
   margin-top: 10px;
 }
+
+/* ============ Notifications popover ============ */
+.p-bell-wrap { position: relative; }
+.p-topbar .icon-btn.is-on {
+  background: var(--p-bg-surface-alt);
+  color: var(--p-fg-1);
+}
+.p-bell-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 59;
+  background: transparent;
+}
+.p-bell-pop {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: min(400px, calc(100vw - 28px));
+  background: var(--p-bg-surface);
+  border: 1px solid var(--p-border);
+  border-radius: 12px;
+  box-shadow: 0 18px 48px rgba(7, 24, 43, 0.18);
+  z-index: 60;
+  overflow: hidden;
+  animation: popIn .22s ease;
+}
+.p-bell-pop .head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--p-border);
+}
+.p-bell-pop .head-txt {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.p-bell-pop .head strong {
+  font-family: var(--rt-font-display);
+  font-size: 15px;
+  letter-spacing: .02em;
+  color: var(--p-fg-1);
+}
+.p-bell-pop .head .cnt {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--rt-gold-700, #8a6a2f);
+}
+.p-bell-pop .mark-all {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--rt-navy-800, #11365c);
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.p-bell-pop .mark-all:hover { background: var(--p-bg-surface-alt); }
+.p-bell-pop .mark-all:disabled { color: var(--p-fg-3); cursor: default; background: transparent; }
+.p-bell-pop .list {
+  max-height: min(440px, 60vh);
+  overflow-y: auto;
+}
+.p-bell-pop .item {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 12px;
+  text-align: left;
+  font: inherit;
+  padding: 13px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--p-border);
+  transition: background .15s;
+}
+.p-bell-pop .item:last-child { border-bottom: 0; }
+.p-bell-pop .item:hover { background: var(--p-bg-surface-alt); }
+.p-bell-pop .item.unread { background: rgba(202, 168, 104, 0.08); }
+.p-bell-pop .item.unread:hover { background: rgba(202, 168, 104, 0.14); }
+.p-bell-pop .item .ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--p-bg-surface-alt);
+  color: var(--p-fg-2);
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+.p-bell-pop .item .ico[data-tone="danger"] { background: #F7E8E5; color: #9F2B1F; }
+.p-bell-pop .item .ico[data-tone="warn"] { background: #F6EEDC; color: #8B6A1F; }
+.p-bell-pop .item .ico[data-tone="gold"] { background: var(--rt-gold-50, #f6efe2); color: var(--rt-gold-700, #8a6a2f); }
+.p-bell-pop .item .ico[data-tone="success"] { background: #E7F0E8; color: #2B5F38; }
+.p-bell-pop .item .txt {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.p-bell-pop .item .t {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--p-fg-1);
+}
+.p-bell-pop .item .b {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--p-fg-2);
+}
+.p-bell-pop .item .time {
+  font-size: 11px;
+  color: var(--p-fg-3);
+  margin-top: 2px;
+}
+.p-bell-pop .item .unread-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rt-gold-500, #CAA868);
+  margin-top: 6px;
+  flex: 0 0 auto;
+}
+
+/* ============================================================
+   Alert modal (lightbox) — brand-consistent with Royal Group
+   ============================================================ */
+.pt-alert-backdrop {
+  position: fixed; inset: 0;
+  z-index: 200;
+  background: rgba(7, 24, 43, 0.72);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  animation: pt-alert-fade 180ms var(--rt-ease, cubic-bezier(.4,0,.2,1)) both;
+}
+.pt-alert-backdrop.is-leaving {
+  animation: pt-alert-fade 180ms var(--rt-ease, cubic-bezier(.4,0,.2,1)) reverse both;
+  pointer-events: none;
+}
+@keyframes pt-alert-fade { from { opacity: 0; } to { opacity: 1; } }
+.pt-alert {
+  background: var(--rt-paper, #fff);
+  border-top: 3px solid var(--rt-gold-600, #b08d4f);
+  box-shadow: var(--rt-shadow-lg, 0 30px 70px rgba(7,24,43,0.32));
+  width: min(420px, 100%);
+  padding: 40px 36px 34px;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center;
+  animation: pt-alert-pop 220ms var(--rt-ease, cubic-bezier(.4,0,.2,1)) both;
+}
+.pt-alert-backdrop.is-leaving .pt-alert { animation: none; }
+@keyframes pt-alert-pop {
+  from { transform: translateY(14px) scale(0.97); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pt-alert-backdrop, .pt-alert { animation: none; }
+}
+.pt-alert-badge {
+  width: 60px; height: 60px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--rt-navy-800, #0e2a47);
+  border-bottom: 3px solid var(--rt-gold-600, #b08d4f);
+  color: var(--rt-cream, #f6f1e7);
+  margin-bottom: 18px;
+}
+.pt-alert-success .pt-alert-badge { background: var(--rt-success, #2f7d4f); border-bottom-color: var(--rt-gold-600, #b08d4f); }
+.pt-alert-error .pt-alert-badge { background: #8E2D22; }
+.pt-alert h2 {
+  font-family: var(--rt-font-display);
+  font-size: 26px; font-weight: 600;
+  color: var(--rt-navy-800, #0e2a47);
+  margin: 0;
+  line-height: 1.25;
+}
+.pt-alert-orn {
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px; margin: 10px 0 6px;
+  color: var(--rt-gold-600, #b08d4f);
+}
+.pt-alert-orn span { font-size: 14px; }
+.pt-alert-orn::before, .pt-alert-orn::after {
+  content: ''; height: 1px; width: 56px;
+  background: var(--rt-gold-600, #b08d4f); opacity: 0.55;
+}
+.pt-alert p {
+  font-size: 14.5px; line-height: 1.65;
+  color: var(--rt-fg-2, #5a5247);
+  margin: 0 0 22px;
+  text-wrap: pretty;
+}
+.pt-alert .rt-btn { justify-content: center; min-width: 160px; }
