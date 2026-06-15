@@ -28,11 +28,16 @@
 			['id' => 'support', 'label' => 'Műszaki',        'count' => count(array_filter($docs, fn ($d) => $d['cat'] === 'support'))],
 		];
 
-		$help = [
-			['i' => 'pen-line', 't' => 'Szerződéskötés', 'd' => 'Töltse le, írja alá két példányban, hozza be irodánkba. Az átvételkor segítünk a kitöltésben.'],
-			['i' => 'refresh-cw', 't' => 'Módosítás', 'd' => 'Csomagváltás vagy adatváltozás esetén a Szerződés-módosítás formanyomtatványt használja.'],
-			['i' => 'log-out', 't' => 'Felmondás', 'd' => 'A felmondási nyomtatványt 30 nappal a kívánt megszűnés előtt juttassa el hozzánk.'],
-		];
+		// Help cards from the CMS (documents.help repeater); fall back to the
+		// built-in three before the editor has been opened/seeded.
+		$help = $cms->items('documents.help');
+		if (empty($help)) {
+			$help = [
+				['icon' => 'pen-line',   'title' => 'Szerződéskötés', 'description' => 'Töltse le, írja alá két példányban, hozza be irodánkba. Az átvételkor segítünk a kitöltésben.'],
+				['icon' => 'refresh-cw', 'title' => 'Módosítás',      'description' => 'Csomagváltás vagy adatváltozás esetén a Szerződés-módosítás formanyomtatványt használja.'],
+				['icon' => 'log-out',    'title' => 'Felmondás',      'description' => 'A felmondási nyomtatványt 30 nappal a kívánt megszűnés előtt juttassa el hozzánk.'],
+			];
+		}
 	@endphp
 
 	<div class="p-page" x-data="{ filter: 'all' }">
@@ -40,11 +45,11 @@
 		<div class="p-card p-pad">
 			<div class="p-section-title">
 				<div>
-					<div class="eyebrow">Dokumentumok</div>
-					<h3>Letölthető dokumentumok</h3>
+					<div class="eyebrow">{{ $cms->get('documents.intro.eyebrow') ?: 'Dokumentumok' }}</div>
+					<h3>{{ $cms->get('documents.intro.heading') ?: 'Letölthető dokumentumok' }}</h3>
 				</div>
 			</div>
-			<p class="p-section-desc">Saját szerződései, szerződésminták, formanyomtatványok, ÁSZF és műszaki tájékoztatók egy helyen. Aláírt példányokat e-mailen vagy postai úton fogadunk.</p>
+			<p class="p-section-desc">{!! $cms->get('documents.intro.description') !== '' ? $cms->text('documents.intro.description') : 'Saját szerződései, szerződésminták, formanyomtatványok, ÁSZF és műszaki tájékoztatók egy helyen. Aláírt példányokat e-mailen vagy postai úton fogadunk.' !!}</p>
 
 			<div class="p-doc-filters">
 				@foreach ($cats as $c)
@@ -82,24 +87,28 @@
 				@endforeach
 			</div>
 
-			<p class="p-doc-note">
-				Az aláírt példányokat <a href="mailto:info@royaltelekom.hu">info@royaltelekom.hu</a> címre küldje, vagy hozza be személyesen az Öv utcai irodánkba.
-			</p>
+			<div class="p-doc-note">
+				@if ($cms->get('documents.intro.note') !== '')
+					{!! $cms->rich('documents.intro.note') !!}
+				@else
+					<p>Az aláírt példányokat <a href="mailto:info@royaltelekom.hu">info@royaltelekom.hu</a> címre küldje, vagy hozza be személyesen az Öv utcai irodánkba.</p>
+				@endif
+			</div>
 		</div>
 
 		<div class="p-card p-pad">
 			<div class="p-section-title">
 				<div>
-					<div class="eyebrow">Segítség</div>
-					<h3>Hogyan használja ezeket?</h3>
+					<div class="eyebrow">{{ $cms->get('documents.help.eyebrow') ?: 'Segítség' }}</div>
+					<h3>{{ $cms->get('documents.help.heading') ?: 'Hogyan használja ezeket?' }}</h3>
 				</div>
 			</div>
 			<div class="p-doc-help">
 				@foreach ($help as $h)
 					<div class="p-doc-help-card">
-						<div class="ico"><i data-lucide="{{ $h['i'] }}" class="lucide-md"></i></div>
-						<h4>{{ $h['t'] }}</h4>
-						<p>{{ $h['d'] }}</p>
+						<div class="ico"><i data-lucide="{{ $h['icon'] }}" class="lucide-md"></i></div>
+						<h4>{{ $h['title'] }}</h4>
+						<p>{{ $h['description'] }}</p>
 					</div>
 				@endforeach
 			</div>
