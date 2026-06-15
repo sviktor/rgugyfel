@@ -10,7 +10,7 @@
 
 @section('content')
 
-	<form class="p-auth-form" method="POST" action="{{ route('login') }}">
+	<form class="p-auth-form" method="POST" action="{{ route('login.submit') }}" data-auth-form novalidate>
 		@csrf
 		<h2>Belépés</h2>
 		<p class="sub">Adja meg e-mail címét vagy ügyfél-azonosítóját.</p>
@@ -45,11 +45,6 @@
 		<div class="p-auth-switch">
 			Még nem ügyfelünk?
 			<a href="{{ route('register') }}">Regisztráció <i data-lucide="arrow-right" class="lucide-xs"></i></a>
-		</div>
-
-		<div class="p-auth-promo-hint">
-			<i data-lucide="info" class="lucide-sm"></i>
-			<span><strong>Demo:</strong> bármilyen e-mail/jelszó kombinációval beléphet.</span>
 		</div>
 	</form>
 

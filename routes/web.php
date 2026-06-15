@@ -1,7 +1,12 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ContractRequestController;
+use App\Http\Controllers\EmailVerificationController;
+use App\Http\Controllers\LegalController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PortalController;
+use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -9,27 +14,49 @@ use Illuminate\Support\Facades\Route;
 | Royal Telekom Ügyfélkapu - web routes
 |--------------------------------------------------------------------------
 |
-| MVP - no real auth yet (the `customers` table comes from rgadmin once
-| that migration lands). For now the login/register forms fake-succeed
-| and redirect into the portal. Every portal route is publicly reachable
-| but visually requires a "session" (we'll add a guard later).
+| Auth: cus_users accounts via the `customer` guard (config/auth.php). The
+| portal pages require a logged-in + e-mail-verified customer. Auth forms POST
+| via AJAX and return JSON (see resources/js/auth-forms.js).
 |
 */
 
-// ---- Auth screens (no middleware) ----
-Route::get('/login',                 [AuthController::class, 'showLogin'])    ->name('login');
-Route::post('/login',                [AuthController::class, 'login'])        ->name('login.submit');
-Route::get('/regisztracio',          [AuthController::class, 'showRegister']) ->name('register');
-Route::post('/regisztracio',         [AuthController::class, 'register'])     ->name('register.submit');
-Route::get('/elfelejtett-jelszo',    [AuthController::class, 'showForgot'])   ->name('forgot');
-Route::post('/elfelejtett-jelszo',   [AuthController::class, 'forgot'])       ->name('forgot.submit');
-Route::post('/logout',               [AuthController::class, 'logout'])       ->name('logout');
+// ---- Guest-only auth screens ----
+Route::middleware('guest:customer')->group(function () {
+	Route::get('/login',  [AuthController::class, 'showLogin'])->name('login');
+	Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
-// ---- Portal pages ----
-Route::get('/',               [PortalController::class, 'dashboard'])->name('dashboard');
-Route::get('/szamlak',        [PortalController::class, 'invoices']) ->name('invoices');
-Route::get('/szerzodeseim',   [PortalController::class, 'plans'])    ->name('plans');
-Route::get('/forgalom',       [PortalController::class, 'usage'])    ->name('usage');
-Route::get('/hibabejelentes', [PortalController::class, 'tickets'])  ->name('tickets');
-Route::get('/dokumentumok',   [PortalController::class, 'docs'])     ->name('docs');
-Route::get('/profil',         [PortalController::class, 'profile'])  ->name('profile');
+	Route::get('/regisztracio',  [RegisterController::class, 'show'])->name('register');
+	Route::post('/regisztracio', [RegisterController::class, 'store'])->name('register.submit');
+
+	Route::get('/elfelejtett-jelszo',  [PasswordResetController::class, 'requestForm'])->name('forgot');
+	Route::post('/elfelejtett-jelszo', [PasswordResetController::class, 'sendLink'])->name('forgot.submit');
+
+	Route::get('/jelszo-visszaallitas/{token}', [PasswordResetController::class, 'resetForm'])->name('password.reset');
+	Route::post('/jelszo-visszaallitas',        [PasswordResetController::class, 'reset'])->name('password.update');
+});
+
+// ---- E-mail verification (public; the link is signed, resend is throttled) ----
+Route::get('/regisztracio/megerosites', [EmailVerificationController::class, 'notice'])->name('register.verify.notice');
+Route::get('/email-megerosites/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
+Route::post('/email-megerosites/ujrakuldes', [EmailVerificationController::class, 'resend'])
+	->middleware('throttle:6,1')->name('verification.resend');
+
+// ---- Legal pages (public; CMS-driven once the rgadmin Ügyfélkapu editor lands) ----
+Route::get('/aszf',        [LegalController::class, 'terms'])->name('terms');
+Route::get('/adatvedelem', [LegalController::class, 'privacy'])->name('privacy');
+
+// ---- Portal pages (logged-in + verified customer) ----
+Route::middleware(['auth:customer', 'customer.verified'])->group(function () {
+	Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+	Route::get('/',               [PortalController::class, 'dashboard'])->name('dashboard');
+	Route::get('/szamlak',        [PortalController::class, 'invoices'])->name('invoices');
+	Route::get('/szerzodeseim',   [PortalController::class, 'plans'])->name('plans');
+	Route::get('/forgalom',       [PortalController::class, 'usage'])->name('usage');
+	Route::get('/hibabejelentes', [PortalController::class, 'tickets'])->name('tickets');
+	Route::get('/dokumentumok',   [PortalController::class, 'docs'])->name('docs');
+	Route::get('/profil',         [PortalController::class, 'profile'])->name('profile');
+
+	// Dashboard "Szerződés hozzárendelése" - files a pending contract request.
+	Route::post('/szerzodes-igenyles', [ContractRequestController::class, 'store'])->name('contract.request');
+});

@@ -14,6 +14,15 @@ return Application::configure(basePath: dirname(__DIR__))
         // The JS-written cookie-consent cookie is plain JSON, not Laravel-
         // encrypted - except it so the Blade layer can read it (GA gate).
         $middleware->encryptCookies(except: [\App\Support\CookieConsent::COOKIE]);
+
+        // Portal auth redirects: guests -> login, already-logged-in -> dashboard.
+        $middleware->redirectGuestsTo(fn () => route('login'));
+        $middleware->redirectUsersTo('/');
+
+        // Belt-and-suspenders e-mail-verification gate for portal routes.
+        $middleware->alias([
+            'customer.verified' => \App\Http\Middleware\EnsureCustomerEmailVerified::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Email an uncaught exception (a genuine 500). Laravel 11 already skips

@@ -268,14 +268,15 @@
 				Adja meg a szerződésszámot és a szerződő születési dátumát. <strong>A hozzárendelés egy kérelem,
 				amelyet munkatársaink jóváhagynak.</strong>
 			</p>
-			<form class="p-contract-form" @submit.prevent="addConfirm = true">
+			<form class="p-contract-form" method="POST" action="{{ route('contract.request') }}">
+				@csrf
 				<div class="p-field">
 					<label for="ac_num">Szerződésszám</label>
-					<input id="ac_num" class="rt-input" required placeholder="RT-2024-0382">
+					<input id="ac_num" name="contract_number" class="rt-input" required placeholder="SV00-00000">
 				</div>
 				<div class="p-field">
 					<label for="ac_dob">Születési dátum</label>
-					<input id="ac_dob" class="rt-input" type="date" required>
+					<input id="ac_dob" name="birth_date" class="rt-input" type="date" required>
 				</div>
 				<button type="submit" class="rt-btn rt-btn-primary">
 					<i data-lucide="send" class="lucide-sm"></i> Kérelem beküldése

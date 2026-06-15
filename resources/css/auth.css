@@ -73,6 +73,47 @@
 	justify-content: space-between;
 }
 
+/* Register - optional-field hint next to a label */
+.p-label-opt {
+	color: var(--p-fg-3);
+	font-weight: 400;
+}
+
+/* Register step 2 - "contract number OR address" divider */
+.p-auth-or {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	color: var(--p-fg-3);
+	font-size: 12px;
+}
+
+.p-auth-or span {
+	flex: 1;
+	height: 1px;
+	background: var(--p-border);
+}
+
+/* Register step 3 - terms acceptance row */
+.p-auth-accept {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	font-size: 13px;
+	color: var(--p-fg-2);
+	margin-top: 6px;
+}
+
+.p-auth-accept input[type="checkbox"] {
+	accent-color: var(--rt-navy-800);
+	margin-top: 2px;
+}
+
+.p-auth-accept a {
+	color: var(--p-fg-1);
+	font-weight: 600;
+}
+
 /* Register - multi-step progress bar */
 .p-auth-progress {
 	display: flex;
@@ -98,6 +139,36 @@
 .p-auth-actions .rt-btn-primary {
 	flex: 1;
 	justify-content: center;
+}
+
+/* Verify / sent screens - shared helpers */
+.p-auth-sub-sent { margin-bottom: 22px; }
+
+.p-auth-email { color: var(--p-fg-1); }
+
+.p-auth-resend { margin-top: 12px; }
+
+/* Verify result - success / error state */
+.p-auth-result-icon {
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 18px;
+}
+
+.p-auth-result-icon.is-success {
+	background: var(--rt-gold-50);
+	border: 1px solid var(--rt-gold-300);
+	color: var(--rt-gold-700);
+}
+
+.p-auth-result-icon.is-error {
+	background: var(--p-bg-surface-alt);
+	border: 1px solid var(--p-border);
+	color: var(--p-fg-3);
 }
 
 /* Forgot - sent state */

@@ -42,3 +42,83 @@ i[data-lucide] {
 	--rt-font-body: var(--rt-font-sans);   /* portal.css "body" alias of Inter */
 	--rt-gold-400: #D6B87E;                 /* light gold accent (between 300 and 500) */
 }
+
+/* =========================================================
+   Public content layout (layouts/page.blade.php) - the slim
+   guest chrome used by the legal pages (ÁSZF / Adatvédelem).
+   ========================================================= */
+.p-page-top {
+	background: #fff;
+	border-bottom: 1px solid var(--p-border);
+}
+
+.p-page-top-inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 16px 24px;
+}
+
+.p-page-brand {
+	display: flex;
+	flex-direction: column;
+	line-height: 1.1;
+	text-decoration: none;
+}
+
+.p-page-brand .top {
+	font-family: var(--rt-font-display);
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	color: var(--rt-navy-800);
+}
+
+.p-page-brand .bottom {
+	font-size: 12px;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--rt-gold-700);
+}
+
+.p-page-main {
+	min-height: calc(100vh - 140px);
+	background: var(--rt-cream, #f6f1e7);
+}
+
+.p-page-foot {
+	border-top: 1px solid var(--p-border);
+	padding: 20px 0;
+	font-size: 13px;
+	color: var(--p-fg-3);
+	text-align: center;
+}
+
+.p-page-foot a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Legal pages */
+.p-legal { padding: 56px 0; }
+
+.p-legal-title {
+	font-family: var(--rt-font-display);
+	font-size: 36px;
+	font-weight: 600;
+	color: var(--rt-navy-800);
+	margin: 0 0 28px;
+	letter-spacing: -0.01em;
+}
+
+.p-legal-content {
+	max-width: 820px;
+	color: var(--p-fg-2);
+	line-height: 1.8;
+}
+
+.p-legal-content h2 { font-family: var(--rt-font-display); font-size: 24px; color: var(--rt-navy-800); margin: 32px 0 12px; }
+.p-legal-content h3 { font-size: 18px; color: var(--rt-navy-800); margin: 24px 0 10px; }
+.p-legal-content p { margin: 0 0 16px; }
+.p-legal-content ul, .p-legal-content ol { margin: 0 0 16px; padding-left: 22px; }
+.p-legal-content li { margin-bottom: 6px; }
+.p-legal-content a { color: var(--rt-gold-700); text-decoration: underline; text-underline-offset: 2px; }
+
+.p-legal-empty { color: var(--p-fg-3); font-style: italic; }

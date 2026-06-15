@@ -77,5 +77,14 @@
 	</script>
 
 	@stack('scripts')
+
+	{{-- Flash -> ptAlert bridge (e.g. the contract-request confirmation). --}}
+	@if (session('pt_alert'))
+		<script>
+			window.addEventListener('DOMContentLoaded', function () {
+				if (window.ptAlert) window.ptAlert(@json(session('pt_alert')));
+			});
+		</script>
+	@endif
 </body>
 </html>

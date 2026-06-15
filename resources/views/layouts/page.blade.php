@@ -1,8 +1,7 @@
 {{--
-	Auth screens layout - login, register, forgot.
-	Split-screen: dark navy side (brand + headline) + form panel.
-	Visual mockup only - no auth backend yet (customers table comes
-	from rgadmin once that migration lands).
+	Public content layout - a simple, guest-accessible page chrome (brand bar +
+	content + slim footer) for standalone pages like the legal documents
+	(ÁSZF / Adatvédelem). Lighter than the portal shell (no sidebar, no auth).
 --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -19,10 +18,6 @@
 	<link rel="manifest" href="{{ asset('assets/site.webmanifest') }}">
 	<meta name="theme-color" content="#0E2A47">
 	@vite(['resources/css/app.css', 'resources/js/app.js'])
-	{{-- Google Analytics (gtag.js) - measurement id from the CMS
-	     (rgadmin: WEBOLDALAK -> Ügyfélkapu -> Beállítások -> Analitika).
-	     GDPR: only emitted once the visitor opted into statistics cookies (the
-	     consent banner JS injects gtag itself right after a first-visit opt-in). --}}
 	@if ($cms->get('global.analytics.ga_id') !== '' && \App\Support\CookieConsent::allows('statistics'))
 		<script async src="https://www.googletagmanager.com/gtag/js?id={{ $cms->get('global.analytics.ga_id') }}"></script>
 		<script>
@@ -35,30 +30,27 @@
 	@stack('head')
 </head>
 <body>
-	<div class="p-auth">
-
-		{{-- Dark navy side with crest watermark + headline (light crest on dark) --}}
-		<aside class="p-auth-side">
-			<img class="crest-bg" src="{{ asset('assets/crest-monogram-light.svg') }}" alt="" aria-hidden="true">
-			<div class="logo-row">
-				<img class="crest" src="{{ asset('assets/crest-monogram-light.svg') }}" alt="">
-				<div class="lockup">
-					<div class="top">ROYAL TELEKOM</div>
-					<div class="bottom">@yield('side-eyebrow', 'ÜGYFÉLKAPU')</div>
-				</div>
-			</div>
-			<div style="max-width:460px;">
-				<h1>@yield('side-headline')</h1>
-				<p class="lede">@yield('side-lede')</p>
-			</div>
-			<div class="small">© {{ date('Y') }} Royal Telekom · Royal Group · Minőség és diszkréció 1998 óta. · <a href="#" data-cookie-settings>Sütibeállítások</a></div>
-		</aside>
-
-		{{-- Form panel --}}
-		<div class="p-auth-form-wrap">
-			@yield('content')
+	<header class="p-page-top">
+		<div class="rt-container p-page-top-inner">
+			<a href="{{ route('login') }}" class="p-page-brand">
+				<span class="top">ROYAL TELEKOM</span>
+				<span class="bottom">Ügyfélkapu</span>
+			</a>
+			<a href="{{ route('login') }}" class="rt-btn rt-btn-secondary">
+				<i data-lucide="arrow-left" class="lucide-sm"></i> Belépés
+			</a>
 		</div>
-	</div>
+	</header>
+
+	<main class="p-page-main">
+		@yield('content')
+	</main>
+
+	<footer class="p-page-foot">
+		<div class="rt-container">
+			© {{ date('Y') }} Royal Telekom · Royal Group · <a href="#" data-cookie-settings>Sütibeállítások</a>
+		</div>
+	</footer>
 
 	{{-- GDPR cookie consent banner + settings modal --}}
 	@include('partials.cookie-consent')
@@ -74,14 +66,5 @@
 	</script>
 
 	@stack('scripts')
-
-	{{-- Flash -> ptAlert bridge (cross-redirect messages, e.g. password reset done). --}}
-	@if (session('pt_alert'))
-		<script>
-			window.addEventListener('DOMContentLoaded', function () {
-				if (window.ptAlert) window.ptAlert(@json(session('pt_alert')));
-			});
-		</script>
-	@endif
 </body>
 </html>

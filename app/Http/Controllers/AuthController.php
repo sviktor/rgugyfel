@@ -2,72 +2,174 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CustomerUser;
+use App\Models\LoginAttempt;
+use App\Support\CustomerMail;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
 
 /**
- * Auth controller - login / register / forgot (visual mockup).
+ * AuthController - portal login + logout against the cus_users accounts.
  *
- * No real authentication yet: the `customers` table will land via
- * rgadmin's migration, and we'll wire a custom Eloquent user provider
- * (App\Models\Customer extends Authenticatable, $table = 'customers')
- * once that exists. See rgugyfel/CLAUDE.md → "Auth setup".
- *
- * For now every form fake-succeeds and redirects.
+ * The forms submit via AJAX (resources/js/auth-forms.js): a JSON
+ * `{redirect: url}` on success, a `{title, message}` / `{errors}` 422 on
+ * failure (shown in the ptAlert lightbox). See rgugyfel/CLAUDE.md -> Auth.
  */
 class AuthController extends Controller
 {
-	public function showLogin(): View    { return view('auth.login'); }
-	public function showRegister(): View { return view('auth.register'); }
-	public function showForgot(): View   { return view('auth.forgot'); }
+	/** Failed attempts inside this window trip the lockout. */
+	private const ATTEMPT_WINDOW_MINUTES = 60;
 
-	/**
-	 * Fake-login - redirects to dashboard regardless of credentials.
-	 *
-	 * @example  POST /login  →  AuthController::login()
-	 */
-	public function login(Request $request): RedirectResponse
+	/** Number of failures (within the window) that locks the account. */
+	private const MAX_ATTEMPTS = 5;
+
+	/** Remember-me cookie lifetime: 180 days (in minutes). */
+	private const REMEMBER_MINUTES = 60 * 24 * 180;
+
+	public function showLogin(): View
 	{
-		// TODO: validate + Auth::guard('customer')->attempt(...) once the
-		// `customers` table and Customer model exist.
-		return redirect()->route('dashboard');
+		return view('auth.login');
 	}
 
 	/**
-	 * Fake-register - redirects to dashboard.
+	 * Authenticate a customer. Resolves the typed identifier (e-mail OR linked
+	 * customer number), enforces the lockout + e-mail-verification gates, and
+	 * logs in with a 180-day remember cookie when requested.
 	 *
-	 * @example  POST /regisztracio  →  AuthController::register()
+	 * @example  POST /login  ->  {redirect: '/'}
 	 */
-	public function register(Request $request): RedirectResponse
+	public function login(Request $request): JsonResponse
 	{
-		// TODO: validate + create Customer row + Auth::login(...)
-		return redirect()->route('dashboard');
-	}
-
-	/**
-	 * Fake-forgot - flashes the email and renders the "sent" state.
-	 *
-	 * @example  POST /elfelejtett-jelszo  →  AuthController::forgot()
-	 */
-	public function forgot(Request $request): RedirectResponse
-	{
-		$request->validate(['email' => 'required|email|max:200']);
-		// TODO: Password::broker('customers')->sendResetLink(...) later.
-		return redirect()->route('forgot')->with([
-			'forgot_sent'  => true,
-			'forgot_email' => $request->input('email'),
+		$request->validate([
+			'login'    => 'required|string',
+			'password' => 'required|string',
+		], [
+			'login.required'    => 'Kérjük, adja meg e-mail címét vagy ügyfél-azonosítóját.',
+			'password.required' => 'A belépéshez kérjük, adja meg jelszavát.',
 		]);
+
+		$email = $this->resolveEmail((string) $request->input('login'));
+		$user  = CustomerUser::where('email', $email)->first();
+
+		// Lockout gate - applies before any password check.
+		if ($user && $user->isLocked()) {
+			return response()->json([
+				'title'   => 'Fiók átmenetileg zárolva',
+				'message' => 'Túl sok sikertelen belépési kísérlet miatt fiókját átmenetileg zároltuk. '
+					. 'Biztonsági okból kérjük, próbálja meg újra 2 nap múlva.',
+			], 422);
+		}
+
+		$credentials = ['email' => $email, 'password' => (string) $request->input('password')];
+
+		// validate() checks credentials WITHOUT logging in.
+		if (! $user || ! Auth::guard('customer')->validate($credentials)) {
+			$this->recordFailure($email, $request->ip(), $user);
+
+			return response()->json([
+				'title'   => 'Sikertelen belépés',
+				'message' => 'A megadott e-mail cím / azonosító vagy jelszó helytelen.',
+			], 422);
+		}
+
+		// Credentials OK but the e-mail is not confirmed yet -> resend + notice.
+		if (! $user->hasVerifiedEmail()) {
+			$this->sendVerification($user);
+			$request->session()->put('verify_email', $user->email);
+			$request->session()->flash('pt_alert', [
+				'variant' => 'info',
+				'title'   => 'Erősítse meg e-mail címét',
+				'message' => 'A belépéshez először erősítse meg e-mail címét. Újra elküldtük a megerősítő linket.',
+			]);
+
+			return response()->json(['redirect' => route('register.verify.notice')]);
+		}
+
+		// Success - clear the failure trail and log in with the remember cookie.
+		LoginAttempt::where('email', $email)->delete();
+		if ($user->locked_until !== null) {
+			$user->forceFill(['locked_until' => null])->save();
+		}
+
+		$guard = Auth::guard('customer');
+		$guard->setRememberDuration(self::REMEMBER_MINUTES);
+		$guard->login($user, $request->boolean('remember'));
+		$request->session()->regenerate();
+
+		return response()->json(['redirect' => route('dashboard')]);
 	}
 
 	/**
-	 * Logout - redirects to the login screen.
+	 * Log the customer out and return to the login screen.
 	 *
-	 * @example  POST /logout  →  AuthController::logout()
+	 * @example  POST /logout  ->  redirect to /login
 	 */
 	public function logout(Request $request): RedirectResponse
 	{
-		// TODO: Auth::guard('customer')->logout(); $request->session()->invalidate();
+		Auth::guard('customer')->logout();
+		$request->session()->invalidate();
+		$request->session()->regenerateToken();
+
 		return redirect()->route('login');
+	}
+
+	/**
+	 * Resolve the typed login identifier to an e-mail. Plain e-mails pass
+	 * through; otherwise we look up a cus_users account whose LINKED customer
+	 * carries the typed customer number.
+	 */
+	private function resolveEmail(string $login): string
+	{
+		$login = trim($login);
+		if ($login === '' || str_contains($login, '@')) {
+			return $login;
+		}
+
+		$user = CustomerUser::whereHas('customer', function ($q) use ($login) {
+			$q->where('customer_number', $login);
+		})->first();
+
+		return $user?->email ?? $login;
+	}
+
+	/**
+	 * Log a failed attempt and lock the account after MAX_ATTEMPTS within the
+	 * rolling window (the lockout lasts 1 day - the user is told "2 days" :)).
+	 */
+	private function recordFailure(string $email, ?string $ip, ?CustomerUser $user): void
+	{
+		LoginAttempt::create(['email' => $email, 'ip' => $ip, 'created_at' => now()]);
+
+		if (! $user) {
+			return;
+		}
+
+		$recent = LoginAttempt::where('email', $email)
+			->where('created_at', '>=', now()->subMinutes(self::ATTEMPT_WINDOW_MINUTES))
+			->count();
+
+		if ($recent >= self::MAX_ATTEMPTS) {
+			$user->forceFill(['locked_until' => now()->addDay()])->save();
+		}
+	}
+
+	/**
+	 * (Re)send the e-mail verification link (24h signed URL).
+	 */
+	private function sendVerification(CustomerUser $user): void
+	{
+		$url = URL::temporarySignedRoute('verification.verify', now()->addDay(), [
+			'id'   => $user->id,
+			'hash' => sha1($user->email),
+		]);
+
+		CustomerMail::send('customer_verify_email', $user->email, [
+			'{neve}'       => $user->name,
+			'{verify_url}' => $url,
+		]);
 	}
 }

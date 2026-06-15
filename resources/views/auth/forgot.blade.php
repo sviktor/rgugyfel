@@ -11,7 +11,8 @@
 
 @section('content')
 
-	<form class="p-auth-form" method="POST" action="{{ route('forgot.submit') }}">
+	<form class="p-auth-form" method="POST" action="{{ route('forgot.submit') }}"
+	      @unless (session('forgot_sent')) data-auth-form novalidate @endunless>
 		@csrf
 
 		@if (session('forgot_sent'))

@@ -108,11 +108,17 @@ class SiteContent
 	{
 		if ($this->sections === null) {
 			$this->sections = [];
-			foreach (WebSection::forSite(self::SITE)->get() as $row) {
-				$this->sections[$row->page . '.' . $row->section] = [
-					'data'   => $row->data ?? [],
-					'status' => (int) $row->status,
-				];
+			// Resilient: a missing/unreachable web_sections table (e.g. a fresh
+			// test DB before rgadmin migrates it) yields empty CMS, not a 500.
+			try {
+				foreach (WebSection::forSite(self::SITE)->get() as $row) {
+					$this->sections[$row->page . '.' . $row->section] = [
+						'data'   => $row->data ?? [],
+						'status' => (int) $row->status,
+					];
+				}
+			} catch (\Throwable $e) {
+				// leave $this->sections empty
 			}
 		}
 
