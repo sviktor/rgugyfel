@@ -110,12 +110,8 @@ export function registerWizard() {
 				if (!this.emailValid(val('email'))) return 'Kérjük, adjon meg egy érvényes e-mail címet (pl. nev@example.hu).';
 				if (!val('phone')) return 'Kérjük, adja meg telefonszámát.';
 			}
-			if (s === 2) {
-				const hasId = val('contract_number');
-				const hasAddr = val('zip') && val('city') && val('street');
-				if (!hasId && !hasAddr) return 'Az azonosításhoz adja meg szerződésszámát és születési dátumát, vagy töltse ki a teljes lakcímét (irányítószám, település, utca).';
-				if (!hasAddr && !val('birth_date')) return 'A szerződésszámmal történő azonosításhoz adja meg születési dátumát is (vagy töltse ki a teljes lakcímét).';
-			}
+			// Step 2 (identification) is optional - it can be left empty and
+			// supplied later in the portal, so nothing is enforced here.
 			if (s === 3) {
 				const pw = (el['password'] && el['password'].value) || '';
 				if (pw.length < 10 || !/[A-Z]/.test(pw) || !/[0-9]/.test(pw)) return 'A jelszónak legalább 10 karakter hosszúnak kell lennie, és tartalmaznia kell nagybetűt és számot is.';

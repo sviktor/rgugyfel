@@ -63,24 +63,21 @@ class RegistrationTest extends FeatureTestCase
 		$this->assertDatabaseHas('cus_contract_requests', ['city' => 'Budapest', 'status' => 'pending']);
 	}
 
-	public function test_contract_path_requires_a_birth_date(): void
+	public function test_registration_succeeds_without_any_identification(): void
 	{
-		// Contract number but no birth date and no address -> birth date error.
-		$this->postJson(route('register.submit'), $this->payload(['birth_date' => null]))
-			->assertStatus(422)
-			->assertJsonValidationErrors('birth_date');
-
-		$this->assertDatabaseCount('cus_users', 0);
-	}
-
-	public function test_registration_requires_contract_number_or_full_address(): void
-	{
+		// Identification is optional: a request row is still created (it lists as
+		// "Adatokra vár" in rgadmin until the contract number + birth date come).
 		$this->postJson(route('register.submit'), $this->payload([
 			'contract_number' => null,
 			'birth_date'      => null,
-		]))->assertStatus(422)->assertJsonValidationErrors('contract_number');
+		]))->assertOk()->assertJsonPath('redirect', route('register.verify.notice'));
 
-		$this->assertDatabaseCount('cus_users', 0);
+		$this->assertDatabaseHas('cus_users', ['email' => 'kis.eva@example.hu']);
+		$this->assertDatabaseHas('cus_contract_requests', [
+			'contract_number' => null,
+			'birth_date'      => null,
+			'status'          => 'pending',
+		]);
 	}
 
 	public function test_registration_rejects_a_weak_password(): void

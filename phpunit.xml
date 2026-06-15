@@ -22,13 +22,17 @@
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_STORE" value="array"/>
-        <!-- Force a DEDICATED MariaDB test database (the same mc_rg_test the
-             rgadmin suite uses; the mcdev grant already covers it). force="true"
-             so a stray shell env var cannot point the suite at the live mc_rg.
-             The guard in tests/TestCase.php refuses to run unless the database
-             name ends in _test. (SQLite is not available on the host PHP.) -->
+        <!-- Force a DEDICATED MariaDB test database, SEPARATE from rgadmin's
+             `mc_rg_test`: both apps create the cus_* tables (rgugyfel via its own
+             migrations, rgadmin via a guarded fallback migration), so sharing one
+             test DB makes their migrate:fresh runs collide. Each app owns its own.
+             force="true" so a stray shell env var cannot point at the live mc_rg;
+             the guard in tests/TestCase.php refuses any DB not ending in _test.
+             (SQLite is not available on the host PHP.) One-time host setup:
+               CREATE DATABASE mc_rg_cp_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+               GRANT ALL PRIVILEGES ON mc_rg_cp_test.* TO 'mcdev'@'localhost'; -->
         <env name="DB_CONNECTION" value="mariadb" force="true"/>
-        <env name="DB_DATABASE" value="mc_rg_test" force="true"/>
+        <env name="DB_DATABASE" value="mc_rg_cp_test" force="true"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="RECAPTCHA_ENABLED" value="false"/>
         <env name="PULSE_ENABLED" value="false"/>

@@ -50,17 +50,22 @@
 			</div>
 		</div>
 
-		{{-- Step 2 - identification: birth date + (contract number OR address) --}}
+		{{-- Step 2 - identification (OPTIONAL): contract number + birth date, or address --}}
 		<div class="p-auth-form-grid" x-show="step === 2" x-cloak>
+			<p class="hint">
+				Az azonosítás <strong>nem kötelező</strong> - megadhatja most, vagy később az
+				Ügyfélkapuban. A szerződéséhez akkor tudjuk kötni a fiókját, ha megadja a
+				szerződésszámát és születési dátumát (vagy a teljes lakcímét).
+			</p>
 			<div class="p-field">
-				<label>Szerződésszám</label>
+				<label>Szerződésszám <span class="p-label-opt">(nem kötelező)</span></label>
 				<input class="rt-input" name="contract_number" value="{{ old('contract_number') }}" placeholder="SV00-00000">
 				<span class="hint">A szerződésén és a számlái fejlécében találja, pl. „Szerződés: SV24-00170”.</span>
 			</div>
 			<div class="p-field">
-				<label>Születési dátum</label>
+				<label>Születési dátum <span class="p-label-opt">(nem kötelező)</span></label>
 				<input class="rt-input" type="date" name="birth_date" value="{{ old('birth_date') }}">
-				<span class="hint">A szerződő születési dátuma - a szerződésszámmal történő azonosításhoz.</span>
+				<span class="hint">A szerződő születési dátuma - a szerződésszámmal együtt az azonosításhoz.</span>
 			</div>
 			<div class="p-auth-or">
 				<span></span> vagy a teljes lakcímmel <span></span>

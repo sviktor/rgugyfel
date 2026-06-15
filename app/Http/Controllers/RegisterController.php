@@ -51,20 +51,10 @@ class RegisterController extends Controller
 			'accept'   => 'accepted',
 		], $this->messages(), $this->attributes());
 
-		// Identification: EITHER a contract number + birth date, OR a full
-		// address (in which case the birth date is not needed).
-		$hasId   = filled($data['contract_number'] ?? null);
-		$hasAddr = filled($data['zip'] ?? null) && filled($data['city'] ?? null) && filled($data['street'] ?? null);
-		if (! $hasId && ! $hasAddr) {
-			throw ValidationException::withMessages([
-				'contract_number' => 'Az azonosításhoz adja meg szerződésszámát és születési dátumát, vagy töltse ki a teljes lakcímét (irányítószám, település, utca).',
-			]);
-		}
-		if (! $hasAddr && blank($data['birth_date'] ?? null)) {
-			throw ValidationException::withMessages([
-				'birth_date' => 'A szerződésszámmal történő azonosításhoz adja meg születési dátumát is (vagy töltse ki a teljes lakcímét).',
-			]);
-		}
+		// Identification (contract number + birth date, or address) is OPTIONAL:
+		// the customer can register without it and supply it later in the portal.
+		// A request row is created regardless (it lists as "Adatokra vár" in
+		// rgadmin until the contract number + birth date are given).
 
 		// reCAPTCHA (registration form only).
 		if (! Recaptcha::verify($request)) {
