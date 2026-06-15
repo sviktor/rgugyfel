@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Support\PortalMockData;
+use App\Support\SiteContent;
 use App\Support\WebInvoices;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -33,7 +34,7 @@ class PortalController extends Controller
 			'invoices'  => $cid > 0 ? WebInvoices::forCustomer($cid) : PortalMockData::invoices(),
 			'contracts' => PortalMockData::contracts(),
 			'tickets'   => PortalMockData::tickets(),
-			'bank'      => PortalMockData::bankDetails(),
+			'bank'      => $this->bankDetails(),
 		]);
 	}
 
@@ -48,7 +49,7 @@ class PortalController extends Controller
 
 		return view('pages.invoices', $this->commonContext() + [
 			'invoices' => $cid > 0 ? WebInvoices::forCustomer($cid) : PortalMockData::invoices(),
-			'bank'     => PortalMockData::bankDetails(),
+			'bank'     => $this->bankDetails(),
 		]);
 	}
 
@@ -139,6 +140,20 @@ class PortalController extends Controller
 	{
 		$badges = PortalMockData::badges();
 
+		// The signed-in portal account (cus_users) - the pages run behind
+		// auth:customer, so this is always present. Name/monogram/identifier come
+		// from the account; address + member-since stay demo data until invoices
+		// bind in a later round.
+		$account = auth('customer')->user();
+		$user    = PortalMockData::user();
+		if ($account) {
+			$name               = trim((string) $account->name);
+			$user['name']       = $name !== '' ? $name : $user['name'];
+			$user['initials']   = $this->initials($user['name']);
+			$user['customerId'] = str_pad((string) $account->id, 5, '0', STR_PAD_LEFT);
+			$user['email']      = (string) $account->email;
+		}
+
 		// Real overdue-invoice badge once the account is linked to a CRM customer.
 		$cid = $this->currentCustomerId();
 		if ($cid > 0) {
@@ -163,5 +178,47 @@ class PortalController extends Controller
 	private function currentCustomerId(): int
 	{
 		return (int) (auth('customer')->user()?->customers_id ?? 0);
+	}
+
+	/**
+	 * Monogram for the sidebar avatar: the initials of the first two name words,
+	 * uppercased. Multibyte-safe (Hungarian accents, e.g. "Kis Éva" -> "KÉ").
+	 *
+	 * @example PortalController::initials('Kis Éva') // 'KÉ'
+	 */
+	private function initials(string $name): string
+	{
+		$words = preg_split('/\s+/', trim($name), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+		$out   = mb_substr($words[0] ?? '', 0, 1);
+		if (isset($words[1])) {
+			$out .= mb_substr($words[1], 0, 1);
+		}
+
+		return mb_strtoupper($out);
+	}
+
+	/**
+	 * Bank-transfer details for the payment modal. The account fields are
+	 * operator-editable in rgadmin (WEBOLDALAK -> Ügyfélkapu -> Beállítások ->
+	 * web_sections global.bank.*); PortalMockData::bankDetails() supplies the
+	 * fallback values (used before the editor is first opened) and the
+	 * per-customer Közlemény reference (still demo data until invoices bind).
+	 *
+	 * @return array<string, string>
+	 * @example PortalController::bankDetails()['iban'] // 'HU42 1177 ...'
+	 */
+	private function bankDetails(): array
+	{
+		$cms  = app(SiteContent::class);
+		$mock = PortalMockData::bankDetails();
+
+		return [
+			'name'    => $cms->get('global.bank.name')    ?: $mock['name'],
+			'bank'    => $cms->get('global.bank.bank')    ?: $mock['bank'],
+			'account' => $cms->get('global.bank.account') ?: $mock['account'],
+			'iban'    => $cms->get('global.bank.iban')    ?: $mock['iban'],
+			'swift'   => $cms->get('global.bank.swift')   ?: $mock['swift'],
+			'ref'     => $mock['ref'],
+		];
 	}
 }

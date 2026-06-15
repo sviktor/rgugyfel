@@ -43,7 +43,6 @@
 		<hr class="p-auth-sep">
 
 		<div class="p-auth-switch">
-			Még nem ügyfelünk?
 			<a href="{{ route('register') }}">Regisztráció <i data-lucide="arrow-right" class="lucide-xs"></i></a>
 		</div>
 	</form>

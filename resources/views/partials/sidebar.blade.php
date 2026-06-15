@@ -12,10 +12,8 @@
 		]],
 		['group' => 'Szolgáltatásaim', 'items' => [
 			['route' => 'plans',     'label' => 'Szerződéseim',            'icon' => 'package'],
-			['route' => 'usage',     'label' => 'Forgalom & sebesség',     'icon' => 'activity'],
 		]],
 		['group' => 'Ügyintézés', 'items' => [
-			['route' => 'tickets',   'label' => 'Hibabejelentés',          'icon' => 'alert-circle',  'badge' => $badges['tickets'] ?? null],
 			['route' => 'docs',      'label' => 'Dokumentumok',            'icon' => 'file-text'],
 		]],
 		['group' => 'Fiók', 'items' => [

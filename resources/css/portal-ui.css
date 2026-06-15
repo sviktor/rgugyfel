@@ -233,6 +233,34 @@
 	max-width: 720px;
 }
 
+/* Bank-transfer modal: the design .p-modal (800px) is wider than the .p-bank
+   card (720px) it wraps, leaving an empty surface band around the gold-bordered
+   card. Match the wrapper to the card and drop its redundant surface chrome so
+   the .p-bank card reads as the single, edge-to-edge modal. */
+.p-modal-bank {
+	max-width: 720px;
+	background: transparent;
+	box-shadow: none;
+}
+
+/* Copy-to-clipboard feedback: window.ptCopy toggles .is-copied on the row's
+   copy button for ~1.4s on success. The Lucide copy glyph is swapped for a
+   check mark and the button takes the success tint so the copy clearly lands. */
+.p-bank-rows .row .copy.is-copied {
+	background: var(--p-success-bg);
+	color: var(--p-success-fg);
+	border-color: var(--p-success-fg);
+}
+.p-bank-rows .row .copy.is-copied > svg {
+	display: none;
+}
+.p-bank-rows .row .copy.is-copied::after {
+	content: "\2713"; /* check mark */
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1;
+}
+
 .p-btn-grow {
 	flex: 1;
 	justify-content: center;

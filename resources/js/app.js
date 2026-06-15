@@ -20,6 +20,44 @@ window.cookieConsentAllows = (category) => {
 	return !!(rec && rec.choices && rec.choices[category]);
 };
 
+/**
+ * Copy text to the clipboard, with a legacy fallback for non-secure (HTTP)
+ * contexts where navigator.clipboard is unavailable. Resolves true on success,
+ * false otherwise - callers drive their own UI feedback off the result (see the
+ * bank-transfer modal copy buttons).
+ *
+ * @param {string} text - the value to copy
+ * @returns {Promise<boolean>}
+ * @example window.ptCopy('HU42 1177 ...').then(ok => { if (ok) flash(); })
+ */
+window.ptCopy = async (text) => {
+	const value = String(text ?? '');
+
+	if (navigator.clipboard && window.isSecureContext) {
+		try {
+			await navigator.clipboard.writeText(value);
+			return true;
+		} catch (e) {
+			// fall through to the legacy textarea path
+		}
+	}
+
+	try {
+		const ta = document.createElement('textarea');
+		ta.value = value;
+		ta.setAttribute('readonly', '');
+		ta.style.position = 'fixed';
+		ta.style.top = '-9999px';
+		document.body.appendChild(ta);
+		ta.select();
+		const ok = document.execCommand('copy');
+		document.body.removeChild(ta);
+		return ok;
+	} catch (e) {
+		return false;
+	}
+};
+
 Alpine.start();
 
 // Bind the AJAX auth forms (login / forgot / reset).

@@ -1,11 +1,13 @@
 {{--
-	Bank-transfer details modal (BankDetailsCard) - shared by the dashboard
-	and the invoices page. Expects:
-	- $bank  array  bank-transfer details (PortalMockData::bankDetails())
+	Bank-transfer details modal (BankDetailsCard) - included by the invoices
+	page (the dashboard inlines an equivalent copy). Expects:
+	- $bank  array  bank-transfer details. CMS-sourced: PortalController builds
+	  it from web_sections global.bank.* (edited in rgadmin under WEBOLDALAK ->
+	  Ügyfélkapu -> Beállítások), with PortalMockData::bankDetails() as fallback.
 	Alpine state on an ancestor: bank (bool), bankAmount (string), bankRef (string).
 --}}
 <div class="p-modal-bg" x-show="bank" x-cloak @click="bank = false" x-transition.opacity>
-	<div class="p-modal" @click.stop>
+	<div class="p-modal p-modal-bank" @click.stop>
 		<div class="p-bank">
 			<div class="p-bank-head">
 				<div>
@@ -25,7 +27,9 @@
 					<div class="row">
 						<span class="lbl">{{ $label }}</span>
 						<span class="val">{{ $value }}</span>
-						<button type="button" class="copy" @click="navigator.clipboard && navigator.clipboard.writeText('{{ $value }}')" aria-label="Másolás">
+						<button type="button" class="copy" x-data="{ copied: false }" :class="{ 'is-copied': copied }"
+						        @click="ptCopy(@js($value)).then(ok => { if (ok) { copied = true; setTimeout(() => copied = false, 1400); } })"
+						        :aria-label="copied ? 'Másolva' : 'Másolás'">
 							<i data-lucide="copy" class="lucide-sm"></i>
 						</button>
 					</div>
@@ -33,14 +37,18 @@
 				<div class="row">
 					<span class="lbl">Közlemény</span>
 					<span class="val" x-text="bankRef"></span>
-					<button type="button" class="copy" @click="navigator.clipboard && navigator.clipboard.writeText(bankRef)" aria-label="Másolás">
+					<button type="button" class="copy" x-data="{ copied: false }" :class="{ 'is-copied': copied }"
+					        @click="ptCopy(bankRef).then(ok => { if (ok) { copied = true; setTimeout(() => copied = false, 1400); } })"
+					        :aria-label="copied ? 'Másolva' : 'Másolás'">
 						<i data-lucide="copy" class="lucide-sm"></i>
 					</button>
 				</div>
 				<div class="row">
 					<span class="lbl">Átutalandó összeg</span>
 					<span class="val" x-text="bankAmount"></span>
-					<button type="button" class="copy" @click="navigator.clipboard && navigator.clipboard.writeText(bankAmount)" aria-label="Másolás">
+					<button type="button" class="copy" x-data="{ copied: false }" :class="{ 'is-copied': copied }"
+					        @click="ptCopy(bankAmount).then(ok => { if (ok) { copied = true; setTimeout(() => copied = false, 1400); } })"
+					        :aria-label="copied ? 'Másolva' : 'Másolás'">
 						<i data-lucide="copy" class="lucide-sm"></i>
 					</button>
 				</div>
