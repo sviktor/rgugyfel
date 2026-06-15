@@ -21,7 +21,6 @@
 
 		<div class="p-tabs">
 			<button type="button" :class="{ on: tab === 'personal' }" @click="tab = 'personal'"><i data-lucide="user" class="lucide-xs"></i> Személyes adatok</button>
-			<button type="button" :class="{ on: tab === 'address' }" @click="tab = 'address'"><i data-lucide="home" class="lucide-xs"></i> Számlázási cím</button>
 			<button type="button" :class="{ on: tab === 'security' }" @click="tab = 'security'"><i data-lucide="shield" class="lucide-xs"></i> Jelszó & biztonság</button>
 			<button type="button" :class="{ on: tab === 'notif' }" @click="tab = 'notif'"><i data-lucide="bell" class="lucide-xs"></i> Értesítések</button>
 		</div>
@@ -31,7 +30,6 @@
 			<div class="p-section-title">
 				<div><div class="eyebrow">Személyes adatok</div><h3>Az Ön szerződéskötéskor megadott adatai</h3></div>
 			</div>
-			<p class="p-form-intro">Itt módosíthatja a Royal Telekom-mal való szerződéskötéskor megadott személyes adatait. A változtatások a következő számlán is megjelennek.</p>
 			<form class="p-profile-form" @submit.prevent="window.ptAlert({ variant: 'info', title: 'Adatok elmentve', message: 'Személyes adatait sikeresen elmentettük. A változások a következő számlán is megjelennek.' })">
 				<div class="p-field-row">
 					<div class="p-field"><label for="pf_last">Vezetéknév</label><input id="pf_last" class="rt-input" value="{{ $last }}"></div>
@@ -45,37 +43,7 @@
 					</div>
 					<div class="p-field"><label for="pf_phone">Telefonszám</label><input id="pf_phone" class="rt-input" type="tel" value="+36 30 555 0382"></div>
 				</div>
-				<div class="p-field-row">
-					<div class="p-field"><label for="pf_dob">Születési dátum</label><input id="pf_dob" class="rt-input" type="date" value="1985-04-22"></div>
-					<div class="p-field"><label for="pf_tax">Adóazonosító jel</label><input id="pf_tax" class="rt-input" value="8412345678"></div>
-				</div>
-				<div class="p-field"><label for="pf_bill">Számlázási név (ha eltér)</label><input id="pf_bill" class="rt-input" value="Kis Éva"></div>
-				<div class="p-profile-actions">
-					<button type="button" class="rt-btn rt-btn-secondary">Mégsem</button>
-					<button type="submit" class="rt-btn rt-btn-primary"><i data-lucide="check" class="lucide-xs"></i> Mentés</button>
-				</div>
-			</form>
-		</div>
-
-		{{-- ADDRESS --}}
-		<div class="p-card p-pad" x-show="tab === 'address'" x-cloak>
-			<div class="p-section-title">
-				<div><div class="eyebrow">Számlázási cím</div><h3>Hová állítjuk ki a számláit?</h3></div>
-			</div>
-			<form class="p-profile-form" @submit.prevent="window.ptAlert({ variant: 'info', title: 'Adatok elmentve', message: 'Számlázási címét sikeresen elmentettük. A következő számláját már az új címre állítjuk ki.' })">
-				<div class="p-field-row p-field-row--3">
-					<div class="p-field"><label for="ad_country">Ország</label><input id="ad_country" class="rt-input" value="Magyarország"></div>
-					<div class="p-field"><label for="ad_zip">Irányítószám</label><input id="ad_zip" class="rt-input" value="1037"></div>
-					<div class="p-field"><label for="ad_city">Város</label><input id="ad_city" class="rt-input" value="Budapest"></div>
-				</div>
-				<div class="p-field-row">
-					<div class="p-field"><label for="ad_street">Utca, házszám</label><input id="ad_street" class="rt-input" value="Aranyhegyi út 14."></div>
-					<div class="p-field"><label for="ad_floor">Emelet, ajtó</label><input id="ad_floor" class="rt-input" value="III/12."></div>
-				</div>
-				<label class="p-switch-terms">
-					<input type="checkbox" checked>
-					<span>A szállítási cím megegyezik a számlázási címmel.</span>
-				</label>
+				<div class="p-field"><label for="pf_dob">Születési dátum</label><input id="pf_dob" class="rt-input" type="date" value="1985-04-22"></div>
 				<div class="p-profile-actions">
 					<button type="button" class="rt-btn rt-btn-secondary">Mégsem</button>
 					<button type="submit" class="rt-btn rt-btn-primary"><i data-lucide="check" class="lucide-xs"></i> Mentés</button>
@@ -127,10 +95,6 @@
 			<div class="p-notif-list">
 				@php
 					$toggles = [
-						['Új számla - e-mailben', 'Minden új számla kiállításakor.', true],
-						['Új számla - SMS-ben', 'Rövid SMS az összegről és a határidőről.', false],
-						['Lejárt számla emlékeztető', 'Ha egy számla 3 napon belül esedékes vagy lejárt.', true],
-						['Szerződés-eseményei', 'Csomagváltás visszaigazolás, hűségidő lejárta.', true],
 						['Szolgáltatás-kimaradás', 'Tervezett karbantartás vagy hibajavítás.', true],
 						['Akciók és újdonságok', 'Csak a témánkba illő, nem kéretlen.', false],
 					];
@@ -160,8 +124,7 @@
 			</div>
 			<div class="p-account-meta">
 				<div><span>Ügyfél-azonosító</span><strong>#{{ $user['customerId'] }}</strong></div>
-				<div><span>Regisztráció</span><strong>2019. március 15.</strong></div>
-				<div><span>Utolsó belépés</span><strong>2026. május 5. · 14:12</strong></div>
+				<div><span>Regisztráció</span><strong>{{ $user['memberSince'] }}</strong></div>
 				<div><span>Aktív szerződések</span><strong>{{ $activeCount }} db</strong></div>
 			</div>
 		</div>

@@ -126,6 +126,7 @@ class PortalController extends Controller
 			$user['initials']   = $this->initials($user['name']);
 			$user['customerId'] = str_pad((string) $account->id, 5, '0', STR_PAD_LEFT);
 			$user['email']      = (string) $account->email;
+			$user['memberSince'] = optional($account->created_at)->locale('hu')->translatedFormat('Y. F j.') ?: $user['memberSince'];
 		}
 
 		// Real overdue-invoice badge once the account is linked to a CRM customer.
