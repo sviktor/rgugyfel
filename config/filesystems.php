@@ -47,6 +47,18 @@ return [
             'report' => false,
         ],
 
+        // Private invoice store, READ-ONLY here - the shared invoice files written
+        // by rgadmin's `invoices:sync`. Points at the same private ROOT as rgadmin
+        // (INVOICES_STORAGE_PATH); the portal streams a customer's own PDF only
+        // through the gated download route. No `url`, never symlinked.
+        'invoices' => [
+            'driver' => 'local',
+            'root' => env('INVOICES_STORAGE_PATH', storage_path('app/invoices')),
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

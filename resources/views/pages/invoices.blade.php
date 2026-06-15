@@ -74,9 +74,15 @@
 									<button type="button" class="rt-btn rt-btn-ghost p-btn-sm" @click="openInvoice = '{{ $inv['id'] }}'" aria-label="Megnyitás">
 										<i data-lucide="eye" class="lucide-sm"></i>
 									</button>
-									<button type="button" class="rt-btn rt-btn-ghost p-btn-sm" aria-label="PDF letöltés">
-										<i data-lucide="download" class="lucide-sm"></i>
-									</button>
+									@if (! empty($inv['downloadUrl']))
+										<a href="{{ $inv['downloadUrl'] }}" class="rt-btn rt-btn-ghost p-btn-sm" aria-label="PDF letöltés">
+											<i data-lucide="download" class="lucide-sm"></i>
+										</a>
+									@else
+										<button type="button" class="rt-btn rt-btn-ghost p-btn-sm" aria-label="PDF letöltés">
+											<i data-lucide="download" class="lucide-sm"></i>
+										</button>
+									@endif
 								</div>
 							</td>
 						</tr>
@@ -101,7 +107,11 @@
 					<div class="p-invoice-toolbar">
 						<button type="button" class="rt-btn rt-btn-ghost" @click="openInvoice = null"><i data-lucide="x" class="lucide-md"></i></button>
 						<div class="p-spacer"></div>
-						<button type="button" class="rt-btn rt-btn-secondary"><i data-lucide="download" class="lucide-xs"></i> PDF letöltés</button>
+						@if (! empty($inv['downloadUrl']))
+							<a href="{{ $inv['downloadUrl'] }}" class="rt-btn rt-btn-secondary"><i data-lucide="download" class="lucide-xs"></i> PDF letöltés</a>
+						@else
+							<button type="button" class="rt-btn rt-btn-secondary"><i data-lucide="download" class="lucide-xs"></i> PDF letöltés</button>
+						@endif
 						<button type="button" class="rt-btn rt-btn-secondary"><i data-lucide="printer" class="lucide-xs"></i> Nyomtatás</button>
 						@if ($unpaid)
 							<button type="button" class="rt-btn rt-btn-primary"

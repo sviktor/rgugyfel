@@ -51,6 +51,7 @@ Route::middleware(['auth:customer', 'customer.verified'])->group(function () {
 
 	Route::get('/',               [PortalController::class, 'dashboard'])->name('dashboard');
 	Route::get('/szamlak',        [PortalController::class, 'invoices'])->name('invoices');
+	Route::get('/szamlak/{id}/letoltes', [PortalController::class, 'invoiceDownload'])->whereNumber('id')->name('invoices.download');
 	Route::get('/szerzodeseim',   [PortalController::class, 'plans'])->name('plans');
 	Route::get('/forgalom',       [PortalController::class, 'usage'])->name('usage');
 	Route::get('/hibabejelentes', [PortalController::class, 'tickets'])->name('tickets');
