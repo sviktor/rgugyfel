@@ -44,17 +44,14 @@ class RegisterController extends Controller
 			'phone'     => 'required|string|max:50',
 			'birth_date' => 'nullable|date|before:today',
 			'contract_number' => 'nullable|string|max:50',
-			'zip'    => 'nullable|string|max:20',
-			'city'   => 'nullable|string|max:100',
-			'street' => 'nullable|string|max:150',
 			'password' => ['required', 'string', 'min:10', 'confirmed', 'regex:/[A-Z]/', 'regex:/[0-9]/'],
 			'accept'   => 'accepted',
 		], $this->messages(), $this->attributes());
 
-		// Identification (contract number + birth date, or address) is OPTIONAL:
-		// the customer can register without it and supply it later in the portal.
-		// A request row is created regardless (it lists as "Adatokra vár" in
-		// rgadmin until the contract number + birth date are given).
+		// Identification (contract number + birth date) is OPTIONAL: the customer
+		// can register without it and supply it later in the portal. A request row
+		// is created regardless (it lists as "Adatokra vár" in rgadmin until the
+		// contract number + birth date are given).
 
 		// reCAPTCHA (registration form only).
 		if (! Recaptcha::verify($request)) {
@@ -75,9 +72,6 @@ class RegisterController extends Controller
 			'cus_users_id'    => $user->id,
 			'contract_number' => $data['contract_number'] ?? null,
 			'birth_date'      => $data['birth_date'],
-			'zip'             => $data['zip'] ?? null,
-			'city'            => $data['city'] ?? null,
-			'street'          => $data['street'] ?? null,
 			'status'          => 'pending',
 		]);
 
@@ -143,9 +137,6 @@ class RegisterController extends Controller
 			'phone'           => 'telefonszám',
 			'birth_date'      => 'születési dátum',
 			'contract_number' => 'szerződésszám',
-			'zip'             => 'irányítószám',
-			'city'            => 'település',
-			'street'          => 'utca, házszám',
 			'password'        => 'jelszó',
 		];
 	}

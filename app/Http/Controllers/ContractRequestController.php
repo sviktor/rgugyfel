@@ -5,15 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\ContractRequest;
 use App\Support\SiteContent;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * ContractRequestController - the logged-in dashboard "Szerződés hozzárendelése"
- * form. Files a PENDING cus_contract_requests row (staff approve it in rgadmin),
- * then returns to the dashboard with a confirmation shown in the ptAlert
- * lightbox (the session `pt_alert` flash bridge).
+ * ContractRequestController - the logged-in "Szerződés hozzárendelése" form
+ * (shared by the dashboard and the Szerződéseim page). Files a PENDING
+ * cus_contract_requests row (staff approve it in rgadmin).
+ *
+ * The form posts via AJAX (the portal's `data-auth-form` mechanism in
+ * resources/js/auth-forms.js): a 422 surfaces the validation errors in the
+ * ptAlert lightbox in place, while a success hands back a `redirect` target so
+ * the browser reloads the originating page - the `pt_alert` flash then fires the
+ * confirmation modal AND the card re-renders with the freshly filed pending
+ * request.
  *
  * If the account still has an INCOMPLETE pending request (e.g. the empty row
  * created when the customer registered without identification data), this form
@@ -23,9 +29,9 @@ use Illuminate\Support\Facades\Auth;
 class ContractRequestController extends Controller
 {
 	/**
-	 * @example  POST /szerzodes-igenyles  ->  redirect back to the dashboard
+	 * @example  POST /szerzodes-igenyles  ->  {redirect: '/'} (+ pt_alert flash)
 	 */
-	public function store(Request $request): RedirectResponse
+	public function store(Request $request): JsonResponse
 	{
 		$data = $request->validate([
 			'contract_number' => 'required|string|max:50',
@@ -64,15 +70,40 @@ class ContractRequestController extends Controller
 
 		// Confirmation copy is operator-editable in rgadmin (WEBOLDALAK ->
 		// Ügyfélkapu -> Főoldal -> Szerződés hozzárendelése); fall back to the
-		// built-in text before the editor is first opened.
+		// built-in text before the editor is first opened. Flashed for the
+		// reloaded page's ptAlert bridge.
 		$cms = app(SiteContent::class);
 
-		return redirect()->route('dashboard')->with('pt_alert', [
+		$request->session()->flash('pt_alert', [
 			'variant' => 'success',
 			'title'   => $cms->get('home.add_contract.confirm_title') ?: 'Kérelmét rögzítettük',
 			'message' => $cms->get('home.add_contract.confirm_message')
 				?: 'A szerződés-hozzárendelési kérelmét továbbítottuk munkatársaink részére. '
 					. 'A jóváhagyás 1-2 munkanapon belül megtörténik, az eredményről e-mailben értesítjük.',
 		]);
+
+		return response()->json(['redirect' => $this->returnTo($request)]);
+	}
+
+	/**
+	 * Resolve the page to reload after a successful submit. The form passes its
+	 * own URL in `return_to`; we only honour it when it is one of the two pages
+	 * the card lives on (dashboard / Szerződéseim), so the value can never become
+	 * an open redirect. Anything else falls back to the dashboard.
+	 *
+	 * @example  $this->returnTo($request) // route('plans') when posted from /szerzodeseim
+	 */
+	private function returnTo(Request $request): string
+	{
+		$target = (string) $request->input('return_to', '');
+
+		foreach (['dashboard', 'plans'] as $name) {
+			$url = route($name);
+			if ($target === $url || $target === rtrim($url, '/')) {
+				return $url;
+			}
+		}
+
+		return route('dashboard');
 	}
 }

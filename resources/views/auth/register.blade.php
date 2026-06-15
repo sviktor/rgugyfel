@@ -3,8 +3,8 @@
 	The 3-step wizard is a client-side Alpine component (registerWizard, in
 	resources/js/auth-forms.js): step state + per-step validation shown in the
 	ptAlert lightbox. The final step POSTs everything via AJAX (window.authSubmit)
-	to RegisterController::store. Step 2 = birth date + (contract number OR full
-	address); step 3 carries the reCAPTCHA.
+	to RegisterController::store. Step 2 = contract number + birth date (both
+	optional, the only identification path); step 3 carries the reCAPTCHA.
 --}}
 @extends('layouts.auth')
 
@@ -50,12 +50,12 @@
 			</div>
 		</div>
 
-		{{-- Step 2 - identification (OPTIONAL): contract number + birth date, or address --}}
+		{{-- Step 2 - identification (OPTIONAL): contract number + birth date --}}
 		<div class="p-auth-form-grid" x-show="step === 2" x-cloak>
 			<p class="hint">
 				Az azonosítás <strong>nem kötelező</strong> - megadhatja most, vagy később az
 				Ügyfélkapuban. A szerződéséhez akkor tudjuk kötni a fiókját, ha megadja a
-				szerződésszámát és születési dátumát (vagy a teljes lakcímét).
+				szerződésszámát és a szerződő születési dátumát.
 			</p>
 			<div class="p-field">
 				<label>Szerződésszám <span class="p-label-opt">(nem kötelező)</span></label>
@@ -66,23 +66,6 @@
 				<label>Születési dátum <span class="p-label-opt">(nem kötelező)</span></label>
 				<input class="rt-input" type="date" name="birth_date" value="{{ old('birth_date') }}">
 				<span class="hint">A szerződő születési dátuma - a szerződésszámmal együtt az azonosításhoz.</span>
-			</div>
-			<div class="p-auth-or">
-				<span></span> vagy a teljes lakcímmel <span></span>
-			</div>
-			<div class="p-field-row">
-				<div class="p-field">
-					<label>Irányítószám</label>
-					<input class="rt-input" name="zip" value="{{ old('zip') }}" placeholder="1037">
-				</div>
-				<div class="p-field">
-					<label>Település</label>
-					<input class="rt-input" name="city" value="{{ old('city') }}" placeholder="Budapest">
-				</div>
-			</div>
-			<div class="p-field">
-				<label>Utca, házszám</label>
-				<input class="rt-input" name="street" value="{{ old('street') }}" placeholder="Aranyhegyi út 14.">
 			</div>
 		</div>
 

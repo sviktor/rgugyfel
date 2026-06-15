@@ -6,9 +6,11 @@
  *   - 200 + {redirect}        -> navigate there (login/register/forgot/reset all
  *                                hand back a redirect target).
  *   - 200 (no redirect)       -> success ptAlert.
- *   - 422 {title?, message?}  -> error ptAlert (a single message), OR
- *   - 422 {errors:{...}}      -> error ptAlert listing every message (one per
- *                                line; .pt-alert p has white-space: pre-line).
+ *   - 422 {errors:{...}}      -> error ptAlert listing EVERY message (one per
+ *                                line; .pt-alert p has white-space: pre-line) -
+ *                                preferred over the truncated Laravel `message`.
+ *   - 422 {title?, message?}  -> error ptAlert with the single message (only when
+ *                                there are no field-level errors).
  *
  * The register wizard is NOT a data-auth-form (it manages its own steps), so it
  * calls window.authSubmit(form, button) once the final step validates.
@@ -49,12 +51,15 @@ async function authSubmit(form, btn) {
 			return;
 		}
 
+		// List EVERY validation error (one per line), never Laravel's truncated
+		// `message` ("first error (and N more errors)"). Fall back to a bare
+		// `message` only when there are no field-level errors (e.g. a custom error).
 		let message = 'Kérjük, ellenőrizze a megadott adatokat.';
-		if (data && data.message) {
+		const list = data && data.errors ? Object.values(data.errors).flat() : [];
+		if (list.length) {
+			message = list.join('\n');
+		} else if (data && data.message) {
 			message = data.message;
-		} else if (data && data.errors) {
-			const list = Object.values(data.errors).flat();
-			if (list.length) message = list.join('\n');
 		}
 		window.ptAlert({
 			variant: 'error',

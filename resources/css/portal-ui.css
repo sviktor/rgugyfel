@@ -188,12 +188,45 @@
 	padding: 0 26px 24px;
 }
 
+/* ptAlert lightbox: preserve the newlines in multi-error messages so every
+   validation error shows on its own line (authSubmit joins them with "\n",
+   set via textContent). The design bundle's .pt-alert p has no white-space
+   rule, so without this the line breaks collapse to spaces. */
+.pt-alert p {
+	white-space: pre-line;
+}
+
 /* Dashboard: add-contract intro paragraph */
 .p-contract-intro {
 	color: var(--p-fg-2);
 	font-size: 14px;
 	line-height: 1.65;
 	margin: 0 0 18px;
+}
+
+/* Add-contract card: pending requests listed above the form */
+.p-pending {
+	margin: 0 0 20px;
+}
+
+.p-pending-label {
+	font-family: var(--rt-font-display);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: .22em;
+	text-transform: uppercase;
+	color: var(--rt-gold-700);
+	margin-bottom: 10px;
+}
+
+.p-contract-form-label {
+	font-family: var(--rt-font-display);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: .22em;
+	text-transform: uppercase;
+	color: var(--p-fg-3);
+	margin-bottom: 12px;
 }
 
 /* Small confirmation modal (add-contract) - reuses the plan-switch "done" panel */

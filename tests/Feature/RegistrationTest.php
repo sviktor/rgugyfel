@@ -49,18 +49,25 @@ class RegistrationTest extends FeatureTestCase
 		$this->assertNotSame('Password123', $user->password);
 	}
 
-	public function test_address_path_is_accepted_without_a_birth_date(): void
+	public function test_legacy_address_fields_are_ignored(): void
 	{
-		// Full address -> birth date is NOT required.
+		// Address-based identification was removed. Posting the old zip/city/street
+		// keys is harmless (ignored, never stored); the request is created with no
+		// identification (it lists as "Adatokra vár" in rgadmin until the contract
+		// number + birth date come).
 		$this->postJson(route('register.submit'), $this->payload([
 			'contract_number' => null,
 			'birth_date'      => null,
 			'zip'             => '1037',
 			'city'            => 'Budapest',
 			'street'          => 'Aranyhegyi út 14.',
-		]))->assertOk();
+		]))->assertOk()->assertJsonPath('redirect', route('register.verify.notice'));
 
-		$this->assertDatabaseHas('cus_contract_requests', ['city' => 'Budapest', 'status' => 'pending']);
+		$this->assertDatabaseHas('cus_contract_requests', [
+			'contract_number' => null,
+			'birth_date'      => null,
+			'status'          => 'pending',
+		]);
 	}
 
 	public function test_registration_succeeds_without_any_identification(): void
