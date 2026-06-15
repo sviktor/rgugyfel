@@ -125,10 +125,10 @@
 							<div>
 								<img class="p-invoice-logo" src="{{ asset('assets/royaltelekom-logo.svg') }}" alt="">
 								<div class="addr">
-									<strong>Royal Telekom Kft.</strong><br>
-									1145 Budapest, Aranyhegyi út 14.<br>
-									Adószám: 12345678-2-42<br>
-									Cégjegyzékszám: 01-09-123456
+									<strong>{{ $cms->get('global.company.name') ?: 'Royal Telekom Kft.' }}</strong><br>
+									{{ $cms->get('global.company.address') ?: '1145 Budapest, Aranyhegyi út 14.' }}<br>
+									Adószám: {{ $cms->get('global.company.tax_number') ?: '12345678-2-42' }}<br>
+									Cégjegyzékszám: {{ $cms->get('global.company.reg_number') ?: '01-09-123456' }}
 								</div>
 							</div>
 							<div class="meta">
@@ -186,7 +186,7 @@
 						</div>
 
 						<div class="foot">
-							<strong>Fizetési mód:</strong> banki átutalás · Royal Telekom Kft. · IBAN {{ $bank['iban'] }} · Közlemény: <strong>{{ $inv['id'] }}</strong>
+							<strong>Fizetési mód:</strong> banki átutalás · {{ $cms->get('global.company.name') ?: 'Royal Telekom Kft.' }} · IBAN {{ $bank['iban'] }} · Közlemény: <strong>{{ $inv['id'] }}</strong>
 						</div>
 					</div>
 				</div>
