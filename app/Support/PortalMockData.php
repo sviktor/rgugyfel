@@ -289,14 +289,12 @@ final class PortalMockData
 	{
 		return [
 			['id' => 'n1', 'icon' => 'receipt', 'tone' => 'danger', 'title' => 'Lejárt számla', 'body' => 'Az RT-2026-0412 számla fizetési határideje lejárt. Kérjük, rendezze mielőbb.', 'time' => 'Ma · 08:14', 'route' => 'invoices', 'read' => false],
-			['id' => 'n2', 'icon' => 'alert-circle', 'tone' => 'warn', 'title' => 'Hibajegy frissült', 'body' => 'Ügyintézőnk válaszolt a nyitott hibabejelentésére.', 'time' => 'Ma · 07:52', 'route' => 'tickets', 'read' => false],
 			['id' => 'n3', 'icon' => 'receipt', 'tone' => 'gold', 'title' => 'Új számla érkezett', 'body' => 'Kiállítottuk május havi számláját. Esedékesség: május 15.', 'time' => 'Tegnap · 16:40', 'route' => 'invoices', 'read' => false],
 			['id' => 'n4', 'icon' => 'wifi', 'tone' => 'neutral', 'title' => 'Tervezett karbantartás', 'body' => 'Május 12-én 02:00-04:00 között rövid szünet várható a szolgáltatásban.', 'time' => 'Tegnap · 11:20', 'route' => 'dashboard', 'read' => false],
 			['id' => 'n5', 'icon' => 'package', 'tone' => 'neutral', 'title' => 'Csomagváltási kérelem', 'body' => 'Kérelmét rögzítettük, munkatársunk hamarosan feldolgozza.', 'time' => 'máj. 3.', 'route' => 'plans', 'read' => true],
 			['id' => 'n6', 'icon' => 'check-circle', 'tone' => 'success', 'title' => 'Sikeres befizetés', 'body' => 'Az RT-2026-0398 számla befizetését jóváírtuk. Köszönjük!', 'time' => 'máj. 2.', 'route' => 'invoices', 'read' => true],
 			['id' => 'n7', 'icon' => 'file-text', 'tone' => 'neutral', 'title' => 'Új dokumentum', 'body' => 'Szerződés-módosítása elérhető a Dokumentumok menüben.', 'time' => 'ápr. 28.', 'route' => 'docs', 'read' => true],
 			['id' => 'n8', 'icon' => 'info', 'tone' => 'neutral', 'title' => 'ÁSZF módosítás', 'body' => '2026. június 1-től frissül az Általános Szerződési Feltételek.', 'time' => 'ápr. 24.', 'route' => 'docs', 'read' => true],
-			['id' => 'n9', 'icon' => 'activity', 'tone' => 'neutral', 'title' => 'Sebességmérés eredménye', 'body' => 'Legutóbbi mérése: 980/495 Mbit/s - minden rendben.', 'time' => 'ápr. 20.', 'route' => 'usage', 'read' => true],
 			['id' => 'n10', 'icon' => 'user', 'tone' => 'neutral', 'title' => 'Profil adat módosítva', 'body' => 'E-mail címét sikeresen frissítettük.', 'time' => 'ápr. 15.', 'route' => 'profile', 'read' => true],
 		];
 	}

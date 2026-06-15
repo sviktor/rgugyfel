@@ -22,12 +22,11 @@
 		$due      = array_merge($overdue, $pending);
 		$totalDue = array_sum(array_column($due, 'amount'));
 		$upcoming = $pending[0] ?? ($overdue[0] ?? null);
-		$ticket   = collect($tickets)->firstWhere('status', 'open');
 
 		$ref = $bank['ref'];
 	@endphp
 
-	<div class="p-page" x-data="{ bank: false, bankAmount: '', bankRef: '{{ $ref }}', addConfirm: false }">
+	<div class="p-page" x-data="{ bank: false, bankAmount: '', bankRef: '{{ $ref }}' }">
 
 		{{-- FINANCIAL HERO --}}
 		<div class="p-hero-fin {{ count($overdue) ? 'has-overdue' : '' }}">
@@ -88,6 +87,9 @@
 				@endforelse
 			</div>
 		</div>
+
+		{{-- ADD CONTRACT (Szerződés hozzárendelése) - directly under the financial overview --}}
+		@include('partials._add-contract')
 
 		{{-- BANK-TRANSFER MODAL --}}
 		<div class="p-modal-bg" x-show="bank" x-cloak @click="bank = false" x-transition.opacity>
@@ -154,67 +156,6 @@
 			</div>
 		</div>
 
-		{{-- SECONDARY GRID: active ticket + quick actions --}}
-		<div class="p-grid-2">
-
-			<div class="p-card">
-				<div class="p-dash-tickethead">
-					<div class="p-section-title">
-						<div>
-							<div class="eyebrow">Hibabejelentés</div>
-							<h3>Aktuális ügyei</h3>
-						</div>
-						<a href="{{ route('tickets') }}" class="link">Összes →</a>
-					</div>
-				</div>
-				@if ($ticket)
-					<div class="p-dash-ticketbody">
-						<div class="p-ticket-mini">
-							<div class="num">#{{ $ticket['id'] }}</div>
-							<div class="title">{{ $ticket['subject'] }}</div>
-							<div class="meta">
-								@if ($ticket['priority'] === 'high')
-									<span class="p-badge p-badge-danger">Magas prioritás</span>
-								@else
-									<span class="p-badge p-badge-warn">Normál</span>
-								@endif
-								<span>Megnyitva {{ $dago($ticket['opened']) }} napja</span>
-								<span>·</span>
-								<span>{{ count($ticket['messages']) }} üzenet</span>
-							</div>
-							<p>{{ $ticket['lastMessage'] }}</p>
-							<a href="{{ route('tickets') }}" class="rt-btn rt-btn-secondary">
-								Részletek megnyitása <i data-lucide="arrow-right" class="lucide-xs"></i>
-							</a>
-						</div>
-					</div>
-				@else
-					<div class="p-dash-ticketempty">
-						<div class="p-empty">
-							<div class="ico"><i data-lucide="check-circle" class="lucide-xl"></i></div>
-							<h4>Nincs nyitott hibajegy</h4>
-							<p>Ha problémát észlel, jelentse be itt.</p>
-						</div>
-					</div>
-				@endif
-			</div>
-
-			<div class="p-card p-pad">
-				<div class="p-section-title">
-					<div>
-						<div class="eyebrow">Gyors műveletek</div>
-						<h3>Mit szeretne tenni?</h3>
-					</div>
-				</div>
-				<div class="p-quick">
-					<a href="{{ route('tickets') }}"><i data-lucide="alert-circle" class="lucide-md"></i> <span>Új hibabejelentés</span><i data-lucide="arrow-right" class="lucide-xs arr"></i></a>
-					<a href="{{ route('usage') }}"><i data-lucide="activity" class="lucide-md"></i> <span>Sebességmérés</span><i data-lucide="arrow-right" class="lucide-xs arr"></i></a>
-					<a href="{{ route('docs') }}"><i data-lucide="file-text" class="lucide-md"></i> <span>Szerződés letöltése</span><i data-lucide="arrow-right" class="lucide-xs arr"></i></a>
-				</div>
-			</div>
-
-		</div>
-
 		{{-- CONTRACTS LIST --}}
 		<div class="p-card p-pad">
 			<div class="p-section-title">
@@ -258,55 +199,6 @@
 						</div>
 					</div>
 				@endforeach
-			</div>
-		</div>
-
-		{{-- ADD CONTRACT --}}
-		<div class="p-card p-pad">
-			<div class="p-section-title">
-				<div>
-					<div class="eyebrow">Új szerződés</div>
-					<h3>Szerződés hozzárendelése</h3>
-				</div>
-			</div>
-			<p class="p-contract-intro">
-				Egy fiókhoz korlátlan számú szerződés tartozhat - például egy másik ingatlan vagy hozzátartozó szolgáltatása.
-				Adja meg a szerződésszámot és a szerződő születési dátumát. <strong>A hozzárendelés egy kérelem,
-				amelyet munkatársaink jóváhagynak.</strong>
-			</p>
-			<form class="p-contract-form" method="POST" action="{{ route('contract.request') }}">
-				@csrf
-				<div class="p-field">
-					<label for="ac_num">Szerződésszám</label>
-					<input id="ac_num" name="contract_number" class="rt-input" required placeholder="SV00-00000">
-				</div>
-				<div class="p-field">
-					<label for="ac_dob">Születési dátum</label>
-					<input id="ac_dob" name="birth_date" class="rt-input" type="date" required>
-				</div>
-				<button type="submit" class="rt-btn rt-btn-primary">
-					<i data-lucide="send" class="lucide-sm"></i> Kérelem beküldése
-				</button>
-			</form>
-		</div>
-
-		{{-- ADD-CONTRACT CONFIRMATION --}}
-		<div class="p-modal-bg" x-show="addConfirm" x-cloak @click="addConfirm = false" x-transition.opacity>
-			<div class="p-modal p-modal--sm" @click.stop>
-				<div class="p-switch-done p-addconfirm">
-					<div class="check p-check-gold"><i data-lucide="send" class="lucide-2xl"></i></div>
-					<h4>Kérelmét rögzítettük.</h4>
-					<p>
-						A szerződés-hozzárendelési kérelmét továbbítottuk munkatársaink részére.
-						A jóváhagyás <strong>1-2 munkanapon belül</strong> megtörténik, az eredményről e-mailben értesítjük.
-						Addig a szerződés <em>„Jóváhagyásra vár"</em> státuszban jelenik meg a Szerződéseim oldalon.
-					</p>
-					<div class="summary">
-						<div><span>Beküldve</span><strong>{{ $fdate('2026-05-05') }}</strong></div>
-						<div><span>Státusz</span><strong>Jóváhagyásra vár</strong></div>
-					</div>
-					<button type="button" class="rt-btn rt-btn-primary rt-btn-large" @click="addConfirm = false">Bezárás</button>
-				</div>
 			</div>
 		</div>
 

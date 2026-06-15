@@ -9,8 +9,6 @@
 		'dashboard' => 'Főoldal',
 		'invoices'  => 'Számláim',
 		'plans'     => 'Szerződéseim',
-		'usage'     => 'Forgalom & sebesség',
-		'tickets'   => 'Hibabejelentés',
 		'docs'      => 'Dokumentumok',
 		'profile'   => 'Profil & beállítások',
 	];

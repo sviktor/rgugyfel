@@ -33,7 +33,6 @@ class PortalController extends Controller
 		return view('pages.dashboard', $this->commonContext() + [
 			'invoices'  => $cid > 0 ? WebInvoices::forCustomer($cid) : PortalMockData::invoices(),
 			'contracts' => PortalMockData::contracts(),
-			'tickets'   => PortalMockData::tickets(),
 			'bank'      => $this->bankDetails(),
 		]);
 	}
@@ -79,31 +78,6 @@ class PortalController extends Controller
 		return view('pages.plans', $this->commonContext() + [
 			'contracts' => PortalMockData::contracts(),
 			'plans'     => PortalMockData::availablePlans(),
-		]);
-	}
-
-	/**
-	 * Usage / speed (Forgalom & sebesség) - /forgalom  [stub by design]
-	 *
-	 * @example GET /forgalom -> PortalController::usage()
-	 */
-	public function usage(): View
-	{
-		return view('pages.stub', $this->commonContext() + [
-			'title' => 'Forgalom és sebességmérés',
-			'body'  => 'Itt fogja látni az aktuális hónap adatforgalmát, a sebességmérési eredményeit és a hálózati statisztikákat. A funkció hamarosan elérhető.',
-		]);
-	}
-
-	/**
-	 * Support / tickets (Hibabejelentés) - /hibabejelentes
-	 *
-	 * @example GET /hibabejelentes -> PortalController::tickets()
-	 */
-	public function tickets(): View
-	{
-		return view('pages.tickets', $this->commonContext() + [
-			'tickets' => PortalMockData::tickets(),
 		]);
 	}
 

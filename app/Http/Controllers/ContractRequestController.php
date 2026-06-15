@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ContractRequest;
+use App\Support\SiteContent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -61,11 +62,17 @@ class ContractRequestController extends Controller
 			]);
 		}
 
+		// Confirmation copy is operator-editable in rgadmin (WEBOLDALAK ->
+		// Ügyfélkapu -> Főoldal -> Szerződés hozzárendelése); fall back to the
+		// built-in text before the editor is first opened.
+		$cms = app(SiteContent::class);
+
 		return redirect()->route('dashboard')->with('pt_alert', [
 			'variant' => 'success',
-			'title'   => 'Kérelmét rögzítettük',
-			'message' => 'A szerződés-hozzárendelési kérelmét továbbítottuk munkatársaink részére. '
-				. 'A jóváhagyás 1-2 munkanapon belül megtörténik, az eredményről e-mailben értesítjük.',
+			'title'   => $cms->get('home.add_contract.confirm_title') ?: 'Kérelmét rögzítettük',
+			'message' => $cms->get('home.add_contract.confirm_message')
+				?: 'A szerződés-hozzárendelési kérelmét továbbítottuk munkatársaink részére. '
+					. 'A jóváhagyás 1-2 munkanapon belül megtörténik, az eredményről e-mailben értesítjük.',
 		]);
 	}
 }
