@@ -26,6 +26,9 @@
 	<div class="p-page"
 	     x-data="{ sw: false, swStep: 1, swCat: 'internet', swCName: '', swCMonthly: 0, swPlan: null, swPlanName: '', swPlanMonthly: 0 }">
 
+		{{-- ADD CONTRACT (Szerződés hozzárendelése) - at the very top of Szerződéseim --}}
+		@include('partials._add-contract')
+
 		{{-- CURRENT CONTRACTS --}}
 		<div class="p-card p-pad">
 			<div class="p-section-title">
