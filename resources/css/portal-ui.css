@@ -432,3 +432,29 @@
 	white-space: pre-line;
 	min-width: 280px;
 }
+
+/* Print: the "Nyomtatás" button (window.print) prints ONLY the open invoice
+   preview's paper. Closed invoice modals are display:none (x-show) so they
+   never paint; the open paper is pinned to the page top and everything else is
+   hidden. Single-page invoices print cleanly. */
+@media print {
+	body * {
+		visibility: hidden !important;
+	}
+	.p-modal-bg .p-invoice-paper,
+	.p-modal-bg .p-invoice-paper * {
+		visibility: visible !important;
+	}
+	.p-invoice-toolbar {
+		display: none !important;
+	}
+	.p-modal-bg .p-invoice-paper {
+		position: fixed !important;
+		left: 0;
+		top: 0;
+		right: 0;
+		margin: 0 !important;
+		max-width: 100% !important;
+		box-shadow: none !important;
+	}
+}

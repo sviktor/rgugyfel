@@ -122,7 +122,7 @@
 						@else
 							<button type="button" class="rt-btn rt-btn-secondary"><i data-lucide="download" class="lucide-xs"></i> PDF letöltés</button>
 						@endif
-						<button type="button" class="rt-btn rt-btn-secondary"><i data-lucide="printer" class="lucide-xs"></i> Nyomtatás</button>
+						<button type="button" class="rt-btn rt-btn-secondary" @click="window.print()"><i data-lucide="printer" class="lucide-xs"></i> Nyomtatás</button>
 						@if ($unpaid)
 							<button type="button" class="rt-btn rt-btn-primary"
 							        @click="bank = true; bankAmount = '{{ $fmt($owed($inv)) }}'; bankRef = '{{ $inv['id'] }}'; openInvoice = null">
