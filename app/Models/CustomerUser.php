@@ -31,8 +31,8 @@ class CustomerUser extends Authenticatable
 	protected $table = 'cus_users';
 
 	protected $fillable = [
-		'customers_id', 'name', 'email', 'phone', 'password',
-		'email_verified_at', 'locked_until', 'status',
+		'customers_id', 'name', 'email', 'phone', 'birth_date', 'password',
+		'email_verified_at', 'locked_until', 'status', 'settings',
 	];
 
 	protected $hidden = [
@@ -44,8 +44,10 @@ class CustomerUser extends Authenticatable
 		return [
 			'email_verified_at' => 'datetime',
 			'locked_until'      => 'datetime',
+			'birth_date'        => 'date',
 			'password'          => 'hashed',
 			'status'            => 'integer',
+			'settings'          => 'array',
 		];
 	}
 

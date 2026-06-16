@@ -20,7 +20,10 @@
 		$overdue  = array_values(array_filter($invoices, fn ($i) => $i['status'] === 'overdue'));
 		$pending  = array_values(array_filter($invoices, fn ($i) => $i['status'] === 'pending'));
 		$due      = array_merge($overdue, $pending);
-		$totalDue = array_sum(array_column($due, 'amount'));
+		// The still-owed amount per invoice ('outstanding' = gross minus any
+		// recorded partial payment); the mock fallback has no such key.
+		$owed     = fn ($i) => $i['outstanding'] ?? $i['amount'];
+		$totalDue = array_sum(array_map($owed, $due));
 		$upcoming = $pending[0] ?? ($overdue[0] ?? null);
 
 		$ref = $bank['ref'];
@@ -28,6 +31,7 @@
 
 	<div class="p-page" x-data="{ bank: false, bankAmount: '', bankRef: '{{ $ref }}' }">
 
+		@if ($linked)
 		{{-- FINANCIAL HERO --}}
 		<div class="p-hero-fin {{ count($overdue) ? 'has-overdue' : '' }}">
 			<div class="p-hero-fin-side">
@@ -65,7 +69,12 @@
 							<div class="id">{{ $inv['id'] }}</div>
 							<div class="period">{{ $inv['period'] }}</div>
 						</div>
-						<div class="amt">{{ $fmt($inv['amount']) }}</div>
+						<div class="amt">
+							{{ $fmt($owed($inv)) }}
+							@if ($owed($inv) < $inv['amount'])
+								<span class="p-partial">részben rendezve</span>
+							@endif
+						</div>
 						<div class="state">
 							@if ($inv['status'] === 'overdue')
 								<span class="p-badge p-badge-danger">Lejárt {{ $dago($inv['due']) }} napja</span>
@@ -74,7 +83,7 @@
 							@endif
 						</div>
 						<button type="button" class="pay"
-						        @click="bank = true; bankAmount = '{{ $fmt($inv['amount']) }}'; bankRef = '{{ $inv['id'] }}'">
+						        @click="bank = true; bankAmount = '{{ $fmt($owed($inv)) }}'; bankRef = '{{ $inv['id'] }}'">
 							<i data-lucide="credit-card" class="lucide-xs"></i> Kifizetem
 						</button>
 					</div>
@@ -87,10 +96,24 @@
 				@endforelse
 			</div>
 		</div>
+		@else
+			{{-- Account not yet linked to a customer (pending approval): only the
+			     contract-assignment card makes sense here, no customer data. --}}
+			<div class="p-card p-pad">
+				<div class="p-section-title">
+					<div>
+						<div class="eyebrow">Üdvözöljük az Ügyfélkapun</div>
+						<h3>Rendelje a szerződését a fiókjához</h3>
+					</div>
+				</div>
+				<p class="p-form-intro">Fiókja még nincs összekötve ügyfél-szerződéssel. Az alábbi űrlapon adja meg a szerződésszámát és születési dátumát - munkatársunk 1-2 munkanapon belül jóváhagyja. Ezt követően itt látja majd a számláit, szerződéseit és pénzügyi áttekintését.</p>
+			</div>
+		@endif
 
-		{{-- ADD CONTRACT (Szerződés hozzárendelése) - directly under the financial overview --}}
+		{{-- ADD CONTRACT (Szerződés hozzárendelése) --}}
 		@include('partials._add-contract')
 
+		@if ($linked)
 		{{-- BANK-TRANSFER MODAL --}}
 		<div class="p-modal-bg" x-show="bank" x-cloak @click="bank = false" x-transition.opacity>
 			<div class="p-modal p-modal-bank" @click.stop>
@@ -201,6 +224,7 @@
 				@endforeach
 			</div>
 		</div>
+		@endif
 
 	</div>
 

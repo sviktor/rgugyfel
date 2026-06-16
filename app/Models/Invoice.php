@@ -38,10 +38,13 @@ class Invoice extends Model
 		'due_date'       => 'date',
 		'period_start'   => 'date',
 		'period_end'     => 'date',
+		'net'            => 'decimal:2',
+		'vat'            => 'decimal:2',
 		'gross'          => 'decimal:2',
 		'paid'           => 'integer',
 		'has_pdf'        => 'integer',
 		'has_xml'        => 'integer',
+		'xml_data'       => 'array',
 	];
 
 	/**

@@ -3,14 +3,18 @@
 	NAV groups + items mirror portal-app.jsx NAV constant.
 --}}
 @php
+	// `linked` = the account is bound to a CRM customer. The customer-only groups
+	// (Pénzügy / Szolgáltatásaim) are hidden until then - an unlinked account can
+	// only request contract assignment from the dashboard.
+	$linked = $linked ?? false;
 	$nav = [
 		['group' => 'Áttekintés', 'items' => [
 			['route' => 'dashboard', 'label' => 'Főoldal',                 'icon' => 'home'],
 		]],
-		['group' => 'Pénzügy', 'items' => [
+		['group' => 'Pénzügy', 'linked' => true, 'items' => [
 			['route' => 'invoices',  'label' => 'Számláim',                'icon' => 'receipt',       'badge' => $badges['invoices'] ?? null],
 		]],
-		['group' => 'Szolgáltatásaim', 'items' => [
+		['group' => 'Szolgáltatásaim', 'linked' => true, 'items' => [
 			['route' => 'plans',     'label' => 'Szerződéseim',            'icon' => 'package'],
 		]],
 		['group' => 'Ügyintézés', 'items' => [
@@ -38,6 +42,7 @@
 
 	<nav>
 		@foreach ($nav as $group)
+			@continue (! empty($group['linked']) && ! $linked)
 			<div class="group-title">{{ $group['group'] }}</div>
 			@foreach ($group['items'] as $item)
 				<a href="{{ route($item['route']) }}" class="{{ $current === $item['route'] ? 'active' : '' }}">

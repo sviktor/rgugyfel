@@ -54,7 +54,7 @@
 					</button>
 				</div>
 				<div class="list">
-					@foreach (array_slice($notifs, 0, 10) as $n)
+					@forelse (array_slice($notifs, 0, 10) as $n)
 						<a href="{{ route($n['route']) }}" class="item {{ empty($n['read']) ? 'unread' : '' }}">
 							<span class="ico" data-tone="{{ $n['tone'] }}"><i data-lucide="{{ $n['icon'] }}" class="lucide-sm"></i></span>
 							<span class="txt">
@@ -66,7 +66,9 @@
 								<span class="unread-dot"></span>
 							@endif
 						</a>
-					@endforeach
+					@empty
+						<div class="p-bell-empty">Nincs új értesítés.</div>
+					@endforelse
 				</div>
 			</div>
 		</div>

@@ -41,6 +41,10 @@ class AppServiceProvider extends ServiceProvider
                 ? $user->contractRequests()->where('status', 'pending')->orderByDesc('id')->get()
                     ->filter->isComplete()->values()
                 : collect());
+
+            // Prefill the contract-request birth_date from the account's own DOB
+            // (entered on Profil) when set, so the customer does not retype it.
+            $view->with('accountBirthDate', optional($user?->birth_date)->format('Y-m-d') ?? '');
         });
     }
 }

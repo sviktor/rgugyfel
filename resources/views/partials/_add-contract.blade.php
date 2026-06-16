@@ -69,7 +69,7 @@
 		</div>
 		<div class="p-field">
 			<label for="ac_dob">Születési dátum</label>
-			<input id="ac_dob" name="birth_date" class="rt-input" type="date" required>
+			<input id="ac_dob" name="birth_date" class="rt-input" type="date" value="{{ $accountBirthDate ?? '' }}" required>
 		</div>
 		<button type="submit" class="rt-btn rt-btn-primary">
 			<i data-lucide="send" class="lucide-sm"></i> Kérelem beküldése

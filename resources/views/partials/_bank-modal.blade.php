@@ -3,7 +3,7 @@
 	page (the dashboard inlines an equivalent copy). Expects:
 	- $bank  array  bank-transfer details. CMS-sourced: PortalController builds
 	  it from web_sections global.bank.* (edited in rgadmin under WEBOLDALAK ->
-	  Ügyfélkapu -> Beállítások), with PortalMockData::bankDetails() as fallback.
+	  Ügyfélkapu -> Beállítások); the account fields stay empty until filled.
 	Alpine state on an ancestor: bank (bool), bankAmount (string), bankRef (string).
 --}}
 <div class="p-modal-bg" x-show="bank" x-cloak @click="bank = false" x-transition.opacity>

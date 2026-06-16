@@ -55,6 +55,9 @@ Route::middleware(['auth:customer', 'customer.verified'])->group(function () {
 	Route::get('/szerzodeseim',   [PortalController::class, 'plans'])->name('plans');
 	Route::get('/dokumentumok',   [PortalController::class, 'docs'])->name('docs');
 	Route::get('/profil',         [PortalController::class, 'profile'])->name('profile');
+	Route::post('/profil/szemelyes',   [PortalController::class, 'profilePersonalSave'])->name('profile.personal');
+	Route::post('/profil/jelszo',      [PortalController::class, 'profilePasswordSave'])->name('profile.password');
+	Route::post('/profil/ertesitesek', [PortalController::class, 'notificationsSave'])->name('profile.notifications');
 
 	// Dashboard "Szerződés hozzárendelése" - files a pending contract request.
 	Route::post('/szerzodes-igenyles', [ContractRequestController::class, 'store'])->name('contract.request');

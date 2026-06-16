@@ -86,5 +86,18 @@
 			});
 		</script>
 	@endif
+
+	{{-- Validation errors -> ptAlert bridge (full-page POST forms, e.g. /profil). --}}
+	@if ($errors->any())
+		<script>
+			window.addEventListener('DOMContentLoaded', function () {
+				if (window.ptAlert) window.ptAlert({
+					variant: 'error',
+					title: @json(__('Hiányzó vagy hibás adatok')),
+					message: @json(implode("\n", $errors->all())),
+				});
+			});
+		</script>
+	@endif
 </body>
 </html>

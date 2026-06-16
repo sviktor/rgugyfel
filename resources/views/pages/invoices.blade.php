@@ -13,6 +13,9 @@
 	@php
 		$fmt   = fn ($n) => \App\Support\PortalMockData::huf($n);
 		$fdate = fn ($d) => \App\Support\PortalMockData::date($d);
+		// Still-owed amount ('outstanding' = gross minus any partial payment);
+		// the mock fallback has no such key, so it falls back to the gross.
+		$owed  = fn ($i) => $i['outstanding'] ?? $i['amount'];
 
 		$sums = [
 			'all'    => count($invoices),
@@ -53,7 +56,12 @@
 							</td>
 							<td>{{ $inv['period'] }}</td>
 							<td>{{ $fdate($inv['due']) }}</td>
-							<td class="amt">{{ $fmt($inv['amount']) }}</td>
+							<td class="amt">
+								{{ $fmt($inv['amount']) }}
+								@if ($owed($inv) > 0 && $owed($inv) < $inv['amount'])
+									<div class="p-partial">hátralék: {{ $fmt($owed($inv)) }}</div>
+								@endif
+							</td>
 							<td>
 								@if ($inv['status'] === 'paid')
 									<span class="p-badge p-badge-success">Kifizetve</span>
@@ -67,7 +75,7 @@
 								<div class="actions">
 									@if ($unpaid)
 										<button type="button" class="rt-btn rt-btn-primary p-btn-sm"
-										        @click="bank = true; bankAmount = '{{ $fmt($inv['amount']) }}'; bankRef = '{{ $inv['id'] }}'">
+										        @click="bank = true; bankAmount = '{{ $fmt($owed($inv)) }}'; bankRef = '{{ $inv['id'] }}'">
 											<i data-lucide="credit-card" class="lucide-xs"></i> Kifizetem
 										</button>
 									@endif
@@ -97,10 +105,12 @@
 		{{-- INVOICE PREVIEW MODALS (one per invoice) --}}
 		@foreach ($invoices as $inv)
 			@php
-				$unpaid = in_array($inv['status'], ['overdue', 'pending'], true);
-				$lines  = ! empty($inv['lines']) ? $inv['lines'] : [['name' => $inv['service'], 'note' => null, 'qty' => '1 hó', 'unit' => $inv['amount'], 'total' => $inv['amount']]];
-				$net    = (int) round($inv['amount'] / 1.27);
-				$vat    = $inv['amount'] - $net;
+				$unpaid     = in_array($inv['status'], ['overdue', 'pending'], true);
+				$seller     = $inv['seller'] ?? null;
+				$buyer      = $inv['buyer'] ?? ['name' => '', 'address' => '', 'tax' => '', 'number' => ''];
+				$sellerName = $seller['name'] ?? ($cms->get('global.company.name') ?: 'Royal Telekom Kft.');
+				$sellerAddr = $seller['address'] ?? ($cms->get('global.company.address') ?: '');
+				$sellerTax  = $seller['tax'] ?? ($cms->get('global.company.tax_number') ?: '');
 			@endphp
 			<div class="p-modal-bg" x-show="openInvoice === '{{ $inv['id'] }}'" x-cloak @click="openInvoice = null" x-transition.opacity>
 				<div class="p-modal p-invoice-doc" @click.stop>
@@ -115,7 +125,7 @@
 						<button type="button" class="rt-btn rt-btn-secondary"><i data-lucide="printer" class="lucide-xs"></i> Nyomtatás</button>
 						@if ($unpaid)
 							<button type="button" class="rt-btn rt-btn-primary"
-							        @click="bank = true; bankAmount = '{{ $fmt($inv['amount']) }}'; bankRef = '{{ $inv['id'] }}'; openInvoice = null">
+							        @click="bank = true; bankAmount = '{{ $fmt($owed($inv)) }}'; bankRef = '{{ $inv['id'] }}'; openInvoice = null">
 								<i data-lucide="credit-card" class="lucide-xs"></i> Kifizetem
 							</button>
 						@endif
@@ -125,10 +135,8 @@
 							<div>
 								<img class="p-invoice-logo" src="{{ asset('assets/royaltelekom-logo.svg') }}" alt="">
 								<div class="addr">
-									<strong>{{ $cms->get('global.company.name') ?: 'Royal Telekom Kft.' }}</strong><br>
-									{{ $cms->get('global.company.address') ?: '1145 Budapest, Aranyhegyi út 14.' }}<br>
-									Adószám: {{ $cms->get('global.company.tax_number') ?: '12345678-2-42' }}<br>
-									Cégjegyzékszám: {{ $cms->get('global.company.reg_number') ?: '01-09-123456' }}
+									<strong>{{ $sellerName }}</strong><br>
+									{{ $sellerAddr }}@if ($sellerTax)<br>Adószám: {{ $sellerTax }}@endif
 								</div>
 							</div>
 							<div class="meta">
@@ -153,40 +161,37 @@
 
 						<div class="customer">
 							<div class="lbl">Vevő</div>
-							<strong>{{ $user['name'] }}</strong>
-							<div>{{ $user['address'] }}</div>
-							<div>Ügyfél-azonosító: #{{ $user['customerId'] }}</div>
+							<strong>{{ $buyer['name'] }}</strong>
+							@if ($buyer['address'])<div>{{ $buyer['address'] }}</div>@endif
+							@if ($buyer['tax'])<div>Adószám: {{ $buyer['tax'] }}</div>@endif
+							@if ($buyer['number'])<div>Azonosító: {{ $buyer['number'] }}</div>@endif
 						</div>
 
 						<table class="lines">
 							<thead>
-								<tr><th>Megnevezés</th><th>Mennyiség</th><th class="ta-right">Egységár</th><th class="ta-right">Összesen</th></tr>
+								<tr><th>Megnevezés</th><th>Menny.</th><th class="ta-right">Nettó</th><th class="ta-right">ÁFA</th><th class="ta-right">Bruttó</th></tr>
 							</thead>
 							<tbody>
-								@foreach ($lines as $l)
+								@foreach ($inv['lines'] as $l)
 									<tr>
-										<td>
-											<strong>{{ $l['name'] }}</strong>
-											@if (! empty($l['note']))
-												<div class="sub">{{ $l['note'] }}</div>
-											@endif
-										</td>
+										<td class="p-line-name"><strong>{{ $l['name'] }}</strong></td>
 										<td>{{ $l['qty'] }}</td>
-										<td class="ta-right">{{ $fmt($l['unit']) }}</td>
-										<td class="ta-right"><strong>{{ $fmt($l['total']) }}</strong></td>
+										<td class="ta-right">{{ $fmt($l['net']) }}</td>
+										<td class="ta-right">{{ $fmt($l['vat']) }}</td>
+										<td class="ta-right"><strong>{{ $fmt($l['gross']) }}</strong></td>
 									</tr>
 								@endforeach
 							</tbody>
 						</table>
 
 						<div class="totals">
-							<div class="row"><span>Nettó</span><span>{{ $fmt($net) }}</span></div>
-							<div class="row"><span>ÁFA (27%)</span><span>{{ $fmt($vat) }}</span></div>
+							<div class="row"><span>Nettó</span><span>{{ $fmt($inv['net']) }}</span></div>
+							<div class="row"><span>ÁFA</span><span>{{ $fmt($inv['vat']) }}</span></div>
 							<div class="row big"><span>Bruttó összesen</span><span>{{ $fmt($inv['amount']) }}</span></div>
 						</div>
 
 						<div class="foot">
-							<strong>Fizetési mód:</strong> banki átutalás · {{ $cms->get('global.company.name') ?: 'Royal Telekom Kft.' }} · IBAN {{ $bank['iban'] }} · Közlemény: <strong>{{ $inv['id'] }}</strong>
+							<strong>Fizetési mód:</strong> banki átutalás · {{ $sellerName }} · IBAN {{ $bank['iban'] }} · Közlemény: <strong>{{ $inv['id'] }}</strong>
 						</div>
 					</div>
 				</div>

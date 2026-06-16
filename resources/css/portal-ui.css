@@ -387,3 +387,48 @@
 	color: var(--p-fg-3);
 	font-weight: 400;
 }
+
+/* Partial-payment note next to an invoice amount (gross shown, remainder owed). */
+.p-partial {
+	display: block;
+	margin-top: 2px;
+	font-size: 0.78em;
+	font-weight: 500;
+	color: var(--p-danger-fg);
+}
+
+/* Muted info line under the available-plans showcase (no plan switching here). */
+.p-plans-note {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin: 16px 0 0;
+	color: var(--p-fg-3);
+	font-size: 0.88em;
+}
+
+/* Empty notifications popover (no mock feed - honest until the feature lands). */
+.p-bell-empty {
+	padding: 22px 16px;
+	text-align: center;
+	color: var(--p-fg-3);
+	font-size: 0.9em;
+}
+
+/* Invoice preview modal: wider so the full item names fit (design default 880px). */
+.p-modal.p-invoice-doc {
+	max-width: 1040px;
+}
+
+/* The design left-aligns ALL .lines th (specificity beats .ta-right) - re-align the
+   numeric column headers to the right so they line up with their values. */
+.p-invoice-paper .lines th.ta-right {
+	text-align: right;
+}
+
+/* Item name = the full original termeknev; honor the embedded line breaks
+   (cleanName turns 2+ spaces into "\n") and let long lines wrap. */
+.p-invoice-paper .lines td.p-line-name {
+	white-space: pre-line;
+	min-width: 280px;
+}

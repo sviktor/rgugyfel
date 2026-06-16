@@ -1,8 +1,8 @@
 {{--
 	Documents (Dokumentumok) - ported from portal-docs.jsx (PortalDocsPage).
 	Category filters + document list + a "how to use these" help section.
-	Filtering via Alpine; downloads are visual (programming phase). Mock data
-	via PortalMockData::docs().
+	The intro + help cards are CMS-driven; the document LIST binds to the public
+	library (App\Support\WebDocuments) in a later round, so it is empty for now.
 --}}
 @extends('layouts.portal')
 
@@ -51,41 +51,43 @@
 			</div>
 			<p class="p-section-desc">{!! $cms->get('documents.intro.description') !== '' ? $cms->text('documents.intro.description') : 'Saját szerződései, szerződésminták, formanyomtatványok, ÁSZF és műszaki tájékoztatók egy helyen. Aláírt példányokat e-mailen vagy postai úton fogadunk.' !!}</p>
 
-			<div class="p-doc-filters">
-				@foreach ($cats as $c)
-					<button type="button" class="p-doc-filter" :class="{ on: filter === '{{ $c['id'] }}' }" @click="filter = '{{ $c['id'] }}'">
-						{{ $c['label'] }}
-						<span class="count">{{ $c['count'] }}</span>
-					</button>
-				@endforeach
-			</div>
+			@if (count($docs))
+				<div class="p-doc-filters">
+					@foreach ($cats as $c)
+						<button type="button" class="p-doc-filter" :class="{ on: filter === '{{ $c['id'] }}' }" @click="filter = '{{ $c['id'] }}'">
+							{{ $c['label'] }}
+							<span class="count">{{ $c['count'] }}</span>
+						</button>
+					@endforeach
+				</div>
 
-			<div class="p-doc-list">
-				@foreach ($docs as $d)
-					<a href="#" class="p-doc-row" x-show="filter === 'all' || filter === '{{ $d['cat'] }}'">
-						<span class="p-doc-ico {{ ! empty($d['personal']) ? 'personal' : '' }}">
-							<i data-lucide="{{ $iconFor($d['type']) }}" class="lucide-md"></i>
-						</span>
-						<div class="p-doc-name">
-							<div class="t">
-								{{ $d['name'] }}
-								@if (! empty($d['personal']))
-									<span class="p-doc-tag">Saját</span>
-								@endif
+				<div class="p-doc-list">
+					@foreach ($docs as $d)
+						<a href="#" class="p-doc-row" x-show="filter === 'all' || filter === '{{ $d['cat'] }}'">
+							<span class="p-doc-ico {{ ! empty($d['personal']) ? 'personal' : '' }}">
+								<i data-lucide="{{ $iconFor($d['type']) }}" class="lucide-md"></i>
+							</span>
+							<div class="p-doc-name">
+								<div class="t">
+									{{ $d['name'] }}
+									@if (! empty($d['personal']))
+										<span class="p-doc-tag">Saját</span>
+									@endif
+								</div>
+								<div class="s">
+									{{ $d['file'] }}
+									@if (! empty($d['date']))
+										<span class="dot">·</span>
+										<span>{{ $fmtDate($d['date']) }}</span>
+									@endif
+								</div>
 							</div>
-							<div class="s">
-								{{ $d['file'] }}
-								@if (! empty($d['date']))
-									<span class="dot">·</span>
-									<span>{{ $fmtDate($d['date']) }}</span>
-								@endif
-							</div>
-						</div>
-						<div class="p-doc-meta">{{ $d['size'] }}</div>
-						<i data-lucide="download" class="lucide-md p-doc-dl"></i>
-					</a>
-				@endforeach
-			</div>
+							<div class="p-doc-meta">{{ $d['size'] }}</div>
+							<i data-lucide="download" class="lucide-md p-doc-dl"></i>
+						</a>
+					@endforeach
+				</div>
+			@endif
 
 			<div class="p-doc-note">
 				@if ($cms->get('documents.intro.note') !== '')
