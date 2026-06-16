@@ -1,8 +1,10 @@
 {{--
 	Documents (Dokumentumok) - ported from portal-docs.jsx (PortalDocsPage).
-	Category filters + document list + a "how to use these" help section.
-	The intro + help cards are CMS-driven; the document LIST binds to the public
-	library (App\Support\WebDocuments) in a later round, so it is empty for now.
+	Tag filters + document list + a "how to use these" help section. The intro +
+	help cards are CMS-driven; the document LIST is the public portal library
+	(App\Support\WebDocuments - the shared `documents` rows bound to
+	web_documents/portal/documents, uploaded in rgadmin), each row linking to the
+	gated docs.download route. Same library for every signed-in customer.
 --}}
 @extends('layouts.portal')
 
@@ -11,22 +13,19 @@
 @section('content')
 
 	@php
-		$iconFor = fn ($type) => match ($type) {
-			'aszf'  => 'scroll-text',
-			'legal' => 'shield',
-			'tech'  => 'cpu',
-			'form'  => 'clipboard-list',
-			default => 'file-text',
-		};
 		$fmtDate = fn ($iso) => $iso ? str_replace('-', '. ', $iso) . '.' : '';
 
-		$cats = [
-			['id' => 'all',     'label' => 'Mind',          'count' => count($docs)],
-			['id' => 'mine',    'label' => 'Saját irataim',  'count' => count(array_filter($docs, fn ($d) => $d['cat'] === 'mine'))],
-			['id' => 'main',    'label' => 'Szerződéses',    'count' => count(array_filter($docs, fn ($d) => $d['cat'] === 'main'))],
-			['id' => 'legal',   'label' => 'Jogi',           'count' => count(array_filter($docs, fn ($d) => $d['cat'] === 'legal'))],
-			['id' => 'support', 'label' => 'Műszaki',        'count' => count(array_filter($docs, fn ($d) => $d['cat'] === 'support'))],
-		];
+		// Filter pills from the real document tags (Mind + one per distinct tag);
+		// $tags comes from App\Support\WebDocuments::tags(). A document may carry
+		// several tags, so a pill's count is the number of docs holding that tag.
+		$cats = [['id' => 'all', 'label' => 'Mind', 'count' => count($docs)]];
+		foreach ($tags ?? [] as $t) {
+			$cats[] = [
+				'id'    => $t,
+				'label' => $t,
+				'count' => count(array_filter($docs, fn ($d) => in_array($t, $d['tags'], true))),
+			];
+		}
 
 		// Help cards from the CMS (documents.help repeater); fall back to the
 		// built-in three before the editor has been opened/seeded.
@@ -49,31 +48,28 @@
 					<h3>{{ $cms->get('documents.intro.heading') ?: 'Letölthető dokumentumok' }}</h3>
 				</div>
 			</div>
-			<p class="p-section-desc">{!! $cms->get('documents.intro.description') !== '' ? $cms->text('documents.intro.description') : 'Saját szerződései, szerződésminták, formanyomtatványok, ÁSZF és műszaki tájékoztatók egy helyen. Aláírt példányokat e-mailen vagy postai úton fogadunk.' !!}</p>
+			<p class="p-section-desc">{!! $cms->get('documents.intro.description') !== '' ? $cms->text('documents.intro.description') : 'Saját szerződései, szerződésminták, formanyomtatványok, ÁSZF és műszaki tájékoztatók egy helyen. Aláírt példányokat e-mailen, személyesen az irodánkban vagy postai úton fogadunk.' !!}</p>
 
 			@if (count($docs))
-				<div class="p-doc-filters">
-					@foreach ($cats as $c)
-						<button type="button" class="p-doc-filter" :class="{ on: filter === '{{ $c['id'] }}' }" @click="filter = '{{ $c['id'] }}'">
-							{{ $c['label'] }}
-							<span class="count">{{ $c['count'] }}</span>
-						</button>
-					@endforeach
-				</div>
+				@if (count($cats) > 1)
+					<div class="p-doc-filters">
+						@foreach ($cats as $c)
+							<button type="button" class="p-doc-filter" :class="{ on: filter === {{ \Illuminate\Support\Js::from($c['id']) }} }" @click="filter = {{ \Illuminate\Support\Js::from($c['id']) }}">
+								{{ $c['label'] }}
+								<span class="count">{{ $c['count'] }}</span>
+							</button>
+						@endforeach
+					</div>
+				@endif
 
 				<div class="p-doc-list">
 					@foreach ($docs as $d)
-						<a href="#" class="p-doc-row" x-show="filter === 'all' || filter === '{{ $d['cat'] }}'">
-							<span class="p-doc-ico {{ ! empty($d['personal']) ? 'personal' : '' }}">
-								<i data-lucide="{{ $iconFor($d['type']) }}" class="lucide-md"></i>
+						<a href="{{ $d['url'] }}" class="p-doc-row" x-show="filter === 'all' || {{ \Illuminate\Support\Js::from($d['tags']) }}.includes(filter)">
+							<span class="p-doc-ico">
+								<i data-lucide="{{ $d['icon'] }}" class="lucide-md"></i>
 							</span>
 							<div class="p-doc-name">
-								<div class="t">
-									{{ $d['name'] }}
-									@if (! empty($d['personal']))
-										<span class="p-doc-tag">Saját</span>
-									@endif
-								</div>
+								<div class="t">{{ $d['name'] }}</div>
 								<div class="s">
 									{{ $d['file'] }}
 									@if (! empty($d['date']))

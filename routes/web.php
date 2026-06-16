@@ -54,6 +54,7 @@ Route::middleware(['auth:customer', 'customer.verified'])->group(function () {
 	Route::get('/szamlak/{id}/letoltes', [PortalController::class, 'invoiceDownload'])->whereNumber('id')->name('invoices.download');
 	Route::get('/szerzodeseim',   [PortalController::class, 'plans'])->name('plans');
 	Route::get('/dokumentumok',   [PortalController::class, 'docs'])->name('docs');
+	Route::get('/dokumentumok/{id}/letoltes', [PortalController::class, 'docDownload'])->whereNumber('id')->name('docs.download');
 	Route::get('/profil',         [PortalController::class, 'profile'])->name('profile');
 	Route::post('/profil/szemelyes',   [PortalController::class, 'profilePersonalSave'])->name('profile.personal');
 	Route::post('/profil/jelszo',      [PortalController::class, 'profilePasswordSave'])->name('profile.password');

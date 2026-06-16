@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Document;
 use App\Models\Invoice;
 use App\Models\Subscription;
 use App\Support\SiteContent;
 use App\Support\WebContracts;
+use App\Support\WebDocuments;
 use App\Support\WebInvoices;
 use App\Support\WebPackages;
 use Illuminate\Http\RedirectResponse;
@@ -106,15 +108,36 @@ class PortalController extends Controller
 	/**
 	 * Documents (Dokumentumok) - /dokumentumok
 	 *
+	 * The page lists the PUBLIC document library (the shared `documents` rows
+	 * bound to 'web_documents'/'portal'/'documents', uploaded in rgadmin under
+	 * WEBOLDALAK -> Ügyfélkapu -> Dokumentumok), read through App\Support\
+	 * WebDocuments. Same library for every signed-in customer; per-customer
+	 * private documents are a later round. The intro + help cards stay CMS-driven.
+	 *
 	 * @example GET /dokumentumok -> PortalController::docs()
 	 */
 	public function docs(): View
 	{
-		// The public document library binding is a later round; until then the page
-		// renders the CMS intro + help cards only (no mock document list).
 		return view('pages.docs', $this->commonContext() + [
-			'docs' => [],
+			'docs' => WebDocuments::all(),
+			'tags' => WebDocuments::tags(),
 		]);
+	}
+
+	/**
+	 * Download a portal library document (gated): streams only documents that
+	 * belong to the published portal library - a private/foreign document id 404s.
+	 * Behind auth:customer, so only signed-in, verified customers can fetch.
+	 *
+	 * @example GET /dokumentumok/12/letoltes -> PortalController::docDownload(12)
+	 */
+	public function docDownload(int $id): StreamedResponse
+	{
+		$document = WebDocuments::downloadable($id);
+		abort_if($document === null, 404);
+		abort_unless(Storage::disk(Document::DISK)->exists($document->diskPath()), 404);
+
+		return Storage::disk(Document::DISK)->download($document->diskPath(), $document->original_name);
 	}
 
 	/**

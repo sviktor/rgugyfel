@@ -59,6 +59,19 @@ return [
             'report' => false,
         ],
 
+        // Private document store, READ-ONLY here - the shared polymorphic files
+        // written by rgadmin (uploaded under WEBOLDALAK -> Ügyfélkapu ->
+        // Dokumentumok). Points at the same private ROOT as rgadmin/rgtelekom
+        // (SHARED_DOCUMENTS_PATH); the portal streams a published library document
+        // only through the gated `docs.download` route. No `url`, never symlinked.
+        'documents' => [
+            'driver' => 'local',
+            'root' => env('SHARED_DOCUMENTS_PATH', storage_path('app/documents')),
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
