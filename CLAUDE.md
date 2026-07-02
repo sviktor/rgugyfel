@@ -127,7 +127,7 @@ The full portal design is ported AND **the customer-facing pages are now bound t
 
 See [root CLAUDE.md](../CLAUDE.md). Same conventions as siblings.
 
-- Local Windows lint: `f:\xampp\php\php.exe`
+- Local Windows lint: `d:\xampp\php\php.exe`
 - **No inline CSS in Blade** - write classes in `resources/css/style.css`. Only Alpine `:style="..."` reactive bindings and JS-toggled `style="display:none"` flags are exempt (see root CLAUDE.md).
 - **No inline images** - files go to `public/assets/` and are referenced by URL.
 
