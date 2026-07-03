@@ -76,6 +76,16 @@ class AuthController extends Controller
 			], 422);
 		}
 
+		// Credentials OK but the account was disabled by staff -> block. Checked
+		// only AFTER a valid password so a wrong guess cannot probe whether an
+		// account exists or is enabled (no enumeration).
+		if ((int) $user->status !== 1) {
+			return response()->json([
+				'title'   => 'Fiók letiltva',
+				'message' => 'Ez a fiók jelenleg le van tiltva. Kérjük, vegye fel a kapcsolatot ügyfélszolgálatunkkal.',
+			], 422);
+		}
+
 		// Credentials OK but the e-mail is not confirmed yet -> resend + notice.
 		if (! $user->hasVerifiedEmail()) {
 			$this->sendVerification($user);

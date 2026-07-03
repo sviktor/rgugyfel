@@ -21,15 +21,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 // ---- Guest-only auth screens ----
+// The POST submits carry a per-IP `throttle` in addition to the per-account
+// lockout (cus_login_attempts): the lockout skips non-existent accounts, so the
+// rate limit is what caps password-spraying / registration abuse / reset-mail
+// bombing at the source. Same inline-throttle pattern as verification.resend.
 Route::middleware('guest:customer')->group(function () {
 	Route::get('/login',  [AuthController::class, 'showLogin'])->name('login');
-	Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+	Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1')->name('login.submit');
 
 	Route::get('/regisztracio',  [RegisterController::class, 'show'])->name('register');
-	Route::post('/regisztracio', [RegisterController::class, 'store'])->name('register.submit');
+	Route::post('/regisztracio', [RegisterController::class, 'store'])->middleware('throttle:6,10')->name('register.submit');
 
 	Route::get('/elfelejtett-jelszo',  [PasswordResetController::class, 'requestForm'])->name('forgot');
-	Route::post('/elfelejtett-jelszo', [PasswordResetController::class, 'sendLink'])->name('forgot.submit');
+	Route::post('/elfelejtett-jelszo', [PasswordResetController::class, 'sendLink'])->middleware('throttle:5,10')->name('forgot.submit');
 
 	Route::get('/jelszo-visszaallitas/{token}', [PasswordResetController::class, 'resetForm'])->name('password.reset');
 	Route::post('/jelszo-visszaallitas',        [PasswordResetController::class, 'reset'])->name('password.update');

@@ -23,10 +23,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  * Portal pages controller - the authenticated customer area.
  *
  * Ports the Royal Telecom Design System portal kit
- * (w:\sv\rg\_design\royal-telecom-sites\project\portal-*.jsx). Visual
- * mockup only: data comes from App\Support\PortalMockData and is replaced
- * once the real `customers` / `invoices` / `subscriptions` / `cp_tickets`
- * schemas land (rgadmin migrations + this project's cp_* migrations).
+ * (w:\sv\rg\_design\royal-telecom-sites\project\portal-*.jsx). Data comes from
+ * the real read layers (WebInvoices / WebContracts / WebPackages / WebDocuments)
+ * scoped to the signed-in cus_users account's linked customer; an unlinked
+ * account shows only the welcome + add-contract state.
  */
 class PortalController extends Controller
 {
@@ -237,6 +237,10 @@ class PortalController extends Controller
 
 		$account->password = $request->input('password'); // the 'hashed' cast hashes it
 		$account->save();
+
+		// Rotate the session id on password change so a previously captured
+		// session cookie is invalidated (the current request stays logged in).
+		$request->session()->regenerate();
 
 		return redirect($back)->with('pt_alert', [
 			'variant' => 'success',
