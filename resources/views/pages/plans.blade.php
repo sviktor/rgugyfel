@@ -1,8 +1,8 @@
 {{--
 	Plans (Szerződéseim) - the customer's current telecom contracts (detail cards
 	with loyalty bar) + the publicly available packages showcase. Current
-	contracts come from the linked customer's subscriptions (App\Support\WebContracts,
-	mock fallback when unlinked); the available packages come from the shared
+	contracts come from the linked customer's subscriptions (App\Support\WebContracts;
+	an unlinked account is redirected to the dashboard); the available packages come from the shared
 	product_listings (App\Support\WebPackages - the SAME source as the rgtelekom
 	/csomagok page). There is NO plan switching on the portal (informational only).
 --}}

@@ -2,7 +2,7 @@
 	Invoices (Számláim) - ported from portal-dashboard.jsx (InvoicesPage +
 	InvoicePreview). Filter tabs + table + bank-transfer modal + a PDF-like
 	invoice preview (one modal per invoice). Filtering + modals via Alpine;
-	mock data via PortalMockData.
+	real data from App\Support\WebInvoices (the linked customer's invoices).
 --}}
 @extends('layouts.portal')
 

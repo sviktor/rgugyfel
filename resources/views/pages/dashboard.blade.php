@@ -1,9 +1,10 @@
 {{--
 	Dashboard (Főoldal) - ported from portal-dashboard.jsx (Dashboard).
-	Financial hero + bank-transfer modal + active ticket + quick actions +
-	contracts list + add-contract request. Mock data via PortalMockData.
-	Modals open/close with Alpine; submitting the add-contract form shows the
-	confirmation state (no backend yet - that lands in the programming phase).
+	Financial hero + bank-transfer modal + quick actions + contracts list +
+	add-contract request. Real data from the linked customer (WebInvoices /
+	WebContracts); an unlinked account shows only the welcome + add-contract
+	state. Modals open/close with Alpine; the add-contract form files a pending
+	cus_contract_requests row.
 --}}
 @extends('layouts.portal')
 

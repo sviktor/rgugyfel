@@ -1,6 +1,6 @@
 {{--
 	Login screen - ported from portal-auth.jsx LoginScreen.
-	Mockup form: POSTs to /login and fake-redirects to /dashboard.
+	POSTs to /login (AuthController) - real cus_users authentication.
 --}}
 @extends('layouts.auth')
 

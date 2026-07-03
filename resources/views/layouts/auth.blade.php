@@ -1,8 +1,8 @@
 {{--
 	Auth screens layout - login, register, forgot.
 	Split-screen: dark navy side (brand + headline) + form panel.
-	Visual mockup only - no auth backend yet (customers table comes
-	from rgadmin once that migration lands).
+	Backed by the real cus_users auth (register / login / forgot, the
+	`customer` guard); the linked CRM customer comes from rgadmin.
 --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
