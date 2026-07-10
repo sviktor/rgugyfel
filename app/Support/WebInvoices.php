@@ -26,6 +26,11 @@ use Illuminate\Support\Collection;
  * covered month is settled; until then the unsettled months' proportional
  * share of the gross (minus the covered months' partial credits) stays owed.
  *
+ * An invoice with NO service-month key (no payable link or no period) is HIDDEN
+ * from the customer: its paid state cannot be derived from the settlement
+ * ledger, so it would otherwise show as a permanent false claim. It becomes
+ * visible once staff assign it to the customer's concrete service.
+ *
  * With `$detail` (the Számláim page modals) each row also carries the real
  * invoice document: the line items (`lines`), the buyer (`buyer`), the issuer
  * (`seller`) and the net/vat totals - all from the parsed `xml_data` JSON +
@@ -83,10 +88,23 @@ class WebInvoices
 		$cancelled = self::cancelledIds($invoices) + self::externalCancelledIds($invoices);
 
 		return $invoices
-			->reject(static fn (Invoice $i): bool => $i->invoice_kind === Invoice::KIND_STORNO)
+			->reject(static fn (Invoice $i): bool => self::hiddenFromCustomer($i))
 			->map(static fn (Invoice $i): array => self::row($i, $settled, $credits, $detail, $cancelled))
 			->values()
 			->all();
+	}
+
+	/**
+	 * Whether an invoice is hidden from the customer's list: a storno document
+	 * (a credit note, never shown) OR an invoice with no service-month key (no
+	 * payable link / no period), whose paid state cannot be derived - showing it
+	 * would be a permanent false claim until staff assign it to a service.
+	 *
+	 * @example  WebInvoices::forCustomer() rejects rows where this is true.
+	 */
+	private static function hiddenFromCustomer(Invoice $i): bool
+	{
+		return $i->invoice_kind === Invoice::KIND_STORNO || self::cellKeys($i) === [];
 	}
 
 	/**
