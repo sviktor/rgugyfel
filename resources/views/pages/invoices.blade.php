@@ -49,7 +49,7 @@
 				<tbody>
 					@foreach ($invoices as $inv)
 						@php $unpaid = in_array($inv['status'], ['overdue', 'pending'], true); @endphp
-						<tr x-show="{{ $unpaid ? "filter !== 'paid'" : "filter !== 'unpaid'" }}">
+						<tr x-show="{{ $inv['status'] === 'cancelled' ? "filter === 'all'" : ($unpaid ? "filter !== 'paid'" : "filter !== 'unpaid'") }}">
 							<td>
 								<button type="button" class="link-btn" @click="openInvoice = '{{ $inv['id'] }}'">{{ $inv['id'] }}</button>
 								<div class="sub">{{ $inv['service'] }}</div>
@@ -65,6 +65,8 @@
 							<td>
 								@if ($inv['status'] === 'paid')
 									<span class="p-badge p-badge-success">Kifizetve</span>
+								@elseif ($inv['status'] === 'cancelled')
+									<span class="p-badge p-badge-neutral">Sztornózva</span>
 								@elseif ($inv['status'] === 'pending')
 									<span class="p-badge p-badge-warn">Esedékes</span>
 								@else

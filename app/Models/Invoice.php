@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int         $id
  * @property int|null    $customers_id
  * @property string|null $invoice_number
+ * @property string      $invoice_kind          'normal' | 'storno' | 'correction'
+ * @property int|null    $corrects_invoice_id   the original a storno cancels (paired by rgadmin)
  * @property \Illuminate\Support\Carbon|null $issue_date
  * @property \Illuminate\Support\Carbon|null $due_date
  * @property string|null $gross
@@ -32,19 +34,23 @@ class Invoice extends Model
 	/** The private filesystem disk invoice files live on (shared with rgadmin). */
 	public const DISK = 'invoices';
 
+	/** Invoice kinds (the rgadmin vocabulary). */
+	public const KIND_STORNO = 'storno';
+
 	protected $casts = [
-		'customers_id'   => 'integer',
-		'issue_date'     => 'date',
-		'due_date'       => 'date',
-		'period_start'   => 'date',
-		'period_end'     => 'date',
-		'net'            => 'decimal:2',
-		'vat'            => 'decimal:2',
-		'gross'          => 'decimal:2',
-		'paid'           => 'integer',
-		'has_pdf'        => 'integer',
-		'has_xml'        => 'integer',
-		'xml_data'       => 'array',
+		'customers_id'        => 'integer',
+		'corrects_invoice_id' => 'integer',
+		'issue_date'          => 'date',
+		'due_date'            => 'date',
+		'period_start'        => 'date',
+		'period_end'          => 'date',
+		'net'                 => 'decimal:2',
+		'vat'                 => 'decimal:2',
+		'gross'               => 'decimal:2',
+		'paid'                => 'integer',
+		'has_pdf'             => 'integer',
+		'has_xml'             => 'integer',
+		'xml_data'            => 'array',
 	];
 
 	/**

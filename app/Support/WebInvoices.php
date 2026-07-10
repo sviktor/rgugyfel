@@ -17,6 +17,11 @@ use Illuminate\Support\Collection;
  * payment) reduces the still-owed `outstanding`. So a month a staff member
  * settled in the rgadmin Tartozások matrix is no longer debt here.
  *
+ * STORNO handling: rgadmin pairs a storno with the invoice it cancels
+ * (`corrects_invoice_id`). The storno document itself is HIDDEN from the list
+ * (an unpaired storno too - it is never a claim); a cancelled original stays
+ * listed with `status = 'cancelled'` and 0 outstanding ("Sztornózva" badge).
+ *
  * With `$detail` (the Számláim page modals) each row also carries the real
  * invoice document: the line items (`lines`), the buyer (`buyer`), the issuer
  * (`seller`) and the net/vat totals - all from the parsed `xml_data` JSON +
@@ -39,7 +44,8 @@ class WebInvoices
 
 	/** Base columns for the list rows + the paid/outstanding math. */
 	private const BASE_COLUMNS = [
-		'id', 'invoice_number', 'payable_type', 'payable_id', 'period_start',
+		'id', 'invoice_number', 'invoice_kind', 'corrects_invoice_id',
+		'payable_type', 'payable_id', 'period_start',
 		'issue_date', 'due_date', 'gross', 'has_pdf',
 	];
 
@@ -67,32 +73,99 @@ class WebInvoices
 		$invoices = Invoice::forCustomer($customerId)->get($columns);
 		[$settled, $credits] = self::ledger($invoices);
 
-		return $invoices->map(static fn (Invoice $i): array => self::row($i, $settled, $credits, $detail))->all();
+		// Storno documents never render; the originals they cancel stay listed
+		// as 'cancelled'. A storno outside this customer's set (unmatched, so
+		// no customers_id) is caught by one extra lookup over the loaded ids.
+		$cancelled = self::cancelledIds($invoices) + self::externalCancelledIds($invoices);
+
+		return $invoices
+			->reject(static fn (Invoice $i): bool => $i->invoice_kind === Invoice::KIND_STORNO)
+			->map(static fn (Invoice $i): array => self::row($i, $settled, $credits, $detail, $cancelled))
+			->values()
+			->all();
+	}
+
+	/**
+	 * The ids cancelled by the loaded storno rows (their `corrects_invoice_id`
+	 * references) - the pure, DB-free part of the storno resolution.
+	 *
+	 * @param  Collection<int, Invoice>  $invoices
+	 * @return array<int, true>  keyed by the cancelled invoice id
+	 *
+	 * @example  $cancelled = WebInvoices::cancelledIds($invoices);
+	 */
+	public static function cancelledIds(Collection $invoices): array
+	{
+		$out = [];
+		foreach ($invoices as $i) {
+			if ($i->invoice_kind === Invoice::KIND_STORNO && $i->corrects_invoice_id !== null) {
+				$out[(int) $i->corrects_invoice_id] = true;
+			}
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Cancelled-id lookup for stornos OUTSIDE the loaded set: one query over the
+	 * loaded non-storno ids for live stornos pointing at them.
+	 *
+	 * @param  Collection<int, Invoice>  $invoices
+	 * @return array<int, true>  keyed by the cancelled invoice id
+	 */
+	private static function externalCancelledIds(Collection $invoices): array
+	{
+		$ids = $invoices
+			->reject(static fn (Invoice $i): bool => $i->invoice_kind === Invoice::KIND_STORNO)
+			->pluck('id')
+			->all();
+		if ($ids === []) {
+			return [];
+		}
+
+		$out = [];
+		foreach (Invoice::query()
+			->where('deleted', 0)
+			->where('invoice_kind', Invoice::KIND_STORNO)
+			->whereIn('corrects_invoice_id', $ids)
+			->pluck('corrects_invoice_id') as $id) {
+			$out[(int) $id] = true;
+		}
+
+		return $out;
 	}
 
 	/**
 	 * Build one view row (the list shape; with `$detail` also the document parts).
+	 * `status`: paid | pending | overdue | cancelled (storno-cancelled original).
 	 *
 	 * @param  array<string, true>  $settled
 	 * @param  array<string, int>   $credits
+	 * @param  array<int, true>     $cancelled  invoice ids cancelled by a live storno
 	 * @return array<string, mixed>
 	 */
-	private static function row(Invoice $i, array $settled, array $credits, bool $detail): array
+	private static function row(Invoice $i, array $settled, array $credits, bool $detail, array $cancelled = []): array
 	{
 		$gross = (int) round((float) $i->gross);
 		$key   = self::cellKey($i);
 
-		if ($key !== null && isset($settled[$key])) {
+		if (isset($cancelled[(int) $i->id])) {
+			// A storno-cancelled original is never a claim.
 			$outstanding = 0;
+			$status      = 'cancelled';
 		} else {
-			$credit      = $key !== null ? ($credits[$key] ?? 0) : 0;
-			$outstanding = max(0, $gross - $credit);
-		}
+			if ($key !== null && isset($settled[$key])) {
+				$outstanding = 0;
+			} else {
+				$credit      = $key !== null ? ($credits[$key] ?? 0) : 0;
+				$outstanding = max(0, $gross - $credit);
+			}
 
-		$due    = $i->due_date;
-		$status = $outstanding === 0
-			? 'paid'
-			: ($due !== null && $due->isPast() ? 'overdue' : 'pending');
+			$due    = $i->due_date;
+			$status = $outstanding === 0
+				? 'paid'
+				: ($due !== null && $due->isPast() ? 'overdue' : 'pending');
+		}
 
 		$row = [
 			'id'          => (string) ($i->invoice_number ?: ('SZ-' . $i->id)),
