@@ -193,9 +193,12 @@ class WebInvoices
 			}
 
 			$due    = $i->due_date;
+			// Overdue starts the day AFTER the due date, matching the admin
+			// matrix rule (PaymentMatrix uses today > deadline). due_date is a
+			// date cast (midnight), so isPast() would fire on the due day itself.
 			$status = $outstanding === 0
 				? 'paid'
-				: ($due !== null && $due->isPast() ? 'overdue' : 'pending');
+				: ($due !== null && $due->isBefore(now()->startOfDay()) ? 'overdue' : 'pending');
 		}
 
 		$row = [
