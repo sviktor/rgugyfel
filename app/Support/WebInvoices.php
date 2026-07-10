@@ -22,6 +22,10 @@ use Illuminate\Support\Collection;
  * (an unpaired storno too - it is never a claim); a cancelled original stays
  * listed with `status = 'cancelled'` and 0 outstanding ("Sztornózva" badge).
  *
+ * MULTI-MONTH invoices (period_start..period_end) are paid only when EVERY
+ * covered month is settled; until then the unsettled months' proportional
+ * share of the gross (minus the covered months' partial credits) stays owed.
+ *
  * With `$detail` (the Számláim page modals) each row also carries the real
  * invoice document: the line items (`lines`), the buyer (`buyer`), the issuer
  * (`seller`) and the net/vat totals - all from the parsed `xml_data` JSON +
@@ -45,7 +49,7 @@ class WebInvoices
 	/** Base columns for the list rows + the paid/outstanding math. */
 	private const BASE_COLUMNS = [
 		'id', 'invoice_number', 'invoice_kind', 'corrects_invoice_id',
-		'payable_type', 'payable_id', 'period_start',
+		'payable_type', 'payable_id', 'period_start', 'period_end',
 		'issue_date', 'due_date', 'gross', 'has_pdf',
 	];
 
@@ -147,18 +151,27 @@ class WebInvoices
 	private static function row(Invoice $i, array $settled, array $credits, bool $detail, array $cancelled = []): array
 	{
 		$gross = (int) round((float) $i->gross);
-		$key   = self::cellKey($i);
+		$keys  = self::cellKeys($i);
 
 		if (isset($cancelled[(int) $i->id])) {
 			// A storno-cancelled original is never a claim.
 			$outstanding = 0;
 			$status      = 'cancelled';
 		} else {
-			if ($key !== null && isset($settled[$key])) {
-				$outstanding = 0;
+			if ($keys === []) {
+				// No service/period link: the whole gross stays owed.
+				$outstanding = max(0, $gross);
 			} else {
-				$credit      = $key !== null ? ($credits[$key] ?? 0) : 0;
-				$outstanding = max(0, $gross - $credit);
+				// Paid only when EVERY covered month is settled; until then
+				// the unsettled months' proportional share, minus the covered
+				// months' partial credits.
+				$total  = count($keys);
+				$open   = count(array_filter($keys, static fn (string $k): bool => ! isset($settled[$k])));
+				$credit = 0;
+				foreach ($keys as $k) {
+					$credit += $credits[$k] ?? 0;
+				}
+				$outstanding = $open === 0 ? 0 : max(0, (int) round($gross * $open / $total) - $credit);
 			}
 
 			$due    = $i->due_date;
@@ -387,16 +400,29 @@ class WebInvoices
 	}
 
 	/**
-	 * The settlement-cell key of an invoice (`payable_type|payable_id|Y-m`), or
-	 * null when the invoice is not tied to a concrete service + billing month.
+	 * The settlement-cell keys of an invoice, one per COVERED billing month
+	 * (`payable_type|payable_id|Y-m`, period_start..period_end inclusive,
+	 * capped at 12 months against bad data) - empty when the invoice is not
+	 * tied to a concrete service + billing period.
+	 *
+	 * @return array<int, string>
 	 */
-	private static function cellKey(Invoice $i): ?string
+	private static function cellKeys(Invoice $i): array
 	{
 		if ($i->payable_type === null || $i->payable_id === null || $i->period_start === null) {
-			return null;
+			return [];
 		}
 
-		return $i->payable_type . '|' . $i->payable_id . '|' . $i->period_start->format('Y-m');
+		$prefix = $i->payable_type . '|' . $i->payable_id . '|';
+		$start  = $i->period_start->copy()->startOfMonth();
+		$end    = ($i->period_end ?? $i->period_start)->copy()->startOfMonth();
+
+		$out = [];
+		for ($m = $start->copy(); $m->lte($end) && count($out) < 12; $m->addMonth()) {
+			$out[] = $prefix . $m->format('Y-m');
+		}
+
+		return $out === [] ? [$prefix . $start->format('Y-m')] : $out;
 	}
 
 	/**
