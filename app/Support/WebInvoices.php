@@ -36,12 +36,14 @@ use Illuminate\Support\Collection;
  * (`seller`) and the net/vat totals - all from the parsed `xml_data` JSON +
  * the normalized columns, never synthesized.
  *
- * Always scoped to ONE customer (the authenticated `customers_id`); the model's
- * `forCustomer` scope is the single ownership filter.
+ * The LIST is scoped to ONE customer (the account's ACTIVE customer - the
+ * model's `forCustomer` scope is the ownership filter); `find` (the PDF
+ * download gate) accepts the account's WHOLE linked-customer id set, so a tab
+ * opened before a customer switch still resolves its download links.
  *
  * @example
- *   $rows = WebInvoices::forCustomer($user->customers_id, true);   // with document detail
- *   $invoice = WebInvoices::find($id, $user->customers_id);        // ownership-checked
+ *   $rows = WebInvoices::forCustomer($activeCustomerId, true);      // with document detail
+ *   $invoice = WebInvoices::find($id, $user->linkedCustomerIds());  // ownership-checked
  */
 class WebInvoices
 {
@@ -447,18 +449,21 @@ class WebInvoices
 	}
 
 	/**
-	 * Resolve one invoice OWNED by the customer (the download ownership gate), or
-	 * null. Only invoices that actually have a stored PDF resolve.
+	 * Resolve one invoice OWNED by any of the given customers (the download
+	 * ownership gate - the account's linked-customer id set), or null. Only
+	 * invoices that actually have a stored PDF resolve.
+	 *
+	 * @param  array<int, int>  $customerIds
 	 */
-	public static function find(int $invoiceId, int $customerId): ?Invoice
+	public static function find(int $invoiceId, array $customerIds): ?Invoice
 	{
-		if ($invoiceId <= 0 || $customerId <= 0) {
+		if ($invoiceId <= 0 || $customerIds === []) {
 			return null;
 		}
 
 		return Invoice::query()
 			->where('id', $invoiceId)
-			->where('customers_id', $customerId)
+			->whereIn('customers_id', $customerIds)
 			->where('deleted', 0)
 			->where('has_pdf', 1)
 			->first();

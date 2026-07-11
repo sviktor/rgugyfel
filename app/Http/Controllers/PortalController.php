@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\CustomerUser;
 use App\Models\Document;
 use App\Models\Invoice;
 use App\Models\Subscription;
@@ -25,8 +26,12 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  * Ports the Royal Telecom Design System portal kit
  * (w:\sv\rg\_design\royal-telecom-sites\project\portal-*.jsx). Data comes from
  * the real read layers (WebInvoices / WebContracts / WebPackages / WebDocuments)
- * scoped to the signed-in cus_users account's linked customer; an unlinked
- * account shows only the welcome + add-contract state.
+ * scoped to the signed-in cus_users account's ACTIVE customer: an account may be
+ * linked to several customers (the cus_users_customers pivot), the topbar
+ * switcher stores the chosen one in the session, and every page shows that one
+ * customer's data. An unlinked account (no pivot links) shows only the
+ * welcome + add-contract state. The invoice PDF download is the exception: it
+ * accepts ANY linked customer's invoice, so a stale tab survives a switch.
  */
 class PortalController extends Controller
 {
@@ -77,7 +82,9 @@ class PortalController extends Controller
 	 */
 	public function invoiceDownload(int $id): StreamedResponse
 	{
-		$invoice = WebInvoices::find($id, $this->currentCustomerId());
+		// Ownership = ANY linked customer (not just the active one): a tab opened
+		// before a customer switch must still resolve its download links.
+		$invoice = WebInvoices::find($id, $this->linkedCustomerIds());
 		abort_unless($invoice !== null && (string) $invoice->pdf_path !== '' && Storage::disk(Invoice::DISK)->exists($invoice->pdf_path), 404);
 
 		$name = preg_replace('/[^\w\-.]+/', '_', (string) ($invoice->invoice_number ?: ('szamla-' . $invoice->id))) . '.pdf';
@@ -275,6 +282,24 @@ class PortalController extends Controller
 	}
 
 	/**
+	 * Switch the ACTIVE customer of a multi-customer account (the topbar
+	 * switcher). Only a customer linked to the signed-in account may be chosen;
+	 * the choice lives in the session and every page renders that customer's
+	 * data until the next switch or logout.
+	 *
+	 * @example POST /ugyfel-valtas {customer_id: 47}
+	 */
+	public function switchCustomer(Request $request): RedirectResponse
+	{
+		$customerId = (int) $request->input('customer_id');
+		abort_unless(in_array($customerId, $this->linkedCustomerIds(), true), 403);
+
+		session(['active_customer_id' => $customerId]);
+
+		return redirect()->back(fallback: route('dashboard'));
+	}
+
+	/**
 	 * The signed-in account's notification toggles, with the defaults (service
 	 * outage on, promo off) when nothing is stored yet.
 	 *
@@ -292,10 +317,12 @@ class PortalController extends Controller
 	}
 
 	/**
-	 * Shared sidebar/topbar context (user identity + nav badges + linkage flag).
-	 * No mock data: the identity is the signed-in cus_users account, the
-	 * customer-data bits (address, overdue badge) only fill once the account is
-	 * linked to a CRM customer. `linked` gates the customer-only nav + sections.
+	 * Shared sidebar/topbar context (user identity + nav badges + linkage flag +
+	 * the customer-switcher data). No mock data: the identity is the signed-in
+	 * cus_users account; the customer-data bits (address, overdue badge) come
+	 * from the ACTIVE linked customer. `linked` gates the customer-only nav +
+	 * sections; `linkedCustomers` (pivot order) + `activeCustomerId` feed the
+	 * topbar switcher, which only renders for a multi-customer account.
 	 *
 	 * @return array<string, mixed>
 	 */
@@ -315,11 +342,30 @@ class PortalController extends Controller
 			'address'     => '',
 		];
 
-		$cid    = $this->currentCustomerId();
-		$badges = ['invoices' => 0];
-		if ($cid > 0) {
-			$customer        = Customer::find($cid);
-			$user['address'] = (string) ($customer?->address ?? '');
+		$ids             = $this->linkedCustomerIds();
+		$cid             = $this->currentCustomerId();
+		$badges          = ['invoices' => 0];
+		$linkedCustomers = [];
+		if ($ids !== []) {
+			// One query for every linked customer, re-ordered to pivot (approval)
+			// order; the active one also provides the topbar address.
+			$rows = Customer::whereIn('id', $ids)
+				->get(['id', 'name', 'address', 'customer_number'])
+				->keyBy('id');
+			foreach ($ids as $id) {
+				$customer = $rows->get($id);
+				if ($customer === null) {
+					continue; // dangling link (customer removed) - hide from the switcher
+				}
+				$linkedCustomers[] = [
+					'id'     => (int) $customer->id,
+					'name'   => (string) $customer->name,
+					'number' => (string) ($customer->customer_number ?? ''),
+				];
+				if ((int) $customer->id === $cid) {
+					$user['address'] = (string) ($customer->address ?? '');
+				}
+			}
 			$badges['invoices'] = count(array_filter(
 				WebInvoices::forCustomer($cid),
 				static fn (array $i): bool => $i['status'] === 'overdue',
@@ -327,21 +373,44 @@ class PortalController extends Controller
 		}
 
 		return [
-			'user'   => $user,
-			'badges' => $badges,
-			'notifs' => [],
-			'linked' => $cid > 0,
+			'user'             => $user,
+			'badges'           => $badges,
+			'notifs'           => [],
+			'linked'           => $ids !== [],
+			'activeCustomerId' => $cid,
+			'linkedCustomers'  => $linkedCustomers,
 		];
 	}
 
 	/**
-	 * The logged-in customer's CRM `customers.id`, or 0 when the account is not
-	 * yet linked to a customer (pending contract approval) - in which case the
-	 * pages fall back to the demo data.
+	 * The signed-in account's linked customer ids (pivot/approval order), [] when
+	 * the account is not yet linked to any customer.
+	 *
+	 * @return array<int, int>
+	 */
+	private function linkedCustomerIds(): array
+	{
+		$account = auth('customer')->user();
+
+		return $account instanceof CustomerUser ? $account->linkedCustomerIds() : [];
+	}
+
+	/**
+	 * The ACTIVE customer's CRM `customers.id`: the session-selected customer
+	 * when it is still linked to the account, else the first linked one
+	 * (approval order). 0 when the account is not yet linked to any customer -
+	 * in which case the pages fall back to the welcome/empty state.
 	 */
 	private function currentCustomerId(): int
 	{
-		return (int) (auth('customer')->user()?->customers_id ?? 0);
+		$ids = $this->linkedCustomerIds();
+		if ($ids === []) {
+			return 0;
+		}
+
+		$active = (int) session('active_customer_id', 0);
+
+		return in_array($active, $ids, true) ? $active : $ids[0];
 	}
 
 	/**
@@ -388,7 +457,7 @@ class PortalController extends Controller
 	 * Bank-transfer details for the payment modal. The account fields are
 	 * operator-editable in rgadmin (WEBOLDALAK -> Ügyfélkapu -> Beállítások ->
 	 * web_sections global.bank.*); they stay EMPTY until filled (no fake account
-	 * number is ever shown). The Közlemény reference is the linked customer's
+	 * number is ever shown). The Közlemény reference is the ACTIVE customer's
 	 * customer number (the per-invoice "Kifizetem" overrides it with the concrete
 	 * invoice number in the view).
 	 *

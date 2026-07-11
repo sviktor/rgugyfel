@@ -66,4 +66,7 @@ Route::middleware(['auth:customer', 'customer.verified'])->group(function () {
 
 	// Dashboard "Szerződés hozzárendelése" - files a pending contract request.
 	Route::post('/szerzodes-igenyles', [ContractRequestController::class, 'store'])->name('contract.request');
+
+	// Topbar customer switcher - picks the ACTIVE customer of a multi-customer account.
+	Route::post('/ugyfel-valtas', [PortalController::class, 'switchCustomer'])->name('customer.switch');
 });

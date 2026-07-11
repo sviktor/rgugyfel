@@ -32,6 +32,8 @@
 	</div>
 
 	<div class="actions" x-data="{ bell: false }">
+		@include('partials._customer-switch')
+
 		<div class="p-bell-wrap">
 			<button type="button" class="icon-btn" :class="{ 'is-on': bell }" @click="bell = !bell" aria-label="Értesítések">
 				<i data-lucide="bell" class="lucide-sm"></i>
