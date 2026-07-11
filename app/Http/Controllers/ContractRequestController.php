@@ -21,10 +21,12 @@ use Illuminate\Support\Facades\Auth;
  * confirmation modal AND the card re-renders with the freshly filed pending
  * request.
  *
- * If the account still has an INCOMPLETE pending request (e.g. the empty row
- * created when the customer registered without identification data), this form
- * COMPLETES that row instead of creating a duplicate; otherwise it adds a new
- * request (a portal account may hold unlimited contracts).
+ * Decision order on submit: (1) a pending request with the SAME contract
+ * number is updated in place (no duplicate row - E3-M4); (2) a pending row
+ * with NO contract number yet (the empty row created when the customer
+ * registered without identification data) is completed; (3) otherwise a new
+ * request is added (a portal account may hold unlimited contracts). A pending
+ * row carrying a DIFFERENT contract number is never overwritten (E3-L5).
  */
 class ContractRequestController extends Controller
 {
@@ -44,18 +46,29 @@ class ContractRequestController extends Controller
 
 		$userId = (int) Auth::guard('customer')->id();
 
-		// Complete an existing incomplete pending request (the empty row from a
-		// data-less registration), else file a new one.
-		$incomplete = ContractRequest::where('cus_users_id', $userId)
+		// (1) A pending request with the SAME number: update it (latest birth
+		// date wins) instead of stacking a duplicate the admin queue would show
+		// twice. (2) A number-less pending row (data-less registration): complete
+		// it. A pending row with a DIFFERENT number is never overwritten - the
+		// submit files a new request instead. (3) Else: a new pending row.
+		$duplicate = ContractRequest::where('cus_users_id', $userId)
+			->where('status', 'pending')
+			->where('contract_number', $data['contract_number'])
+			->orderBy('id')
+			->first();
+
+		$numberless = $duplicate ? null : ContractRequest::where('cus_users_id', $userId)
 			->where('status', 'pending')
 			->where(static function (Builder $w): void {
-				$w->whereNull('contract_number')->orWhere('contract_number', '=', '')->orWhereNull('birth_date');
+				$w->whereNull('contract_number')->orWhere('contract_number', '=', '');
 			})
 			->orderBy('id')
 			->first();
 
-		if ($incomplete) {
-			$incomplete->update([
+		if ($duplicate) {
+			$duplicate->update(['birth_date' => $data['birth_date']]);
+		} elseif ($numberless) {
+			$numberless->update([
 				'contract_number' => $data['contract_number'],
 				'birth_date'      => $data['birth_date'],
 			]);

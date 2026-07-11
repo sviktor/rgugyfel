@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
 
@@ -52,7 +53,7 @@ class AuthController extends Controller
 			'password.required' => 'A belépéshez kérjük, adja meg jelszavát.',
 		]);
 
-		$email = $this->resolveEmail((string) $request->input('login'));
+		$email = $this->resolveEmail((string) $request->input('login'), (string) $request->input('password'));
 		$user  = CustomerUser::where('email', $email)->first();
 
 		// Lockout gate - applies before any password check.
@@ -108,6 +109,9 @@ class AuthController extends Controller
 		$guard = Auth::guard('customer');
 		$guard->setRememberDuration(self::REMEMBER_MINUTES);
 		$guard->login($user, $request->boolean('remember'));
+		// regenerate() swaps the session id but KEEPS the data - drop the previous
+		// account's active-customer choice so it cannot leak into this login.
+		$request->session()->forget('active_customer_id');
 		$request->session()->regenerate();
 
 		return response()->json(['redirect' => route('dashboard')]);
@@ -129,21 +133,39 @@ class AuthController extends Controller
 
 	/**
 	 * Resolve the typed login identifier to an e-mail. Plain e-mails pass
-	 * through; otherwise we look up a cus_users account whose LINKED customer
-	 * carries the typed customer number.
+	 * through; otherwise we look up the cus_users accounts whose PIVOT-linked
+	 * customer (cus_users_customers) carries the typed customer number.
+	 *
+	 * Several accounts may be linked to the same customer: a single candidate
+	 * resolves directly (a wrong password then books its failure to that
+	 * account, keeping the lockout intact); with two or more, the password
+	 * picks the matching account (a locked match still resolves - the lockout
+	 * gate above handles it), and when none matches, the raw identifier is
+	 * returned so the failure books to the typed string instead of inflating an
+	 * arbitrary account's lockout counter (the per-IP throttle still applies).
 	 */
-	private function resolveEmail(string $login): string
+	private function resolveEmail(string $login, string $password): string
 	{
 		$login = trim($login);
 		if ($login === '' || str_contains($login, '@')) {
 			return $login;
 		}
 
-		$user = CustomerUser::whereHas('customer', function ($q) use ($login) {
+		$candidates = CustomerUser::whereHas('customers', function ($q) use ($login) {
 			$q->where('customer_number', $login);
-		})->first();
+		})->orderBy('id')->get();
 
-		return $user?->email ?? $login;
+		if ($candidates->count() <= 1) {
+			return $candidates->first()?->email ?? $login;
+		}
+
+		foreach ($candidates as $candidate) {
+			if (Hash::check($password, (string) $candidate->password)) {
+				return $candidate->email;
+			}
+		}
+
+		return $login;
 	}
 
 	/**

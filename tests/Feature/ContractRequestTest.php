@@ -65,6 +65,54 @@ class ContractRequestTest extends FeatureTestCase
 			->assertJsonPath('redirect', route('plans'));
 	}
 
+	public function test_a_duplicate_pending_number_updates_instead_of_duplicating(): void
+	{
+		// E3-M4: the same contract number submitted twice must not stack two
+		// pending rows in the admin queue; the latest birth date wins.
+		$user = CustomerUser::factory()->create();
+
+		$this->actingAs($user, 'customer')
+			->postJson(route('contract.request'), ['contract_number' => 'SV-DUP', 'birth_date' => '1990-01-01'])
+			->assertOk();
+		$this->actingAs($user, 'customer')
+			->postJson(route('contract.request'), ['contract_number' => 'SV-DUP', 'birth_date' => '1991-02-02'])
+			->assertOk();
+
+		$this->assertDatabaseCount('cus_contract_requests', 1);
+		$this->assertDatabaseHas('cus_contract_requests', [
+			'cus_users_id'    => $user->id,
+			'contract_number' => 'SV-DUP',
+			'birth_date'      => '1991-02-02',
+		]);
+	}
+
+	public function test_completion_does_not_overwrite_a_different_contract_number(): void
+	{
+		// E3-L5: an incomplete pending row carrying ANOTHER number must survive a
+		// new submit untouched - the form files a NEW request instead.
+		$user = CustomerUser::factory()->create();
+		ContractRequest::create([
+			'cus_users_id'    => $user->id,
+			'contract_number' => 'SV-OLD',
+			'status'          => 'pending', // birth_date missing - incomplete
+		]);
+
+		$this->actingAs($user, 'customer')
+			->postJson(route('contract.request'), ['contract_number' => 'SV-NEW', 'birth_date' => '1992-03-03'])
+			->assertOk();
+
+		$this->assertDatabaseCount('cus_contract_requests', 2);
+		$this->assertDatabaseHas('cus_contract_requests', [
+			'cus_users_id'    => $user->id,
+			'contract_number' => 'SV-OLD',
+			'birth_date'      => null,
+		]);
+		$this->assertDatabaseHas('cus_contract_requests', [
+			'cus_users_id'    => $user->id,
+			'contract_number' => 'SV-NEW',
+		]);
+	}
+
 	public function test_an_invalid_submit_returns_validation_errors(): void
 	{
 		$user = CustomerUser::factory()->create();

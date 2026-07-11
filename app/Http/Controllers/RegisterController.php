@@ -61,11 +61,14 @@ class RegisterController extends Controller
 		}
 
 		$user = CustomerUser::create([
-			'name'     => trim($data['lastName'] . ' ' . $data['firstName']),
-			'email'    => $data['email'],
-			'phone'    => $data['phone'],
-			'password' => $data['password'], // hashed by the model cast
-			'status'   => 1,
+			'name'       => trim($data['lastName'] . ' ' . $data['firstName']),
+			'email'      => $data['email'],
+			'phone'      => $data['phone'],
+			// The DOB lands on the ACCOUNT too (Profil shows it, the add-contract
+			// form prefills from it), not only on the contract request (E3-L3).
+			'birth_date' => $data['birth_date'] ?? null,
+			'password'   => $data['password'], // hashed by the model cast
+			'status'     => 1,
 		]);
 
 		ContractRequest::create([

@@ -51,6 +51,18 @@ class RegistrationTest extends FeatureTestCase
 		$this->assertNotSame('Password123', $user->password);
 	}
 
+	public function test_registration_stores_the_birth_date_on_the_account_too(): void
+	{
+		// E3-L3: the DOB must land on cus_users as well (Profil + the
+		// add-contract prefill read it), not only on the contract request.
+		$this->postJson(route('register.submit'), $this->payload())->assertOk();
+
+		$this->assertDatabaseHas('cus_users', [
+			'email'      => 'kis.eva@example.hu',
+			'birth_date' => '1990-05-14',
+		]);
+	}
+
 	public function test_legacy_address_fields_are_ignored(): void
 	{
 		// Address-based identification was removed. Posting the old zip/city/street
