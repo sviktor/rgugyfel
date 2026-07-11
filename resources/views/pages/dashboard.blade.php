@@ -25,7 +25,9 @@
 		// recorded partial payment); the mock fallback has no such key.
 		$owed     = fn ($i) => $i['outstanding'] ?? $i['amount'];
 		$totalDue = array_sum(array_map($owed, $due));
-		$upcoming = $pending[0] ?? ($overdue[0] ?? null);
+		// "Next due" = the earliest-due open invoice, not the most recently
+		// issued one (the list is issue_date DESC ordered) (audit E3-L4).
+		$upcoming = collect($pending)->sortBy('due')->first() ?? ($overdue[0] ?? null);
 
 		$ref = $bank['ref'];
 	@endphp
