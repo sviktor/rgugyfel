@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\CustomerUser;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Http;
 use Tests\FeatureTestCase;
 
 class RegistrationTest extends FeatureTestCase
@@ -111,6 +113,26 @@ class RegistrationTest extends FeatureTestCase
 		$this->postJson(route('register.submit'), $this->payload())
 			->assertStatus(422)
 			->assertJsonValidationErrors('g-recaptcha-response');
+
+		$this->assertDatabaseCount('cus_users', 0);
+	}
+
+	public function test_recaptcha_outage_fails_closed_with_a_clear_message(): void
+	{
+		config(['recaptcha.enabled' => true, 'recaptcha.site_key' => 'x', 'recaptcha.secret_key' => 'y']);
+
+		// Google siteverify unreachable (audit E3-M1): the gate must fail
+		// CLOSED with an honest validation message - never a 500 - and no
+		// account may be created.
+		Http::fake(function (): void {
+			throw new ConnectionException('timeout');
+		});
+
+		$this->postJson(route('register.submit'), $this->payload(['g-recaptcha-response' => 'token']))
+			->assertStatus(422)
+			->assertJsonValidationErrors([
+				'g-recaptcha-response' => 'A robot-ellenőrzés átmenetileg nem elérhető.',
+			]);
 
 		$this->assertDatabaseCount('cus_users', 0);
 	}
