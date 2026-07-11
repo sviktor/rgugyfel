@@ -47,7 +47,10 @@ class Recaptcha
 			return true;
 		}
 
-		$token = (string) $request->input('g-recaptcha-response', '');
+		// is_string guard: an array param (g-recaptcha-response[]) must not blow
+		// up the (string) cast (audit E3-L7).
+		$raw   = $request->input('g-recaptcha-response', '');
+		$token = is_string($raw) ? $raw : '';
 		if ($token === '') {
 			return false;
 		}

@@ -142,6 +142,19 @@ class RegistrationTest extends FeatureTestCase
 		$this->assertDatabaseHas('cus_users', ['email' => 'kis.eva@example.hu']);
 	}
 
+	public function test_recaptcha_array_token_is_rejected_not_500(): void
+	{
+		config(['recaptcha.enabled' => true, 'recaptcha.site_key' => 'x', 'recaptcha.secret_key' => 'y']);
+
+		// A crafted array token (g-recaptcha-response[]) must fall back to an
+		// empty token -> 422, never a (string)-cast 500 (audit E3-L7).
+		$this->postJson(route('register.submit'), $this->payload(['g-recaptcha-response' => ['x']]))
+			->assertStatus(422)
+			->assertJsonValidationErrors('g-recaptcha-response');
+
+		$this->assertDatabaseCount('cus_users', 0);
+	}
+
 	public function test_recaptcha_outage_fails_closed_with_a_clear_message(): void
 	{
 		config(['recaptcha.enabled' => true, 'recaptcha.site_key' => 'x', 'recaptcha.secret_key' => 'y']);
