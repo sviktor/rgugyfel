@@ -55,4 +55,30 @@ class EmailVerificationTest extends FeatureTestCase
 		$this->post(route('verification.resend'), ['email' => 'nobody@example.hu'])
 			->assertRedirect(route('register.verify.notice'));
 	}
+
+	public function test_the_notice_page_shows_an_email_input_when_the_session_is_empty(): void
+	{
+		// Expired session (audit E3-M3): the resend form must offer a visible
+		// e-mail field instead of a guaranteed-invalid empty hidden value.
+		$this->get(route('register.verify.notice'))
+			->assertOk()
+			->assertSee('type="email"', false)
+			->assertSee('name="email"', false);
+	}
+
+	public function test_resend_reports_a_missing_email_as_a_json_validation_error(): void
+	{
+		// The data-auth-form AJAX path: the validation error surfaces as 422
+		// JSON (shown in the ptAlert lightbox) - not a silently dropped redirect.
+		$this->postJson(route('verification.resend'), [])
+			->assertStatus(422)
+			->assertJsonValidationErrors('email');
+	}
+
+	public function test_resend_hands_back_a_json_redirect_for_the_ajax_form(): void
+	{
+		$this->postJson(route('verification.resend'), ['email' => 'nobody@example.hu'])
+			->assertOk()
+			->assertJsonPath('redirect', route('register.verify.notice'));
+	}
 }

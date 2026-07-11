@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CustomerUser;
 use App\Support\CustomerMail;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
@@ -57,9 +58,13 @@ class EmailVerificationController extends Controller
 	 *
 	 * @example  POST /email-megerosites/ujrakuldes
 	 */
-	public function resend(Request $request): RedirectResponse
+	public function resend(Request $request): RedirectResponse|JsonResponse
 	{
-		$request->validate(['email' => 'required|email|max:200']);
+		$request->validate(['email' => 'required|email|max:200'], [
+			'email.required' => 'Add meg az e-mail címed.',
+			'email.email'    => 'Hibás formátumú e-mail cím.',
+			'email.max'      => 'A megadott e-mail cím túl hosszú.',
+		]);
 		$email = (string) $request->input('email');
 
 		$user = CustomerUser::where('email', $email)->first();
@@ -80,6 +85,13 @@ class EmailVerificationController extends Controller
 			'title'   => 'E-mail újraküldve',
 			'message' => 'Ha a megadott címmel van megerősítésre váró fiók, újra elküldtük a megerősítő linket.',
 		]);
+
+		// The resend form posts via auth-forms.js (data-auth-form): hand back
+		// the redirect target as JSON; a plain (no-JS) post keeps the classic
+		// redirect. The pt_alert flash fires on the page loaded next.
+		if ($request->expectsJson()) {
+			return response()->json(['redirect' => route('register.verify.notice')]);
+		}
 
 		return redirect()->route('register.verify.notice');
 	}

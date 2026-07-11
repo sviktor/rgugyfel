@@ -30,9 +30,17 @@
 
 		<div class="p-auth-sent-note">
 			Nem érkezett meg? Ellenőrizze a Spam mappát, vagy küldje el újra:
-			<form method="POST" action="{{ route('verification.resend') }}" class="p-auth-resend">
+			<form method="POST" action="{{ route('verification.resend') }}" class="p-auth-resend" data-auth-form>
 				@csrf
-				<input type="hidden" name="email" value="{{ $email }}">
+				@if ($email !== '')
+					<input type="hidden" name="email" value="{{ $email }}">
+				@else
+					{{-- The session no longer knows the address (e.g. arriving from an
+					     expired link the next day): ask for it instead of posting a
+					     guaranteed-invalid empty hidden value (audit E3-M3). --}}
+					<input type="email" name="email" class="rt-input" required
+						placeholder="nev@example.hu" aria-label="E-mail cím">
+				@endif
 				<button type="submit" class="rt-btn rt-btn-secondary">
 					<i data-lucide="send" class="lucide-sm"></i> Megerősítő e-mail újraküldése
 				</button>

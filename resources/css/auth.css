@@ -147,6 +147,7 @@
 .p-auth-email { color: var(--p-fg-1); }
 
 .p-auth-resend { margin-top: 12px; }
+.p-auth-resend .rt-input { margin-bottom: 10px; }
 
 /* Verify result - success / error state */
 .p-auth-result-icon {
