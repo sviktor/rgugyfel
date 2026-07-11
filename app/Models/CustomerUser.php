@@ -4,19 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\DB;
 
 /**
  * CustomerUser - a Royal Telekom customer-portal login account (cus_users).
  *
  * The rgugyfel-owned authentication identity, separate from the shared CRM
- * `customers` table. A row is created by self-registration and is LINKED to a
- * `customers` record only once a staff member approves the contract request
- * (cus_contract_requests) - until then `customers_id` is NULL.
+ * `customers` table. A row is created by self-registration and is LINKED to
+ * `customers` records through the `cus_users_customers` pivot, one link added
+ * per staff-approved contract request (cus_contract_requests) - one account may
+ * hold N customers (a relative's or a second property's service). Until the
+ * first approval the account is unlinked. The old single `customers_id` column
+ * is RETIRED (backfilled into the pivot; no code reads or writes it).
  *
  * @property int         $id
- * @property int|null    $customers_id
+ * @property int|null    $customers_id  retired single-link column (pivot is the source of truth)
  * @property string      $name
  * @property string      $email
  * @property string|null $phone
@@ -31,9 +36,12 @@ class CustomerUser extends Authenticatable
 	protected $table = 'cus_users';
 
 	protected $fillable = [
-		'customers_id', 'name', 'email', 'phone', 'birth_date', 'password',
+		'name', 'email', 'phone', 'birth_date', 'password',
 		'email_verified_at', 'locked_until', 'status', 'settings',
 	];
+
+	/** @var array<int, int>|null memoized linkedCustomerIds() result (per request) */
+	private ?array $linkedIdsCache = null;
 
 	protected $hidden = [
 		'password', 'remember_token',
@@ -52,11 +60,49 @@ class CustomerUser extends Authenticatable
 	}
 
 	/**
-	 * The linked CRM customer (NULL until a contract request is approved).
+	 * The linked CRM customer via the retired single-link column.
+	 *
+	 * @deprecated The `customers_id` column is retired - use customers() /
+	 *             linkedCustomerIds() (the cus_users_customers pivot) instead.
 	 */
 	public function customer(): BelongsTo
 	{
 		return $this->belongsTo(Customer::class, 'customers_id');
+	}
+
+	/**
+	 * The linked CRM customers (the `cus_users_customers` pivot), in approval
+	 * order (pivot id ASC) - the first row is the account's default customer.
+	 *
+	 * @example  $user->customers->pluck('name')->all()
+	 */
+	public function customers(): BelongsToMany
+	{
+		return $this->belongsToMany(Customer::class, 'cus_users_customers', 'cus_users_id', 'customers_id')
+			->orderBy('cus_users_customers.id');
+	}
+
+	/**
+	 * The linked customer ids in approval order (pivot id ASC), [] when the
+	 * account is not yet linked. Pivot-only query (no `customers` join), memoized
+	 * for the request - the portal calls this on every page render.
+	 *
+	 * @return array<int, int>
+	 *
+	 * @example  $ids = $user->linkedCustomerIds();   // [12, 47]
+	 */
+	public function linkedCustomerIds(): array
+	{
+		if ($this->linkedIdsCache === null) {
+			$this->linkedIdsCache = DB::table('cus_users_customers')
+				->where('cus_users_id', $this->id)
+				->orderBy('id')
+				->pluck('customers_id')
+				->map(static fn ($id): int => (int) $id)
+				->all();
+		}
+
+		return $this->linkedIdsCache;
 	}
 
 	/**
