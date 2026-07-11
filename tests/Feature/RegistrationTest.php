@@ -117,6 +117,19 @@ class RegistrationTest extends FeatureTestCase
 		$this->assertDatabaseCount('cus_users', 0);
 	}
 
+	public function test_recaptcha_gate_is_skipped_when_the_config_is_incomplete(): void
+	{
+		// Enabled but the secret key is missing (audit E3-M2): the captcha must
+		// deactivate itself instead of rejecting every submission.
+		config(['recaptcha.enabled' => true, 'recaptcha.site_key' => 'x', 'recaptcha.secret_key' => '']);
+
+		$this->postJson(route('register.submit'), $this->payload())
+			->assertOk()
+			->assertJsonPath('redirect', route('register.verify.notice'));
+
+		$this->assertDatabaseHas('cus_users', ['email' => 'kis.eva@example.hu']);
+	}
+
 	public function test_recaptcha_outage_fails_closed_with_a_clear_message(): void
 	{
 		config(['recaptcha.enabled' => true, 'recaptcha.site_key' => 'x', 'recaptcha.secret_key' => 'y']);

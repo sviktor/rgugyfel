@@ -15,13 +15,17 @@ use Illuminate\Validation\ValidationException;
 class Recaptcha
 {
 	/**
-	 * Is reCAPTCHA active (enabled + a site key configured)?
+	 * Is reCAPTCHA active (enabled + site AND secret key configured)? A
+	 * half-configured env deactivates the gate instead of bricking the
+	 * registration form (audit E3-M2).
 	 *
 	 * @example  if (Recaptcha::enabled()) { /* render the widget *\/ }
 	 */
 	public static function enabled(): bool
 	{
-		return (bool) config('recaptcha.enabled') && config('recaptcha.site_key') !== '';
+		return (bool) config('recaptcha.enabled')
+			&& config('recaptcha.site_key') !== ''
+			&& config('recaptcha.secret_key') !== '';
 	}
 
 	/**
@@ -36,6 +40,10 @@ class Recaptcha
 	public static function verify(Request $request): bool
 	{
 		if (! self::enabled()) {
+			if (config('recaptcha.enabled')) {
+				Log::warning('reCAPTCHA is enabled but a key is missing - the gate is skipped (check RECAPTCHA_SITE_KEY / RECAPTCHA_SECRET_KEY).');
+			}
+
 			return true;
 		}
 
