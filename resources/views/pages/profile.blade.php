@@ -13,9 +13,12 @@
 @section('content')
 
 	@php
-		$nameParts = explode(' ', trim($user['name']));
-		$last  = $nameParts[0] ?? '';
-		$first = $nameParts[1] ?? '';
+		// Given name = the LAST word, family name = the rest: the lossless
+		// inverse of the register-time lastName+firstName concatenation
+		// (multi-word Hungarian family names, audit E3-M5).
+		$nameParts = preg_split('/\s+/', trim($user['name']), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+		$first = count($nameParts) > 1 ? array_pop($nameParts) : '';
+		$last  = implode(' ', $nameParts);
 		$activeCount = count(array_filter($contracts, fn ($c) => $c['status'] === 'active'));
 	@endphp
 
