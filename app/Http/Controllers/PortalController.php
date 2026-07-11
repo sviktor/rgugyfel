@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -243,6 +244,9 @@ class PortalController extends Controller
 		}
 
 		$account->password = $request->input('password'); // the 'hashed' cast hashes it
+		// Rotate the remember token too so a previously captured 180-day
+		// remember cookie stops working after the change (audit E3-L2).
+		$account->setRememberToken(Str::random(60));
 		$account->save();
 
 		// Rotate the session id on password change so a previously captured

@@ -60,6 +60,25 @@ class PasswordResetTest extends FeatureTestCase
 		])->assertStatus(422);
 	}
 
+	public function test_a_successful_reset_rotates_the_remember_token(): void
+	{
+		// A captured 180-day remember cookie must stop working after a reset
+		// (audit E3-L2).
+		$user = CustomerUser::factory()->create(['email' => 'kis.eva@example.hu']);
+		$user->setRememberToken('old-remember-token');
+		$user->save();
+
+		$token = Password::broker('customers')->createToken($user);
+		$this->postJson(route('password.update'), [
+			'token'                 => $token,
+			'email'                 => 'kis.eva@example.hu',
+			'password'              => 'NewPass123',
+			'password_confirmation' => 'NewPass123',
+		])->assertOk();
+
+		$this->assertNotSame('old-remember-token', $user->fresh()->getRememberToken());
+	}
+
 	public function test_a_successful_reset_clears_the_login_attempt_counter(): void
 	{
 		// Lockout state: 5 rolling-window attempts + a live lock (audit E3-L1).

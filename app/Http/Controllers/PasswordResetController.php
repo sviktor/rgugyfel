@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -93,8 +94,14 @@ class PasswordResetController extends Controller
 		$status = Password::broker('customers')->reset(
 			$request->only('email', 'password', 'password_confirmation', 'token'),
 			function (CustomerUser $user, string $password) {
-				// The 'hashed' cast hashes on set - store the PLAIN value.
-				$user->forceFill(['password' => $password, 'locked_until' => null])->save();
+				// The 'hashed' cast hashes on set - store the PLAIN value. Rotate
+				// the remember token too so a captured 180-day remember cookie
+				// stops working after a reset (audit E3-L2).
+				$user->forceFill([
+					'password'       => $password,
+					'locked_until'   => null,
+					'remember_token' => Str::random(60),
+				])->save();
 
 				// A successful reset starts with a clean slate (like a successful
 				// login): the rolling-window attempt rows must go too, or a single

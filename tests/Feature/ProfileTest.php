@@ -39,4 +39,23 @@ class ProfileTest extends FeatureTestCase
 
 		$this->assertSame('Szabóné Kis Éva', $user->fresh()->name);
 	}
+
+	public function test_a_password_change_rotates_the_remember_token(): void
+	{
+		// A captured 180-day remember cookie must stop working after a password
+		// change (audit E3-L2).
+		$user = CustomerUser::factory()->create();
+		$user->setRememberToken('old-remember-token');
+		$user->save();
+
+		$this->actingAs($user, 'customer')
+			->post(route('profile.password'), [
+				'current_password'      => 'Password123',
+				'password'              => 'NewPass123',
+				'password_confirmation' => 'NewPass123',
+			])
+			->assertRedirect(route('profile', ['tab' => 'security']));
+
+		$this->assertNotSame('old-remember-token', $user->fresh()->getRememberToken());
+	}
 }
