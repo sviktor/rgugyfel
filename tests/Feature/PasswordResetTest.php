@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\CustomerUser;
+use App\Models\LoginAttempt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Tests\FeatureTestCase;
@@ -57,5 +58,34 @@ class PasswordResetTest extends FeatureTestCase
 			'password'              => 'NewPass123',
 			'password_confirmation' => 'NewPass123',
 		])->assertStatus(422);
+	}
+
+	public function test_a_successful_reset_clears_the_login_attempt_counter(): void
+	{
+		// Lockout state: 5 rolling-window attempts + a live lock (audit E3-L1).
+		$user = CustomerUser::factory()->create([
+			'email'        => 'kis.eva@example.hu',
+			'locked_until' => now()->addDay(),
+		]);
+		for ($i = 0; $i < 5; $i++) {
+			LoginAttempt::create(['email' => $user->email, 'ip' => '1.2.3.4', 'created_at' => now()]);
+		}
+
+		$token = Password::broker('customers')->createToken($user);
+		$this->postJson(route('password.update'), [
+			'token'                 => $token,
+			'email'                 => 'kis.eva@example.hu',
+			'password'              => 'NewPass123',
+			'password_confirmation' => 'NewPass123',
+		])->assertOk();
+
+		// Lock lifted AND the counter cleared with it.
+		$this->assertNull($user->fresh()->locked_until);
+		$this->assertDatabaseMissing('cus_login_attempts', ['email' => $user->email]);
+
+		// One typo of the new password must NOT relock the account.
+		$this->postJson(route('login.submit'), ['login' => $user->email, 'password' => 'WrongPass123'])
+			->assertStatus(422);
+		$this->assertNull($user->fresh()->locked_until);
 	}
 }

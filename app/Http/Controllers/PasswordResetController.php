@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CustomerUser;
+use App\Models\LoginAttempt;
 use App\Support\CustomerMail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -94,6 +95,11 @@ class PasswordResetController extends Controller
 			function (CustomerUser $user, string $password) {
 				// The 'hashed' cast hashes on set - store the PLAIN value.
 				$user->forceFill(['password' => $password, 'locked_until' => null])->save();
+
+				// A successful reset starts with a clean slate (like a successful
+				// login): the rolling-window attempt rows must go too, or a single
+				// typo of the NEW password would relock immediately (audit E3-L1).
+				LoginAttempt::where('email', $user->email)->delete();
 			}
 		);
 
