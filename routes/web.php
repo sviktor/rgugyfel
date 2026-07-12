@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContractRequestController;
 use App\Http\Controllers\EmailVerificationController;
+use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PortalController;
@@ -49,6 +50,13 @@ Route::post('/email-megerosites/ujrakuldes', [EmailVerificationController::class
 Route::get('/aszf',        [LegalController::class, 'terms'])->name('terms');
 Route::get('/adatvedelem', [LegalController::class, 'privacy'])->name('privacy');
 
+// ---- Operator impersonation ("Belépés az ügyfélkapuba") ----
+// Public accept route: an rgadmin operator is redirected here with a single-use,
+// short-lived DB token (shared mc_rg) that logs them in as the linked account.
+// Throttled per IP; the token itself is one-time + expiring.
+Route::get('/operator-belepes/{token}', [ImpersonationController::class, 'accept'])
+	->middleware('throttle:10,1')->name('imperson.accept');
+
 // ---- Portal pages (logged-in + verified customer) ----
 Route::middleware(['auth:customer', 'customer.verified'])->group(function () {
 	Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -69,4 +77,7 @@ Route::middleware(['auth:customer', 'customer.verified'])->group(function () {
 
 	// Topbar customer switcher - picks the ACTIVE customer of a multi-customer account.
 	Route::post('/ugyfel-valtas', [PortalController::class, 'switchCustomer'])->name('customer.switch');
+
+	// Leave operator impersonation mode (the topbar banner's "Kilépés" button).
+	Route::post('/operator-kilepes', [ImpersonationController::class, 'exit'])->name('imperson.exit');
 });

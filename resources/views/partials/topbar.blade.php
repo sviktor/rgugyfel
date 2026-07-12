@@ -21,6 +21,22 @@
 	$unread    = \count(\array_filter($notifs, fn ($n) => empty($n['read'])));
 @endphp
 
+@if (session('impersonation'))
+	{{-- Operator impersonation banner: staff is viewing the portal AS the customer. --}}
+	<div class="p-imperson-bar">
+		<span class="p-imperson-txt">
+			<i data-lucide="user-cog" class="lucide-sm"></i>
+			Operátor módban jársz - pontosan azt látod, amit az ügyfél.
+		</span>
+		<form method="post" action="{{ route('imperson.exit') }}">
+			@csrf
+			<button type="submit" class="p-imperson-exit">
+				<i data-lucide="log-out" class="lucide-xs"></i> Kilépés
+			</button>
+		</form>
+	</div>
+@endif
+
 <header class="p-topbar">
 	<button type="button" class="p-topbar-burger" aria-label="Menü" @click="navOpen = true">
 		<i data-lucide="menu" class="lucide-md"></i>

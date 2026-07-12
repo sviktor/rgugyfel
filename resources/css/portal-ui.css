@@ -620,3 +620,45 @@
 		display: none;
 	}
 }
+
+/* ---- Operator impersonation banner ----
+   Shown at the top of the portal when a staff member is viewing it AS the
+   customer (session('impersonation')). Deliberately loud (solid amber) so the
+   operator never forgets they are in someone else's account. */
+.p-imperson-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	flex-wrap: wrap;
+	padding: 10px 16px;
+	background: #8B6A1F;
+	color: #fff;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.p-imperson-txt {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.p-imperson-exit {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 12px;
+	border: 1px solid rgba(255, 255, 255, 0.6);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.12);
+	color: #fff;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.15s ease;
+}
+
+.p-imperson-exit:hover {
+	background: rgba(255, 255, 255, 0.24);
+}
