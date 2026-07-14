@@ -9,9 +9,9 @@
 @extends('layouts.auth')
 
 @section('title', 'Regisztráció - Royal Telekom Ügyfélkapu')
-@section('side-eyebrow', 'REGISZTRÁCIÓ')
-@section('side-headline', 'Csatlakozzon az Ügyfélkapuhoz.')
-@section('side-lede', 'Néhány adat megadásával Ön azonnal hozzáfér a teljes ügyfélkörnyezethez. Ha már Royal Telekom ügyfél, a szerződésszámát megtalálja a szerződésén vagy az utolsó számláján.')
+@section('side-eyebrow', $cms->get('home.login_page.register_eyebrow') ?: 'REGISZTRÁCIÓ')
+@section('side-headline', $cms->get('home.login_page.register_headline') ?: 'Csatlakozzon az Ügyfélkapuhoz.')
+@section('side-lede', $cms->get('home.login_page.register_lede') ?: 'Néhány adat megadásával Ön azonnal hozzáfér a teljes ügyfélkörnyezethez. Ha már Royal Telekom ügyfél, a szerződésszámát megtalálja a szerződésén vagy az utolsó számláján.')
 
 @section('content')
 

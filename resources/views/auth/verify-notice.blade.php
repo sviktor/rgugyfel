@@ -7,9 +7,9 @@
 @extends('layouts.auth')
 
 @section('title', 'E-mail megerősítés - Royal Telekom Ügyfélkapu')
-@section('side-eyebrow', 'E-MAIL MEGERŐSÍTÉS')
-@section('side-headline', 'Már csak egy lépés van hátra.')
-@section('side-lede', 'A fiók aktiválásához erősítse meg e-mail címét a kiküldött levélben található gombbal. Ezután azonnal beléphet az Ügyfélkapuba.')
+@section('side-eyebrow', $cms->get('home.login_page.verify_eyebrow') ?: 'E-MAIL MEGERŐSÍTÉS')
+@section('side-headline', $cms->get('home.login_page.verify_headline') ?: 'Már csak egy lépés van hátra.')
+@section('side-lede', $cms->get('home.login_page.verify_lede') ?: 'A fiók aktiválásához erősítse meg e-mail címét a kiküldött levélben található gombbal. Ezután azonnal beléphet az Ügyfélkapuba.')
 
 @section('content')
 

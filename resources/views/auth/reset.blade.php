@@ -7,9 +7,9 @@
 @extends('layouts.auth')
 
 @section('title', 'Új jelszó - Royal Telekom Ügyfélkapu')
-@section('side-eyebrow', 'JELSZÓ-HELYREÁLLÍTÁS')
-@section('side-headline', 'Állítson be egy új jelszót.')
-@section('side-lede', 'Adjon meg egy erős, új jelszót. A beállítás után azonnal beléphet vele a fiókjába.')
+@section('side-eyebrow', $cms->get('home.login_page.reset_eyebrow') ?: 'JELSZÓ-HELYREÁLLÍTÁS')
+@section('side-headline', $cms->get('home.login_page.reset_headline') ?: 'Állítson be egy új jelszót.')
+@section('side-lede', $cms->get('home.login_page.reset_lede') ?: 'Adjon meg egy erős, új jelszót. A beállítás után azonnal beléphet vele a fiókjába.')
 
 @section('content')
 

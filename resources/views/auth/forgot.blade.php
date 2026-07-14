@@ -5,9 +5,9 @@
 @extends('layouts.auth')
 
 @section('title', 'Elfelejtett jelszó - Royal Telekom Ügyfélkapu')
-@section('side-eyebrow', 'JELSZÓ-HELYREÁLLÍTÁS')
-@section('side-headline', 'Visszaállítjuk önnek a hozzáférést.')
-@section('side-lede', 'Adja meg e-mail címét, és küldünk egy biztonságos linket, amellyel új jelszót állíthat be. A link 30 percig érvényes.')
+@section('side-eyebrow', $cms->get('home.login_page.forgot_eyebrow') ?: 'JELSZÓ-HELYREÁLLÍTÁS')
+@section('side-headline', $cms->get('home.login_page.forgot_headline') ?: 'Visszaállítjuk önnek a hozzáférést.')
+@section('side-lede', $cms->get('home.login_page.forgot_lede') ?: 'Adja meg e-mail címét, és küldünk egy biztonságos linket, amellyel új jelszót állíthat be. A link 30 percig érvényes.')
 
 @section('content')
 

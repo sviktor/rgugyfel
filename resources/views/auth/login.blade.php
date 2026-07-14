@@ -5,8 +5,9 @@
 @extends('layouts.auth')
 
 @section('title', 'Belépés - Royal Telekom Ügyfélkapu')
-@section('side-headline', 'Üdvözöljük újra, kedves Ügyfelünk.')
-@section('side-lede', 'Itt megtekintheti aktuális számláit, kezelheti előfizetését, bejelentheti hibáit, és felveheti a kapcsolatot ügyfélszolgálatunkkal - mindezt egyetlen helyen, biztonságosan.')
+@section('side-eyebrow', $cms->get('home.login_page.login_eyebrow') ?: 'ÜGYFÉLKAPU')
+@section('side-headline', $cms->get('home.login_page.login_headline') ?: 'Üdvözöljük újra, kedves Ügyfelünk.')
+@section('side-lede', $cms->get('home.login_page.login_lede') ?: 'Itt megtekintheti aktuális számláit, kezelheti előfizetését, bejelentheti hibáit, és felveheti a kapcsolatot ügyfélszolgálatunkkal - mindezt egyetlen helyen, biztonságosan.')
 
 @section('content')
 
