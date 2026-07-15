@@ -35,6 +35,12 @@
 	@stack('head')
 </head>
 <body>
+	{{-- Preview mode: the Ügyfélkapu is switched OFF but this session entered
+	     with the preview key (SiteAvailability middleware shares the flag). --}}
+	@if (! empty($siteOffline))
+		<div class="pt-offline-banner">Az Ügyfélkapu jelenleg ki van kapcsolva.</div>
+	@endif
+
 	<div class="p-auth">
 
 		{{-- Dark navy side with crest watermark + headline (light crest on dark) --}}

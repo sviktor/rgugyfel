@@ -1,3 +1,6 @@
+# public: opt out of global secure-by-default Basic auth (added 2026-07-08)
+Require all granted
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

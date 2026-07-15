@@ -30,6 +30,12 @@
 	@stack('head')
 </head>
 <body>
+	{{-- Preview mode: the Ügyfélkapu is switched OFF but this session entered
+	     with the preview key (SiteAvailability middleware shares the flag). --}}
+	@if (! empty($siteOffline))
+		<div class="pt-offline-banner">Az Ügyfélkapu jelenleg ki van kapcsolva.</div>
+	@endif
+
 	<header class="p-page-top">
 		<div class="rt-container p-page-top-inner">
 			<a href="{{ route('login') }}" class="p-page-brand">

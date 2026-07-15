@@ -23,6 +23,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'customer.verified' => \App\Http\Middleware\EnsureCustomerEmailVerified::class,
         ]);
+
+        // Portal on/off gate (CMS "Oldal elérhetőség"): maintenance page for
+        // visitors when the Ügyfélkapu is switched off in rgadmin; preview-key
+        // session browsing for admins. Appended so the session is started.
+        $middleware->web(append: \App\Http\Middleware\SiteAvailability::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Email an uncaught exception (a genuine 500). Laravel 11 already skips

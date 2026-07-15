@@ -122,3 +122,52 @@ i[data-lucide] {
 .p-legal-content a { color: var(--rt-gold-700); text-decoration: underline; text-underline-offset: 2px; }
 
 .p-legal-empty { color: var(--p-fg-3); font-style: italic; }
+
+/* ============ Ügyfélkapu availability (CMS Oldal elérhetőség) ============ */
+
+/* Red top banner in preview mode - the Ügyfélkapu is switched OFF in rgadmin
+   but this session entered with the preview key (SiteAvailability middleware). */
+.pt-offline-banner {
+	background: #c0392b;
+	color: #fff;
+	text-align: center;
+	padding: 10px 16px;
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+}
+
+/* Maintenance page (resources/views/maintenance.blade.php) - centered box. */
+.pt-maintenance {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--rt-navy-800, #0E2A47);
+	padding: 24px;
+}
+
+.pt-maintenance-box {
+	background: #fff;
+	border-radius: 12px;
+	padding: 48px 40px;
+	max-width: 480px;
+	text-align: center;
+}
+
+.pt-maintenance-logo {
+	height: 56px;
+	margin-bottom: 24px;
+}
+
+.pt-maintenance-box h1 {
+	color: var(--rt-navy-800, #0E2A47);
+	font-size: 28px;
+	margin: 0 0 12px;
+}
+
+.pt-maintenance-box p {
+	color: var(--p-fg-2, #1a2b3c);
+	line-height: 1.6;
+	margin: 0;
+}

@@ -35,6 +35,12 @@
 </head>
 <body>
 
+	{{-- Preview mode: the Ügyfélkapu is switched OFF but this session entered
+	     with the preview key (SiteAvailability middleware shares the flag). --}}
+	@if (! empty($siteOffline))
+		<div class="pt-offline-banner">Az Ügyfélkapu jelenleg ki van kapcsolva.</div>
+	@endif
+
 	<div class="p-shell" x-data="{ navOpen: false }">
 
 		{{-- Scrim for mobile sidebar overlay --}}
