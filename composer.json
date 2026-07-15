@@ -13,7 +13,6 @@
     "require-dev": {
         "barryvdh/laravel-debugbar": "^4.3",
         "fakerphp/faker": "^1.23",
-        "larastan/larastan": "^3.0",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
@@ -57,11 +56,8 @@
             "Composer\\Config::disableProcessTimeout",
             "@php artisan test"
         ],
-        "stan": "phpstan analyse --memory-limit=1G",
-        "stan:baseline": "phpstan analyse --memory-limit=1G --generate-baseline",
         "check": [
             "Composer\\Config::disableProcessTimeout",
-            "@stan",
             "@php artisan test"
         ]
     },
