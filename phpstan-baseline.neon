@@ -1,2 +1,385 @@
 parameters:
-	ignoreErrors: []
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Auth\\StatefulGuard\:\:setRememberDuration\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/AuthController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>email" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/AuthController.php
+
+		-
+			message: '#^Offset ''notify'' on array\{\}\|array\{string\} on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Http/Controllers/PortalController.php
+
+		-
+			message: '#^Offset ''outage'' on array\{\} on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Http/Controllers/PortalController.php
+
+		-
+			message: '#^Offset ''promo'' on array\{\} on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Http/Controllers/PortalController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>email" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/PortalController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/PortalController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>phone" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/PortalController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>settings" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/PortalController.php
+
+		-
+			message: '#^Method App\\Models\\ContractRequest\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/ContractRequest.php
+
+		-
+			message: '#^Class App\\Models\\Customer has PHPDoc tag @property for property \$customer_data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/Customer.php
+
+		-
+			message: '#^Class App\\Models\\CustomerUser uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/CustomerUser.php
+
+		-
+			message: '#^Method App\\Models\\CustomerUser\:\:contractRequests\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/CustomerUser.php
+
+		-
+			message: '#^Method App\\Models\\CustomerUser\:\:customer\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/CustomerUser.php
+
+		-
+			message: '#^Method App\\Models\\CustomerUser\:\:customers\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/CustomerUser.php
+
+		-
+			message: '#^Cannot call method getTimestamp\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Models/Document.php
+
+		-
+			message: '#^Class App\\Models\\Document has PHPDoc tag @property for property \$tags with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/Document.php
+
+		-
+			message: '#^Method App\\Models\\Document\:\:scopeLibrary\(\) has parameter \$q with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Document.php
+
+		-
+			message: '#^Method App\\Models\\Document\:\:scopeLibrary\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Document.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type string\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Models/Document.php
+
+		-
+			message: '#^Unsafe call to private method App\\Models\\EmailTemplate\:\:fallback\(\) through static\:\:\.$#'
+			identifier: staticClassAccess.privateMethod
+			count: 1
+			path: app/Models/EmailTemplate.php
+
+		-
+			message: '#^Method App\\Models\\Invoice\:\:scopeForCustomer\(\) has parameter \$q with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Invoice.php
+
+		-
+			message: '#^Method App\\Models\\Invoice\:\:scopeForCustomer\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Invoice.php
+
+		-
+			message: '#^Class App\\Models\\ProductListing has PHPDoc tag @property for property \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/ProductListing.php
+
+		-
+			message: '#^Method App\\Models\\ProductListing\:\:scopePublished\(\) has parameter \$q with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/ProductListing.php
+
+		-
+			message: '#^Method App\\Models\\ProductListing\:\:scopePublished\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/ProductListing.php
+
+		-
+			message: '#^Method App\\Models\\Property\:\:location\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Property.php
+
+		-
+			message: '#^Method App\\Models\\Subscription\:\:customer\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Subscription.php
+
+		-
+			message: '#^Method App\\Models\\Subscription\:\:loyaltyExpiry\(\) should return Illuminate\\Support\\Carbon\|null but returns Carbon\\Carbon\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Subscription.php
+
+		-
+			message: '#^Method App\\Models\\Subscription\:\:products\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Subscription.php
+
+		-
+			message: '#^Method App\\Models\\Subscription\:\:property\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Subscription.php
+
+		-
+			message: '#^Method App\\Models\\Subscription\:\:scopeForCustomer\(\) has parameter \$q with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Subscription.php
+
+		-
+			message: '#^Method App\\Models\\Subscription\:\:scopeForCustomer\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Subscription.php
+
+		-
+			message: '#^Class App\\Models\\WebSection has PHPDoc tag @property for property \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/WebSection.php
+
+		-
+			message: '#^Method App\\Models\\WebSection\:\:scopeForSite\(\) has parameter \$q with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/WebSection.php
+
+		-
+			message: '#^Method App\\Models\\WebSection\:\:scopeForSite\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/WebSection.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Support\\HigherOrderCollectionProxy\<string, Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:isComplete\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Method App\\Support\\CookieConsent\:\:record\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/CookieConsent.php
+
+		-
+			message: '#^PHPDoc tag @if has invalid value \(\(\\App\\Support\\CookieConsent\:\:allows\(''statistics''\)\) \.\.\.GA snippet\.\.\. @endif\)\: Unexpected token "\(", expected ''\)'' at offset 321 on line 8$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: app/Support/CookieConsent.php
+
+		-
+			message: '#^Method App\\Support\\SiteContent\:\:items\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/SiteContent.php
+
+		-
+			message: '#^Method App\\Support\\SiteContent\:\:load\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/SiteContent.php
+
+		-
+			message: '#^Method App\\Support\\SiteContent\:\:splitKey\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/SiteContent.php
+
+		-
+			message: '#^Offset 0 on non\-empty\-list\<string\> on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Support/SiteContent.php
+
+		-
+			message: '#^PHPDoc tag @foreach has invalid value \(\(\$cms\-\>items\(''global\.faq''\) as \$f\) \.\.\.    // repeater rows\)\: Unexpected token "\$cms", expected type at offset 893 on line 16$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: app/Support/SiteContent.php
+
+		-
+			message: '#^PHPDoc tag @if has invalid value \(\(\$cms\-\>has\(''home\.testimonials''\)\) \.\.\. @endif   // section exists \+ visible\)\: Unexpected token "\$cms", expected type at offset 968 on line 17$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: app/Support/SiteContent.php
+
+		-
+			message: '#^PHPDoc tag @if has invalid value \(\(\$cms\-\>has\(''home\.testimonials''\)\) \.\.\. @endif\)\: Unexpected token "\$cms", expected type at offset 185 on line 6$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: app/Support/SiteContent.php
+
+		-
+			message: '#^Property App\\Support\\SiteContent\:\:\$sections type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/SiteContent.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$location\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Support/WebContracts.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Support/WebContracts.php
+
+		-
+			message: '#^Method App\\Support\\WebDocuments\:\:map\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/WebDocuments.php
+
+		-
+			message: '#^Method App\\Support\\WebDocuments\:\:rows\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/WebDocuments.php
+
+		-
+			message: '#^Property App\\Support\\WebDocuments\:\:\$rows type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/WebDocuments.php
+
+		-
+			message: '#^Offset 1\|2\|3\|4\|5\|6\|7\|8\|9\|10\|11\|12 on array\{1\: ''január'', 2\: ''február'', 3\: ''március'', 4\: ''április'', 5\: ''május'', 6\: ''június'', 7\: ''július'', 8\: ''augusztus'', \.\.\.\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Support/WebInvoices.php
+
+		-
+			message: '#^Method App\\Support\\WebPackages\:\:features\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/WebPackages.php
+
+		-
+			message: '#^Method App\\Support\\WebPackages\:\:hero\(\) has parameter \$d with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/WebPackages.php
+
+		-
+			message: '#^Method App\\Support\\WebPackages\:\:monthly\(\) has parameter \$d with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/WebPackages.php
+
+		-
+			message: '#^Method App\\Support\\WebPackages\:\:rows\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/WebPackages.php
+
+		-
+			message: '#^Property App\\Support\\WebPackages\:\:\$byKind type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/WebPackages.php
+
+		-
+			message: '#^Method Tests\\Feature\\RegistrationTest\:\:payload\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/RegistrationTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\RegistrationTest\:\:payload\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/RegistrationTest.php
+
+		-
+			message: '#^Offset ''notify'' does not exist on string\.$#'
+			identifier: offsetAccess.notFound
+			count: 2
+			path: tests/Feature/RegistrationTest.php
+
+		-
+			message: '#^PHPDoc tag @example has invalid value \(\(automatic \- every test boots through this\)\)\: Unexpected token "\-", expected ''\)'' at offset 185 on line 5$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: tests/TestCase.php
+
+		-
+			message: '#^Method Tests\\Unit\\WebInvoicesParseTest\:\:lines\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/WebInvoicesParseTest.php
+
+		-
+			message: '#^Method Tests\\Unit\\WebInvoicesStornoTest\:\:row\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/WebInvoicesStornoTest.php
