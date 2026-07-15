@@ -13,6 +13,7 @@
     "require-dev": {
         "barryvdh/laravel-debugbar": "^4.3",
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.0",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
@@ -56,8 +57,11 @@
             "Composer\\Config::disableProcessTimeout",
             "@php artisan test"
         ],
+        "stan": "phpstan analyse --memory-limit=1G",
+        "stan:baseline": "phpstan analyse --memory-limit=1G --generate-baseline",
         "check": [
             "Composer\\Config::disableProcessTimeout",
+            "@stan",
             "@php artisan test"
         ]
     },
@@ -73,6 +77,13 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "audit": {
+            "ignore": {
+                "PKSA-mdq4-51ck-6kdq": "CRLF injection in the default email rule (CVE-2026-48019); fixed only in Laravel 12.60+ - accepted until the planned Laravel 12 upgrade",
+                "PKSA-3r5d-mb8f-1qw9": "CRLF injection in the default email rule; fixed only in Laravel 12.60+ - accepted until the planned Laravel 12 upgrade",
+                "PKSA-m5cs-t1y6-qpcs": "Temporary signed URL path confusion; fixed only in Laravel 12.61.1+ - accepted until the planned Laravel 12 upgrade"
+            }
         }
     },
     "minimum-stability": "stable",

@@ -1,0 +1,17 @@
+includes:
+	- vendor/larastan/larastan/extension.neon
+	- phpstan-baseline.neon
+
+parameters:
+	# Level 6 (matches rgadmin). Any pre-existing level-6 findings are frozen in
+	# phpstan-baseline.neon - regenerate it once with `composer stan:baseline`
+	# after installing larastan, then commit it. Raise the level over time
+	# (bump level, regenerate baseline).
+	level: 6
+
+	paths:
+		- app
+		- config
+		- database
+		- routes
+		- tests
