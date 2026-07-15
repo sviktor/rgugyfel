@@ -101,6 +101,30 @@ class RegistrationTest extends FeatureTestCase
 		]);
 	}
 
+	public function test_registration_persists_the_notification_optins(): void
+	{
+		// The two opt-in checkboxes land in cus_users.settings.notify (the same
+		// shape /profil?tab=notif reads), so the sign-up choice shows on the
+		// profile and gates the promo newsletter in rgadmin.
+		$this->postJson(route('register.submit'), $this->payload([
+			'notify_outage' => '1',
+			'notify_promo'  => '1',
+		]))->assertOk();
+
+		$user = CustomerUser::where('email', 'kis.eva@example.hu')->first();
+		$this->assertSame(['outage' => true, 'promo' => true], $user->settings['notify']);
+	}
+
+	public function test_registration_defaults_notifications_off_when_unchecked(): void
+	{
+		// Unchecked checkboxes are simply not submitted, so both preferences store
+		// as false server-side (the "outage checked" default is only a UI hint).
+		$this->postJson(route('register.submit'), $this->payload())->assertOk();
+
+		$user = CustomerUser::where('email', 'kis.eva@example.hu')->first();
+		$this->assertSame(['outage' => false, 'promo' => false], $user->settings['notify']);
+	}
+
 	public function test_registration_rejects_a_weak_password(): void
 	{
 		$this->postJson(route('register.submit'), $this->payload([

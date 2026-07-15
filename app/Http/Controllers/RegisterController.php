@@ -46,6 +46,9 @@ class RegisterController extends Controller
 			'contract_number' => 'nullable|string|max:50',
 			'password' => ['required', 'string', 'min:10', 'confirmed', 'regex:/[A-Z]/', 'regex:/[0-9]/'],
 			'accept'   => 'accepted',
+			// Optional notification opt-ins (not required, unlike ÁSZF).
+			'notify_outage' => 'nullable|boolean',
+			'notify_promo'  => 'nullable|boolean',
 		], $this->messages(), $this->attributes());
 
 		// Identification (contract number + birth date) is OPTIONAL: the customer
@@ -69,6 +72,13 @@ class RegisterController extends Controller
 			'birth_date' => $data['birth_date'] ?? null,
 			'password'   => $data['password'], // hashed by the model cast
 			'status'     => 1,
+			// Notification preferences (same keys the /profil?tab=notif page reads),
+			// so the choice made at sign-up shows up on the profile and gates the
+			// promo newsletter in rgadmin.
+			'settings'   => ['notify' => [
+				'outage' => $request->boolean('notify_outage'),
+				'promo'  => $request->boolean('notify_promo'),
+			]],
 		]);
 
 		ContractRequest::create([

@@ -84,6 +84,15 @@
 				<input type="checkbox" name="accept" value="1">
 				<span>Elfogadom az <a href="{{ route('terms') }}" target="_blank" rel="noopener">Általános Szerződési Feltételeket</a> és az <a href="{{ route('privacy') }}" target="_blank" rel="noopener">Adatvédelmi Tájékoztatót</a>.</span>
 			</label>
+			{{-- Optional notification opt-ins - stored into cus_users.settings.notify (same keys as /profil?tab=notif). --}}
+			<label class="p-auth-accept">
+				<input type="checkbox" name="notify_outage" value="1" checked>
+				<span>Kérek értesítést a tervezett karbantartásról vagy hibajavításról.</span>
+			</label>
+			<label class="p-auth-accept">
+				<input type="checkbox" name="notify_promo" value="1">
+				<span>Kérek értesítést akciókról és újdonságokról.</span>
+			</label>
 			@if (\App\Support\Recaptcha::enabled())
 				<div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}"></div>
 			@endif
