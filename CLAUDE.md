@@ -18,7 +18,7 @@ Part of the [Royal Group project family](../CLAUDE.md). Siblings:
 
 ## Stack
 
-- **Laravel 11** + Blade
+- **Laravel 12** + Blade
 - **Tailwind CSS 3** + Vite
 - Alpine.js for light interactivity (modals, dropdowns)
 - PHP 8.4+
