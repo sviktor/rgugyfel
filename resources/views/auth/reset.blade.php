@@ -28,12 +28,12 @@
 			</div>
 			<div class="p-field">
 				<label>Új jelszó</label>
-				<input class="rt-input" type="password" name="password" placeholder="Min. 10 karakter">
+				<x-pw-input name="password" placeholder="Min. 10 karakter" />
 				<span class="hint">Legalább 10 karakter, tartalmazzon nagybetűt és számot.</span>
 			</div>
 			<div class="p-field">
 				<label>Új jelszó megerősítése</label>
-				<input class="rt-input" type="password" name="password_confirmation" placeholder="••••••••">
+				<x-pw-input name="password_confirmation" placeholder="••••••••" />
 			</div>
 			<button type="submit" class="rt-btn rt-btn-primary rt-btn-large p-auth-submit">
 				Jelszó módosítása

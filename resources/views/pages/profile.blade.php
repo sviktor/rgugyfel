@@ -77,12 +77,12 @@
 				<input type="email" name="username" value="{{ $user['email'] }}" autocomplete="username" hidden>
 				<div class="p-field">
 					<label for="sec_cur">Jelenlegi jelszó</label>
-					<input id="sec_cur" name="current_password" class="rt-input" type="password" autocomplete="current-password" required placeholder="••••••••">
+					<x-pw-input id="sec_cur" name="current_password" autocomplete="current-password" required placeholder="••••••••" />
 				</div>
 				<div class="p-field-row">
 					<div class="p-field">
 						<label for="sec_pw">Új jelszó</label>
-						<input id="sec_pw" name="password" class="rt-input" type="password" autocomplete="new-password" required x-model="pw" placeholder="Min. 10 karakter">
+						<x-pw-input id="sec_pw" name="password" autocomplete="new-password" required x-model="pw" placeholder="Min. 10 karakter" />
 						<div class="pw-strength" x-show="pw" x-cloak>
 							<div class="bar"><div class="fill" :style="'--pw:' + (sc / 4 * 100) + '%; --pwc:' + colors[sc]"></div></div>
 							<span :style="'color:' + colors[sc]" x-text="labels[sc]"></span>
@@ -91,7 +91,7 @@
 					</div>
 					<div class="p-field">
 						<label for="sec_pw2">Új jelszó megerősítése</label>
-						<input id="sec_pw2" name="password_confirmation" class="rt-input" type="password" autocomplete="new-password" required x-model="pw2" placeholder="••••••••">
+						<x-pw-input id="sec_pw2" name="password_confirmation" autocomplete="new-password" required x-model="pw2" placeholder="••••••••" />
 						<span class="hint p-hint-ok" x-show="pw2 && pw && pw === pw2" x-cloak><i data-lucide="check" class="lucide-xs"></i> A jelszavak egyeznek.</span>
 						<span class="hint p-hint-bad" x-show="pw2 && pw && pw !== pw2" x-cloak>A jelszavak nem egyeznek.</span>
 					</div>

@@ -73,12 +73,12 @@
 		<div class="p-auth-form-grid" x-show="step === 3" x-cloak>
 			<div class="p-field">
 				<label>Jelszó</label>
-				<input class="rt-input" type="password" name="password" placeholder="Min. 10 karakter">
+				<x-pw-input name="password" placeholder="Min. 10 karakter" />
 				<span class="hint">Legalább 10 karakter, tartalmazzon nagybetűt és számot.</span>
 			</div>
 			<div class="p-field">
 				<label>Jelszó megerősítése</label>
-				<input class="rt-input" type="password" name="password_confirmation" placeholder="••••••••">
+				<x-pw-input name="password_confirmation" placeholder="••••••••" />
 			</div>
 			<label class="p-auth-accept">
 				<input type="checkbox" name="accept" value="1">

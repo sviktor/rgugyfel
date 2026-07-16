@@ -28,7 +28,7 @@
 					<span>Jelszó</span>
 					<a href="{{ route('forgot') }}" class="p-auth-forgot">Elfelejtette?</a>
 				</label>
-				<input class="rt-input" type="password" name="password" placeholder="••••••••">
+				<x-pw-input name="password" placeholder="••••••••" />
 			</div>
 
 			<label class="p-auth-remember">

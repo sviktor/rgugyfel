@@ -68,6 +68,32 @@
 
 .p-auth-submit { width: 100%; justify-content: center; margin-top: 8px; }
 
+/* Password field with a show/hide toggle icon.
+   The wrapper is relative; the input gets extra right padding
+   so the text never runs under the button, which sits inside. */
+.p-pw-field { position: relative; }
+
+.p-pw-field .rt-input { padding-right: 42px; }
+
+.p-pw-toggle {
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 44px;
+	width: 42px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
+	color: var(--p-fg-3);
+	transition: color 160ms;
+}
+
+.p-pw-toggle:hover { color: var(--p-fg-1); }
+
 .p-auth-label-row {
 	display: flex;
 	justify-content: space-between;
