@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\CustomerUser;
 use App\Models\Document;
 use App\Models\Invoice;
+use App\Models\Setting;
 use App\Models\Subscription;
 use App\Support\SiteContent;
 use App\Support\WebContracts;
@@ -52,6 +53,7 @@ class PortalController extends Controller
 			'invoices'  => WebInvoices::forCustomer($cid),
 			'contracts' => WebContracts::forCustomer($cid),
 			'bank'      => $this->bankDetails(),
+			'bankRef'   => $this->bankRef(),
 		]);
 	}
 
@@ -72,6 +74,7 @@ class PortalController extends Controller
 		return view('pages.invoices', $this->commonContext() + [
 			'invoices' => WebInvoices::forCustomer($cid, true), // with the full document detail for the preview modal
 			'bank'     => $this->bankDetails(),
+			'bankRef'  => $this->bankRef(),
 		]);
 	}
 
@@ -458,20 +461,48 @@ class PortalController extends Controller
 	}
 
 	/**
-	 * Bank-transfer details for the payment modal. The account fields are
-	 * operator-editable in rgadmin (WEBOLDALAK -> Ügyfélkapu -> Beállítások ->
-	 * web_sections global.bank.*); they stay EMPTY until filled (no fake account
-	 * number is ever shown). The Közlemény reference is the ACTIVE customer's
-	 * customer number (the per-invoice "Kifizetem" overrides it with the concrete
-	 * invoice number in the view).
+	 * Bank-account details for the payment modal, or NULL when the operator has
+	 * not yet verified them in rgadmin (WEBOLDALAK -> Ügyfélkapu -> Beállítások ->
+	 * "Ellenőrizve", the 'content_verify.portal.global.bank' settings flag). Until
+	 * then the portal shows NO account details at all - no seed/test account number
+	 * is ever exposed; the views hide the payment modal + its triggers. The fields
+	 * are operator-editable (web_sections global.bank.*). The Közlemény reference
+	 * is NOT here - it is the customer's own number (see bankRef), which is not
+	 * bank data and stays available regardless of verification.
 	 *
-	 * @return array<string, string>
-	 * @example PortalController::bankDetails()['iban'] // 'HU42 1177 ...' (once set)
+	 * @return array<string, string>|null
+	 * @example PortalController::bankDetails()['iban'] // 'HU42 1177 ...' (once verified)
 	 */
-	private function bankDetails(): array
+	private function bankDetails(): ?array
 	{
+		// Gate: hide every account detail until the operator confirms it is real
+		// (not seed/test data) via the rgadmin content-verification flag.
+		if (! Setting::present('content_verify.portal.global.bank')) {
+			return null;
+		}
+
 		$cms = app(SiteContent::class);
 
+		return [
+			'name'    => $cms->get('global.bank.name')    ?: 'Royal Telekom Kft.',
+			'bank'    => $cms->get('global.bank.bank'),
+			'account' => $cms->get('global.bank.account'),
+			'iban'    => $cms->get('global.bank.iban'),
+			'swift'   => $cms->get('global.bank.swift'),
+		];
+	}
+
+	/**
+	 * The active customer's number - the default bank-transfer reference
+	 * (Közlemény) pre-filled into the payment modal. This is the customer's OWN
+	 * identifier, NOT bank data, so it stays available even before the bank account
+	 * details are verified (the per-invoice "Kifizetem" overrides it with the
+	 * concrete invoice number in the view); '' when the account is not yet linked.
+	 *
+	 * @example PortalController::bankRef() // '2026000001'
+	 */
+	private function bankRef(): string
+	{
 		$ref = '';
 		$cid = $this->currentCustomerId();
 		if ($cid > 0) {
@@ -481,13 +512,6 @@ class PortalController extends Controller
 			}
 		}
 
-		return [
-			'name'    => $cms->get('global.bank.name')    ?: 'Royal Telekom Kft.',
-			'bank'    => $cms->get('global.bank.bank'),
-			'account' => $cms->get('global.bank.account'),
-			'iban'    => $cms->get('global.bank.iban'),
-			'swift'   => $cms->get('global.bank.swift'),
-			'ref'     => $ref,
-		];
+		return $ref;
 	}
 }

@@ -29,7 +29,7 @@
 		// issued one (the list is issue_date DESC ordered) (audit E3-L4).
 		$upcoming = collect($pending)->sortBy('due')->first() ?? ($overdue[0] ?? null);
 
-		$ref = $bank['ref'];
+		$ref = $bankRef;
 	@endphp
 
 	<div class="p-page" x-data="{ bank: false, bankAmount: '', bankRef: '{{ $ref }}' }">
@@ -53,11 +53,13 @@
 					@endif
 				</div>
 				<div class="cta-row">
-					<button type="button" class="rt-btn rt-btn-cream rt-btn-large"
+					@if ($bank)
+				<button type="button" class="rt-btn rt-btn-cream rt-btn-large"
 					        @click="bank = true; bankAmount = '{{ $fmt($totalDue) }}'; bankRef = '{{ $ref }}'">
 						<i data-lucide="credit-card" class="lucide-sm"></i> Kifizetem
 					</button>
-					<a href="{{ route('invoices') }}" class="rt-btn rt-btn-large p-btn-ghost-cream">
+					@endif
+				<a href="{{ route('invoices') }}" class="rt-btn rt-btn-large p-btn-ghost-cream">
 						Számlák megtekintése <i data-lucide="arrow-right" class="lucide-sm"></i>
 					</a>
 				</div>
@@ -85,10 +87,12 @@
 								<span class="p-badge p-badge-warn">Esedékes {{ $duntil($inv['due']) }} nap múlva</span>
 							@endif
 						</div>
+						@if ($bank)
 						<button type="button" class="pay"
 						        @click="bank = true; bankAmount = '{{ $fmt($owed($inv)) }}'; bankRef = '{{ $inv['id'] }}'">
 							<i data-lucide="credit-card" class="lucide-xs"></i> Kifizetem
 						</button>
+						@endif
 					</div>
 				@empty
 					<div class="p-empty">
@@ -118,6 +122,7 @@
 
 		@if ($linked)
 		{{-- BANK-TRANSFER MODAL --}}
+		@if ($bank)
 		<div class="p-modal-bg" x-show="bank" x-cloak @click="bank = false" x-transition.opacity>
 			<div class="p-modal p-modal-bank" @click.stop>
 				<div class="p-bank">
@@ -181,6 +186,7 @@
 				</div>
 			</div>
 		</div>
+		@endif
 
 		{{-- CONTRACTS LIST --}}
 		<div class="p-card p-pad">

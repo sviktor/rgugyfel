@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * TEST-ONLY minimal mirrors of the shared rgadmin-owned tables the portal READS
- * (`customers`, `invoices`, `payments`, `subscriptions`) - the reverse of
+ * (`customers`, `invoices`, `payments`, `subscriptions`, `settings`) - the reverse of
  * rgadmin's `*_create_cus_portal_tables_if_absent` pattern. The portal test DB
  * (`mc_rg_cp_test`) is built by rgugyfel migrations alone, so feature tests that
  * link an account to a customer (customer-switcher, invoice ownership, customer-
@@ -103,6 +103,17 @@ return new class extends Migration
 				$table->unsignedSmallInteger('loyalty_months')->nullable();
 				$table->unsignedTinyInteger('status')->default(1);
 				$table->unsignedTinyInteger('deleted')->default(0);
+			});
+		}
+
+		// Global settings store (App\Models\Setting) - the portal reads the
+		// 'content_verify.portal.global.bank' flag to gate the bank-transfer
+		// details. Only `name` is read; `value` mirrored for completeness.
+		if (! Schema::hasTable('settings')) {
+			Schema::create('settings', function (Blueprint $table) {
+				$table->id();
+				$table->string('name', 191)->unique();
+				$table->longText('value')->nullable();
 			});
 		}
 	}

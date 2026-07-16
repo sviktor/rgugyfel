@@ -24,7 +24,7 @@
 		];
 	@endphp
 
-	<div class="p-page" x-data="{ filter: 'all', openInvoice: null, bank: false, bankAmount: '', bankRef: '{{ $bank['ref'] }}' }">
+	<div class="p-page" x-data="{ filter: 'all', openInvoice: null, bank: false, bankAmount: '', bankRef: '{{ $bankRef }}' }">
 
 		{{-- FILTER TABS --}}
 		<div class="p-tabs">
@@ -75,7 +75,7 @@
 							</td>
 							<td>
 								<div class="actions">
-									@if ($unpaid)
+									@if ($unpaid && $bank)
 										<button type="button" class="rt-btn rt-btn-primary p-btn-sm"
 										        @click="bank = true; bankAmount = '{{ $fmt($owed($inv)) }}'; bankRef = '{{ $inv['id'] }}'">
 											<i data-lucide="credit-card" class="lucide-xs"></i> Kifizetem
@@ -102,7 +102,9 @@
 		</div>
 
 		{{-- BANK-TRANSFER MODAL --}}
-		@include('partials._bank-modal')
+		@if ($bank)
+			@include('partials._bank-modal')
+		@endif
 
 		{{-- INVOICE PREVIEW MODALS (one per invoice) --}}
 		@foreach ($invoices as $inv)
@@ -125,7 +127,7 @@
 							<button type="button" class="rt-btn rt-btn-secondary"><i data-lucide="download" class="lucide-xs"></i> PDF letöltés</button>
 						@endif
 						<button type="button" class="rt-btn rt-btn-secondary" @click="window.print()"><i data-lucide="printer" class="lucide-xs"></i> Nyomtatás</button>
-						@if ($unpaid)
+						@if ($unpaid && $bank)
 							<button type="button" class="rt-btn rt-btn-primary"
 							        @click="bank = true; bankAmount = '{{ $fmt($owed($inv)) }}'; bankRef = '{{ $inv['id'] }}'; openInvoice = null">
 								<i data-lucide="credit-card" class="lucide-xs"></i> Kifizetem
@@ -193,7 +195,7 @@
 						</div>
 
 						<div class="foot">
-							<strong>Fizetési mód:</strong> banki átutalás · {{ $sellerName }} · IBAN {{ $bank['iban'] }} · Közlemény: <strong>{{ $inv['id'] }}</strong>
+							<strong>Fizetési mód:</strong> banki átutalás · {{ $sellerName }}@if ($bank) · IBAN {{ $bank['iban'] }}@endif · Közlemény: <strong>{{ $inv['id'] }}</strong>
 						</div>
 					</div>
 				</div>
