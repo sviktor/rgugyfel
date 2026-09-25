@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * EmailTemplate - read model for the shared `email_templates` table (owned by
  * rgadmin). The portal reads the admin-editable verify/reset templates and
- * substitutes their {curly} variables. If a row is missing or empty (e.g. the
- * rgadmin seeding has not run yet), a built-in Hungarian fallback is used so the
- * portal always sends a usable mail.
+ * substitutes their {curly} variables. If a row is missing, empty or switched
+ * off (status 0 - e.g. the rgadmin seeding has not run yet), a built-in
+ * Hungarian fallback is used so the portal always sends a usable mail.
  *
  * Single-language (hu) port of rgadmin's EmailTemplate::useTemplate().
  *
@@ -41,7 +41,10 @@ class EmailTemplate extends Model
 		// Resilient read: a missing/unreachable email_templates table (e.g. a
 		// fresh test DB) falls through to the built-in fallback below.
 		try {
-			$row = static::query()->where('alias', $alias)->where('deleted', 0)->first();
+			// An inactive template (Státusz off in rgadmin) is skipped, so the
+			// built-in text goes out instead - the verify / reset mail can never
+			// be switched off (registration and password reset depend on it).
+			$row = static::query()->where('alias', $alias)->where('deleted', 0)->where('status', 1)->first();
 		} catch (\Throwable $e) {
 			$row = null;
 		}
